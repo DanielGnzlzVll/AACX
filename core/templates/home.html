@@ -1,0 +1,20 @@
+{% extends base_template %}
+
+{% load static %}
+{% block content%}
+<div class="grid">
+{% if parties %}
+<ul>
+    {% for party in parties %}
+        {% if party.is_active %}
+            <a href="{% url 'detail_party' party.id %}" role="button" class="party is_active">{{ party.name }}</a>
+        {% else %}
+            <a href="{% url 'detail_party' party.id %}" role="button" class="party not_is_active">{{ party.name }}</a>
+        {% endif %}
+    {% endfor %}
+</ul>
+{% else %}
+    <p>No parties are available.</p>
+{% endif %}
+</div>
+{% endblock %}

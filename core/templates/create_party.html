@@ -1,0 +1,13 @@
+{% extends base_template %}
+{% load static %}
+{% block content%}
+<form method="POST" action="{% url 'create_party' %}" class="grid">
+    {% csrf_token %}
+    <label for="party_name">Party name:</label><br />
+    <input type="text" name="party_name" /><br />
+    <input type="submit" value="Create new party"  role="button" class="secondary"/>
+</form>
+{% endblock %}
+
+
+

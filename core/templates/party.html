@@ -1,0 +1,38 @@
+{% extends base_template %}
+{% load static %}
+{% block content%}
+<div class="party_game">
+    <div class="party_past_answers">Hola</div>
+    <div class="party_current_answers">
+        {% include "party_current_answers.html" %}
+    </div>
+    <div class="party_reports">
+        <h3>Reportes</h2>
+        <h4>Letra actual</h2>
+        <div>
+            <strong>{{ current_round.letter|upper }}</strong>
+        </div>
+        </br>
+        <h4>puntos por jugador</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Jugador</th>
+                    <th>Puntos</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Nombre</td>
+                    <td>0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+

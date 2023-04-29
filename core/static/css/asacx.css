@@ -1,0 +1,142 @@
+html {
+  height: 100%;
+}
+
+:root {
+  --navbar_height: 8vh;
+}
+
+body {
+  min-height: 100%;
+  max-height: 100%;
+}
+* {
+  box-sizing: border-box;
+}
+
+.party {
+  margin: 1em;
+  width: 150px;
+  height: 100px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#content {
+  padding: var(--block-spacing-vertical);
+}
+
+.is_active {
+  background-color: #0c4b33;
+}
+
+.not_is_active {
+  background-color: #c1cad2;
+}
+
+.navbar {
+  padding-right: 2em;
+  background-color: #c9f0dd;
+  max-height: var(--navbar_height);
+}
+
+.navbar > ul > li > a {
+  color: rgb(120, 120, 120);
+  font-weight: bold;
+}
+
+.avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  height: 64px;
+}
+
+.message {
+  padding: 0.5em;
+  color: white !important;
+  border-radius: 10px;
+  margin: 0.5em;
+}
+
+.debug {
+  background-color: #8d8d8d !important;
+}
+.info {
+  background-color: #36e1f4 !important;
+}
+.success {
+  background-color: #49f436 !important;
+}
+.error {
+  background-color: #f44336 !important;
+}
+.warning {
+  background-color: #f48b36 !important;
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+  color: black;
+}
+
+.party_game {
+  background-color: #8d8d8d;
+  /* height: -webkit-fill-available; */
+  /* width: 90vw; */
+  /* max-height: -webkit-fill-available; */
+  min-height: calc(
+    100vh - var(--navbar_height) - 2 * var(--block-spacing-vertical)
+  );
+  display: grid;
+  gap: 20px;
+  grid-template-areas:
+    "past_answers past_answers past_answers past_answers past_answers party_reports"
+    "past_answers past_answers past_answers past_answers past_answers party_reports"
+    "past_answers past_answers past_answers past_answers past_answers party_reports"
+    "current_answers current_answers current_answers current_answers current_answers party_reports";
+}
+
+.party_past_answers {
+  grid-area: past_answers;
+  background-color: #f48b36;
+  border-radius: 15px;
+}
+.party_current_answers {
+  grid-area: current_answers;
+  background-color: #f48b36;
+  border-radius: 15px;
+}
+.party_reports {
+  grid-area: party_reports;
+  background-color: #f48b36;
+  border-radius: 15px;
+}
+
+
+form div {
+  display: flex;
+}
+
+form div div label {
+  flex-basis: 20%;
+  padding-right: 10px;
+}
+
+form div div input[type="text"],
+form div div button[type="submit"] {
+  flex: 1;
+}

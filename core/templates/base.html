@@ -1,0 +1,50 @@
+{% load static %}
+{% load django_htmx %}
+
+<!DOCTYPE html>
+<html data-theme="light" lang="es">
+  <meta name="description" content="ASACX." />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta
+    name="theme-color"
+    media="(prefers-color-scheme: dark)"
+    content="black"
+  />
+  {% block tittle %}
+    <title>ASACX | Game</title>
+  {% endblock %}
+  {% block static_files %}
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="{% static 'css/pico.min.css' %}"
+    />
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="{% static 'css/asacx.css' %}"
+    />
+    <script src="https://unpkg.com/htmx.org@1.8.0"></script>
+    {% django_htmx_script %}
+  {% endblock %}
+  <body id="body">
+    {% block navbar%}
+        <nav class="navbar">
+            <li><strong>ASACX</strong></li>
+            <ul>
+                <li><a hx-get="{% url 'home' %}" hx-target="#content" hx-push-url="true">Home</a></li>
+                <li><a hx-get="{% url 'create_party' %}" hx-target="#content" hx-push-url="true">Create new party</a></li>
+            </ul>
+            <li>
+                <img class="avatar" src="https://i.pravatar.cc/150?u={{ user }}">
+                <small>{{ user }}</small>
+            </li>
+        </nav>
+    {% endblock %}
+    <main id="content" class="container-fluid">
+        {% include "_messages.html" %}
+        {% block content%} {% endblock %}
+    </main>
+  </body>
+</html>

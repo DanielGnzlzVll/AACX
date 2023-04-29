@@ -1,0 +1,8 @@
+{% if messages %}
+{% for message in messages %}
+    <div class="message {{ message.level_tag }}">
+        {{ message }}
+        <span class="closebtn" onclick="this.parentElement.style.display='none';" >&times;</span>
+    </div>
+{% endfor %}
+{% endif %}
