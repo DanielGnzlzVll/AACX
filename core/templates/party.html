@@ -1,7 +1,8 @@
 {% extends base_template %}
 {% load static %}
 {% block content%}
-<div class="party_game">
+<script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
+<div class="party_game" hx-ext="ws" ws-connect="/party/1/">
     <div class="party_past_answers">Hola</div>
     <div class="party_current_answers">
         {% include "party_current_answers.html" %}
@@ -9,25 +10,27 @@
     <div class="party_reports">
         <h3>Reportes</h2>
         <h4>Letra actual</h2>
-        <div>
+        <div id="current_round_letter">
             <strong>{{ current_round.letter|upper }}</strong>
         </div>
         </br>
         <h4>puntos por jugador</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Jugador</th>
-                    <th>Puntos</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Nombre</td>
-                    <td>0</td>
-                </tr>
-            </tbody>
-        </table>
+        <div id="party_points">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Jugador</th>
+                        <th>Puntos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Nombre</td>
+                        <td>0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}
