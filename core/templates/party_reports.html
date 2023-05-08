@@ -1,0 +1,25 @@
+<h4>Reportes</h4>
+<hr style="height: 3px; border-width: 0; color: gray; background-color: gray" />
+<h6>Letra actual</h6>
+<div id="current_round_letter">
+  <h3>{{ current_round.letter|upper }}</h3>
+</div>
+<hr style="height: 3px; border-width: 0; color: gray; background-color: gray" />
+<h6>Puntos por jugador</h6>
+<div id="party_points">
+  <table>
+    <thead>
+      <tr>
+        <th><strong>Jugador</strong></th>
+        <th><strong>Puntos</strong></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ user.username }}</td>
+        <td>0</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<hr style="height: 3px; border-width: 0; color: gray; background-color: gray" />

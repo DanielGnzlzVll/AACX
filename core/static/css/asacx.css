@@ -12,6 +12,7 @@ body {
 }
 * {
   box-sizing: border-box;
+  text-transform: capitalize;
 }
 
 .party {
@@ -94,7 +95,7 @@ body {
 }
 
 .party_game {
-  background-color: #8d8d8d;
+  /* background-color: #8d8d8d; */
   /* height: -webkit-fill-available; */
   /* width: 90vw; */
   /* max-height: -webkit-fill-available; */
@@ -107,36 +108,85 @@ body {
     "past_answers past_answers past_answers past_answers past_answers party_reports"
     "past_answers past_answers past_answers past_answers past_answers party_reports"
     "past_answers past_answers past_answers past_answers past_answers party_reports"
+    "past_answers past_answers past_answers past_answers past_answers party_reports"
+    "past_answers past_answers past_answers past_answers past_answers party_reports"
+    "past_answers past_answers past_answers past_answers past_answers party_reports"
     "current_answers current_answers current_answers current_answers current_answers party_reports";
 }
 
 .party_past_answers {
   grid-area: past_answers;
-  background-color: #f48b36;
+  background-color:  #dff9ec;
   border-radius: 15px;
+  padding: 20px;
+
 }
 .party_current_answers {
   grid-area: current_answers;
-  background-color: #f48b36;
+  background-color:   #dff9ec;
   border-radius: 15px;
+  padding: 20px;
+
 }
 .party_reports {
   grid-area: party_reports;
-  background-color: #f48b36;
+  background-color:   #dff9ec;
   border-radius: 15px;
+  padding: 20px;
+  /* display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* distribuye los divs verticalmente */
+/* } */
+
+/* 
+hr {
+  margin: 0;
+  border: none;
+  border-top: 2px solid black; */
 }
 
+.party_current_answers form {
+  margin: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* distribuye los divs verticalmente */
+}
 
-form div {
+.party_current_answers form div {
   display: flex;
 }
 
-form div div label {
+.party_current_answers form div div label {
   flex-basis: 20%;
   padding-right: 10px;
 }
 
-form div div input[type="text"],
-form div div button[type="submit"] {
+.party_current_answers form div div input[type="text"],
+.party_current_answers form div button[type="submit"] {
   flex: 1;
+  margin: 0px !important;
+}
+
+.word_column {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 3px;
+}
+
+.word_column input {
+  background-color: #eaeaea;
+}
+
+#current_round_letter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+td:first-child {
+  /* color: #0c4b33; */
+  font-weight: bold;
 }
