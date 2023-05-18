@@ -1,5 +1,8 @@
 import datetime
+import logging
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,6 +13,7 @@ from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
 from core import models
 
+logger = logging.getLogger(__name__)
 
 class HTMXPartialMixin(ContextMixin, TemplateResponseMixin):
     def get_context_data(self, *args, **kwargs):
@@ -81,6 +85,15 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
 
         context = self.get_context_data(**kwargs)
         context["parties"] = models.Party.objects.all()
+        
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.send)("party", {
+            "type": "party.join",
+            "text": "Hello there!",
+            "party_id": party.id,
+        })
+        logger.info("view created")
+        
         return self.render_to_response(context)
 
 

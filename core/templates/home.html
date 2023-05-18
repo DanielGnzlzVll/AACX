@@ -7,9 +7,9 @@
 <ul>
     {% for party in parties %}
         {% if party.is_active %}
-            <a href="{% url 'detail_party' party.id %}" role="button" class="party is_active">{{ party.name }}</a>
+            <a href="{% url 'detail_party' party.id %}" hx-get="{% url 'detail_party' party.id %}" hx-swap="innerHTML transition:true" hx-target="#content" role="button" hx-push-url="true" class="party is_active">{{ party.name }}</a>
         {% else %}
-            <a href="{% url 'detail_party' party.id %}" role="button" class="party not_is_active">{{ party.name }}</a>
+            <a href="{% url 'detail_party' party.id %}" hx-get="{% url 'detail_party' party.id %}" hx-swap="innerHTML transition:true" hx-target="#content" role="button" hx-push-url="true" class="party not_is_active">{{ party.name }}</a>
         {% endif %}
     {% endfor %}
 </ul>
