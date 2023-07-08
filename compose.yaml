@@ -15,7 +15,8 @@ services:
       - .:/app
     ports:
       - "8000:8000"
-    network_mode: bridge
+    depends_on:
+      - cache
   cache:
     image: redis
     restart: always
