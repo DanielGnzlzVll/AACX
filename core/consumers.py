@@ -2,13 +2,10 @@ import logging
 import time
 
 from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer, SyncConsumer
-
+from channels.generic.websocket import SyncConsumer, WebsocketConsumer
+from channels.layers import get_channel_layer
 
 logger = logging.getLogger(__name__)
-
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
 
 
 class PartyConsumer(WebsocketConsumer):
@@ -18,7 +15,7 @@ class PartyConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_add)(
             self.party_group_name, self.channel_name
         )
-        logger.error(f"player connects {self.party_id}")
+        logger.info(f"player connects {self.party_id}")
         async_to_sync(self.channel_layer.send)(
             f"party_{self.party_id}_join",
             {"type": "party.join"}

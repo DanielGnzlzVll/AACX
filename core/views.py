@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 from asgiref.sync import async_to_sync
@@ -7,13 +6,13 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.shortcuts import render
 from django.views import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
 from core import models
 
 logger = logging.getLogger(__name__)
+
 
 class HTMXPartialMixin(ContextMixin, TemplateResponseMixin):
     def get_context_data(self, *args, **kwargs):
