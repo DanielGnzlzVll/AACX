@@ -159,3 +159,46 @@ STORAGES = {
 }
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": """[{levelname} "{asctime}" {name}] {message}""",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "null": {
+            "level": "DEBUG",
+            "class": "logging.NullHandler",
+        },
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "simple"
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "include_html": True,
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+    "loggers": {
+        "django.security.DisallowedHost": {
+            "handlers": ["null"],
+            "propagate": False,
+        },
+        "celery": {
+            "level": "DEBUG",
+            "handlers": ["console", "mail_admins"],
+            "propagate": False,
+        },
+    },
+}
