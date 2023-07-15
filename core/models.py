@@ -10,8 +10,10 @@ class Party(models.Model):
 
     name = models.CharField(max_length=50)
 
-    started_at = models.DateTimeField(auto_now_add=True)
-    closed_at = models.DateTimeField(null=True)
+    started_at = models.DateTimeField(blank=True, null=True)
+    closed_at = models.DateTimeField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
     @property
     def is_active(self):
@@ -23,7 +25,7 @@ class PartyRound(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE)
     letter = models.CharField(max_length=1)
 
-    started_at = models.DateTimeField()
+    started_at = models.DateTimeField(auto_now_add=True)
     closed_at = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
