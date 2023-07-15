@@ -1,6 +1,5 @@
 {% extends base_template %} {% load static %} {% block content%}
-<script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
-<div class="party_game" hx-ext="ws" ws-connect="/party/1/">
+<div class="party_game" hx-ext="ws" ws-connect="/party/{{ party.pk }}/">
     <div class="party_past_answers">
         {% include "party_answers.html" %}
     </div>
