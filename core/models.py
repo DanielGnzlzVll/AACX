@@ -26,6 +26,8 @@ class PartyRound(models.Model):
     started_at = models.DateTimeField()
     closed_at = models.DateTimeField(blank=True, null=True)
 
+    created_at = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         unique_together = ("party", "letter")
 
