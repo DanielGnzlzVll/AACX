@@ -1,60 +1,79 @@
 import logging
-import time
 
-from asgiref.sync import async_to_sync
-from channels.generic.websocket import SyncConsumer, WebsocketConsumer
-from channels.layers import get_channel_layer
+import datetime
+
+from channels.generic.websocket import (
+    AsyncConsumer,
+    AsyncWebsocketConsumer,
+)
+
+from core import models
 
 logger = logging.getLogger(__name__)
 
 
-class PartyConsumer(WebsocketConsumer):
-    def connect(self):
+class PartyConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
         self.party_id = self.scope["url_route"]["kwargs"]["party_id"]
+        user = self.scope["user"]
+        await self.accept()
+        logger.info(f"player connected to party: {self.party_id} {user.username=}")
+
         self.party_group_name = "party_%s" % self.party_id
-        async_to_sync(self.channel_layer.group_add)(
-            self.party_group_name, self.channel_name
+        await self.channel_layer.group_add(self.party_group_name, self.channel_name)
+
+        await self.channel_layer.send(
+            f"party_players_{self.party_id}",
+            {
+                "hola": "mundo",
+                "date": datetime.datetime.now().isoformat(),
+                "party_id": self.party_id,
+                "username": user.username,
+            },
         )
-        logger.info(f"player connects {self.party_id}")
-        async_to_sync(self.channel_layer.send)(
-            f"party_{self.party_id}_join",
-            {"type": "party.join"}
+
+        party = await models.Party.objects.aget(id=self.party_id)
+
+        if not party.started_at:
+            await self.send(text_data="waiting for players to join")
+
+    async def html(self, event):
+        self.send(text_data=event["message"])
+
+    async def disconnect(self, close_code):
+        logger.info(
+            f"player disconnected from party: {self.party_id} {self.scope['user'].username=}"
         )
-        self.accept()
-
-    def receive(self, text_data):
-        pass
-        #self.send(text_data=text_data)
-
-    def html(self, event):
-        self.send(text_data=event['message'])
-
-    def disconnect(self, close_code):
-        pass
 
 
-class PartyStateMachine(SyncConsumer):
-    def party_started(self, event):
-        logger.critical("party started")
-        channel_layer = get_channel_layer()
+class PartyStateMachine(AsyncConsumer):
+    async def party_started(self, event):
         party_id = event["party_id"]
-        for i in range(67, 91):
-            async_to_sync(channel_layer.group_send)(f"party_{party_id}", {
-                "type": "html",
-                "message": f"""
-                <div id="current_round_letter">
-                    <h3>{ chr(i) }</h3>
-                </div>
-                """
-            }
-            )
-            time.sleep(5)
+        logger.info(f"party started {party_id=}")
+        logger.info("waiting for players to join")
+        for i in range(2):
+            logger.info("---- waiting new player to join")
+            player_data = await self.channel_layer.receive(f"party_players_{party_id}")
+            logger.info(f"player joined {player_data=}")
 
-    def party_join(self, event):
-        logger.critical("party started 2")
-        channel_layer = get_channel_layer()
-        party_id = event["party_id"]
-        for _ in range(2):
-            player_event = async_to_sync(channel_layer.receive)("party_join_test")
-            logger.info(f"player join {player_event=}")
         logger.info("all players joined")
+
+    async def get_connected_players(self, group):
+        assert self.channel_layer.valid_group_name(group), "Group name not valid"
+        key = self.channel_layer._group_key(group)
+        connection = self.channel_layer.connection(
+            self.channel_layer.consistent_hash(group)
+        )
+        return await connection.get(key)
+
+    async def party_join(self, event):
+        party_id = event["party_id"]
+        logger.info(f"player joining to party {party_id=}")
+        await self.channel_layer.send(
+            f"party_players_{party_id}",
+            {
+                "hola": "mundo",
+                "date": datetime.datetime.now().isoformat(),
+                "event": event,
+            },
+        )
