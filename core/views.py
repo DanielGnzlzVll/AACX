@@ -86,7 +86,9 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
             )
 
         context = self.get_context_data(**kwargs)
-        context["parties"] = models.Party.objects.all()
+        context["parties"] = models.Party.objects.filter(
+            started_at__isnull=True
+        ).order_by("-pk")
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.send)(
             "party_state_machine",
