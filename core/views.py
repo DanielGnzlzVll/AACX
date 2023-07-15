@@ -111,9 +111,10 @@ class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
         )
         if not party.exists():
             raise Http404()
-        context["party"] = party
+
+        context["party"] = party.get()
         current_round = (
-            models.PartyRound.objects.filter(party=party).order_by("-id").first()
+            models.PartyRound.objects.filter(party=context["party"].id).order_by("-id").first()
         )
         context["current_round"] = current_round
         return context
