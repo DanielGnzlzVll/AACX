@@ -7,5 +7,5 @@ websocket_urlpatterns = [
 ]
 
 channel_routing = {
-    "party": consumers.PartyStateMachine.as_asgi(),
+    "party-state-machine": consumers.PartyStateMachine.as_asgi(),
 }

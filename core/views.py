@@ -56,7 +56,7 @@ class Home(
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["parties"] = models.Party.objects.all()
+        context["parties"] = models.Party.objects.all().order_by("-pk")
         return context
 
     def get(self, request, *args, **kwargs):
@@ -84,15 +84,12 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
 
         context = self.get_context_data(**kwargs)
         context["parties"] = models.Party.objects.all()
-        
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.send)("party", {
-            "type": "party.join",
-            "text": "Hello there!",
+        async_to_sync(channel_layer.send)("party_state_machine", {
+            "type": "party_stared",
+            "party_name": party.name,
             "party_id": party.id,
         })
-        logger.info("view created")
-        
         return self.render_to_response(context)
 
 
