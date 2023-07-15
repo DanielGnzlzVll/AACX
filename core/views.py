@@ -57,7 +57,9 @@ class Home(
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["parties"] = models.Party.objects.all().order_by("-pk")
+        context["parties"] = models.Party.objects.filter(
+            started_at__isnull=True
+        ).order_by("-pk")
         return context
 
     def get(self, request, *args, **kwargs):
@@ -86,21 +88,25 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
         context = self.get_context_data(**kwargs)
         context["parties"] = models.Party.objects.all()
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.send)("party_state_machine", {
-            "type": "party_stared",
-            "party_name": party.name,
-            "party_id": party.id,
-        })
+        async_to_sync(channel_layer.send)(
+            "party_state_machine",
+            {
+                "type": "party_stared",
+                "party_name": party.name,
+                "party_id": party.id,
+            },
+        )
         return self.render_to_response(context)
 
 
 class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
-
     template_name = "party_no_started.html"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        party = models.Party.objects.filter(id=kwargs["party_id"], started_at__isnull=True)
+        party = models.Party.objects.filter(
+            id=kwargs["party_id"], started_at__isnull=True
+        )
         if not party.exists():
             raise Http404()
         context["party"] = party
