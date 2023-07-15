@@ -188,7 +188,7 @@ LOGGING = {
     },
     "root": {
         "handlers": ["console"],
-        "level": "DEBUG",
+        "level": "ERROR",
     },
     "loggers": {
         "django.security.DisallowedHost": {
@@ -196,9 +196,24 @@ LOGGING = {
             "propagate": False,
         },
         "celery": {
-            "level": "DEBUG",
+            "level": "ERROR",
             "handlers": ["console", "mail_admins"],
             "propagate": False,
         },
+        "core": {
+            "level": "DEBUG",
+            "handlers": ["console"],
+            "propagate": False,
+        },
+        "django":{
+            "level": "ERROR",
+        }
     },
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://cache:6379/1",
+    }
 }

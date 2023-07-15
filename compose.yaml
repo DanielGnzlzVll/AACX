@@ -9,6 +9,7 @@
 # https://github.com/docker/awesome-compose
 services:
   server:
+    image: asacx
     build:
       context: .
     volumes:
@@ -17,6 +18,15 @@ services:
       - "8000:8000"
     depends_on:
       - cache
+  channel-worker:
+    image: asacx
+    build:
+      context: .
+    volumes:
+      - .:/app
+    depends_on:
+      - cache
+    command: watchmedo auto-restart --directory=/app --ignore-pattern=*sqlite3 --pattern=*.py --recursive -- python manage.py custom_runworker *
   cache:
     image: redis
     restart: always
