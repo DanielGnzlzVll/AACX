@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.http import Http404
 from django.views import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
@@ -95,11 +96,13 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
 
 class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
 
-    template_name = "party.html"
+    template_name = "party_no_started.html"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        party = models.Party.objects.get(id=kwargs["party_id"])
+        party = models.Party.objects.filter(id=kwargs["party_id"], started_at__isnull=True)
+        if not party.exists():
+            raise Http404()
         context["party"] = party
         current_round = (
             models.PartyRound.objects.filter(party=party).order_by("-id").first()
