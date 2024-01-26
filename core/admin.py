@@ -11,10 +11,23 @@ class PartyAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+class UserRoundAnswerInline(admin.TabularInline):
+    model = UserRoundAnswer
+    extra = 0
+
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        formset.form.base_fields['user'].initial = request.user
+        return formset
+
+
 @admin.register(PartyRound)
 class PartyRoundAdmin(admin.ModelAdmin):
     list_display = ('id', 'party', 'letter', 'started_at', 'closed_at')
     list_filter = ('party', 'started_at', 'closed_at')
+
+    inlines = [UserRoundAnswerInline]
+
 
 
 @admin.register(UserRoundAnswer)

@@ -103,7 +103,7 @@ body {
     100vh - var(--navbar_height) - 2 * var(--block-spacing-vertical)
   );
   display: grid;
-  gap: 20px;
+  gap: 15px;
   grid-template-areas:
     "past_answers past_answers past_answers past_answers past_answers party_reports"
     "past_answers past_answers past_answers past_answers past_answers party_reports"
@@ -132,7 +132,8 @@ body {
   grid-area: party_reports;
   background-color:   #dff9ec;
   border-radius: 15px;
-  padding: 20px;
+  /* padding: 15px; */
+  padding: 20px 10px 20px 15px;
   /* display: flex;
   flex-direction: column;
   justify-content: space-between; /* distribuye los divs verticalmente */
@@ -143,6 +144,17 @@ hr {
   margin: 0;
   border: none;
   border-top: 2px solid black; */
+}
+
+.reports-title {
+  padding: 20px 5px 20px 5px;
+}
+.reports-username {
+  padding: 15px 10px 15px 0px;
+}
+
+.reports-points {
+  padding: 15px 5px 15px 0px;
 }
 
 .party_current_answers form {

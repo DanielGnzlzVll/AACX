@@ -59,7 +59,9 @@ class Home(
         context = super().get_context_data(*args, **kwargs)
         context["parties"] = models.Party.objects.filter(
             started_at__isnull=True
-        ).order_by("-pk")
+        ).order_by("-pk") | models.Party.objects.filter(
+            closed_at__isnull=True, joined_users__pk=self.request.user.id
+        )
         return context
 
     def get(self, request, *args, **kwargs):
@@ -106,18 +108,23 @@ class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        party = models.Party.objects.filter(
-            id=kwargs["party_id"], started_at__isnull=True
+        party_qs = models.Party.objects.filter(id=kwargs["party_id"]) & (
+            models.Party.objects.filter(started_at__isnull=True)
+            | models.Party.objects.filter(joined_users__pk=self.request.user.id)
         )
-        if not party.exists():
+        if not party_qs.exists():
             raise Http404()
 
-        context["party"] = party.get()
-        current_round = (
-            models.PartyRound.objects.filter(party=context["party"].id).order_by("-id").first()
-        )
-        context["current_round"] = current_round
+        context["party"] = party_qs.get()
+        self.party = context["party"]
+        context["current_round"] = self.party.get_current_or_next_round()
+        context["rounds"] = self.party.get_answers_for_user(self.request.user)
         return context
+
+    def get_template_names(self):
+        if self.party.started_at:
+            return ["party.html"]
+        return ["party_no_started.html"]
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)

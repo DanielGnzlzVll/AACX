@@ -4,6 +4,7 @@
       <th><strong>Letra</strong></th>
       <th><strong>Nombre</strong></th>
       <th><strong>Apellido</strong></th>
+      <th><strong>País</strong></th>
       <th><strong>Ciudad</strong></th>
       <th><strong>Animal</strong></th>
       <th><strong>Cosa</strong></th>
@@ -11,24 +12,17 @@
     </tr>
   </thead>
   <tbody>
-    <tr>
-      <td>J</td>
-      <td>juan</td>
-      <td>jiraldo</td>
-      <td>jalisco</td>
-      <td>javali</td>
-      <td>juete</td>
-      <td>jazmin</td>
-    </tr>
-    <tr>
-      <td>M</td>
-      <td>María</td>
-      <td>Magdalena</td>
-      <td>Manizales</td>
-      <td>Manati</td>
-      <td>Masmelo</td>
-      <td>Marron</td>
-    </tr>
-    <!-- Aquí puedes agregar más filas con los resultados anteriores -->
+    {% for round in rounds %}
+      <tr>
+        <td>{{ round.letter }}</td>
+        <td>{{ round.name }}</td>
+        <td>{{ round.last_name }}</td>
+        <td>{{ round.country }}</td>
+        <td>{{ round.city }}</td>
+        <td>{{ round.animal }}</td>
+        <td>{{ round.thing }}</td>
+        <td>{{ round.color }}</td>
+      </tr>
+    {% endfor %}
   </tbody>
 </table>

@@ -18,6 +18,7 @@ services:
       - "8000:8000"
     depends_on:
       - cache
+    command: bash -c "python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"
   channel-worker:
     image: asacx
     build:
@@ -27,9 +28,26 @@ services:
     depends_on:
       - cache
     command: watchmedo auto-restart --directory=/app --ignore-pattern=*sqlite3 --pattern=*.py --recursive -- python manage.py custom_runworker *
+    deploy:
+      mode: replicated
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
   cache:
     image: redis
     restart: always
+  
+  db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: django_password
+      POSTGRES_USER: django_user
+      POSTGRES_DB: django_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
@@ -58,8 +76,8 @@ services:
 #       interval: 10s
 #       timeout: 5s
 #       retries: 5
-# volumes:
-#   db-data:
+volumes:
+  pgdata:
 # secrets:
 #   db-password:
 #     file: db/password.txt

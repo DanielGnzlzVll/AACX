@@ -10,15 +10,17 @@
   <table>
     <thead>
       <tr>
-        <th><strong>Jugador</strong></th>
-        <th><strong>Puntos</strong></th>
+        <th class="reports-title"><strong>Jugador</strong></th>
+        <th class="reports-title"><strong>Puntos</strong></th>
       </tr>
     </thead>
     <tbody>
+      {% for user_name, points in party.get_players_scores.items %}
       <tr>
-        <td>{{ user.username }}</td>
-        <td>0</td>
+        <td class="reports-username">{{ user_name }}</td>
+        <td class="reports-points">{{ points }}</td>
       </tr>
+      {% endfor %}
     </tbody>
   </table>
 </div>

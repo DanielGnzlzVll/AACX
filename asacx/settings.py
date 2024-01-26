@@ -91,8 +91,12 @@ WSGI_APPLICATION = "asacx.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "django_db",
+        "USER": "django_user",
+        "PASSWORD": "django_password",
+        "HOST": "db",
+        "PORT": 5432,
     }
 }
 
@@ -206,14 +210,17 @@ LOGGING = {
             "propagate": False,
         },
         "django":{
-            "level": "ERROR",
+            "level": "INFO",
         }
     },
 }
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "BACKEND": "redis_lock.django_cache.RedisCache",
         "LOCATION": "redis://cache:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient"
+        }
     }
 }

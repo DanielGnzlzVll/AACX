@@ -1,13 +1,5 @@
 {% extends base_template %} {% load static %} {% block content%}
 <div class="party_game" hx-ext="ws" ws-connect="/party/{{ party.pk }}/">
-    <div class="party_past_answers">
-        {% include "party_answers.html" %}
-    </div>
-    <div class="party_current_answers">
-        {% include "party_current_answers.html" %}
-    </div>
-    <div class="party_reports">
-        {% include "party_reports.html" %}
-    </div>
+    {% include "_party_content.html" %}
 </div>
 {% endblock %}
