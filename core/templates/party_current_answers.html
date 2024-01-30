@@ -1,32 +1,50 @@
-<form id="party_current_answers_form" ws-send>
-  <div>
-    <div class="word_column">
-      <label for="nombre"><strong>Nombre:</strong></label>
-      <input pattern='^[{{ current_round.letter|upper }}|{{ current_round.letter }}]' placeholder='{{ current_round.letter|upper }}' class="word_column-input" type="text" id="nombre" name="nombre" hx-trigger="keyup changed delay:1s"/>
-    </div>
-    <div class="word_column">
-      <label for="apellido"><strong>Apellido:</strong></label>
-      <input pattern='^[{{ current_round.letter|upper }}|{{ current_round.letter }}]' placeholder='{{ current_round.letter|upper }}' class="word_column-input" type="text" id="apellido" name="apellido" />
-    </div>
-    <div class="word_column">
-      <label for="ciudad"><strong>Ciudad:</strong></label>
-      <input pattern='^[{{ current_round.letter|upper }}|{{ current_round.letter }}]' placeholder='{{ current_round.letter|upper }}' class="word_column-input" type="text" id="ciudad" name="ciudad" />
-    </div>
-    <div class="word_column">
-      <label for="animal"><strong>Animal:</strong></label>
-      <input pattern='^[{{ current_round.letter|upper }}|{{ current_round.letter }}]' placeholder='{{ current_round.letter|upper }}' class="word_column-input" type="text" id="animal" name="animal" />
-    </div>
-    <div class="word_column">
-      <label for="cosa"><strong>Cosa:</strong></label>
-      <input pattern='^[{{ current_round.letter|upper }}|{{ current_round.letter }}]' placeholder='{{ current_round.letter|upper }}' class="word_column-input" type="text" id="cosa" name="cosa" />
-    </div>
-    <div class="word_column">
-      <label for="color"><strong>Color:</strong></label>
-      <input pattern='^[{{ current_round.letter|upper }}|{{ current_round.letter }}]' placeholder='{{ current_round.letter|upper }}' class="word_column-input" type="text" id="color" name="color" />
-    </div>
-  </div>
+<script id="script">
+  if (!window.ultimoElementoConFoco) {
+    // Evento que se ejecuta antes de enviar una solicitud htmx ws
+    document.addEventListener("htmx:wsBeforeSend", function (event) {
+      // Captura el id del elemento con el foco actual
+      const elementoConFoco = document.activeElement;
+      ultimoElementoConFocoId = elementoConFoco ? elementoConFoco.id : null;
+    });
 
-  <div>
-    <button class="secondary" type="submit" style="width: 100%" id="submit-answers">STOP</button>
-  </div>
+    // Evento que se ejecuta después de completarse la carga de una solicitud htmx ws
+    document.addEventListener("htmx:wsAfterMessage", function (event) {
+      // Verifica si hay un id almacenado y asigna el foco al elemento correspondiente
+      if (ultimoElementoConFocoId) {
+        const elementoConFoco = document.getElementById(
+          ultimoElementoConFocoId
+        );
+        if (elementoConFoco) {
+          elementoConFoco.focus();
+          if (elementoConFoco.setSelectionRange) {
+            elementoConFoco.setSelectionRange(
+              elementoConFoco.value.length,
+              elementoConFoco.value.length
+            );
+          }
+        }
+        // Reinicia la variable después de utilizarla
+        ultimoElementoConFocoId = null;
+      }
+    });
+  }
+</script>
+<form
+  id="party_current_answers_form"
+  action="post"
+  ws-send
+  hx-trigger="input[target.value.length > 1] delay:200ms, click from:#submit-answers"
+  hx-push-url="true"
+>
+  <div id="random">{{ form.as_div }}</div>
+  <button
+    type="submit"
+    value="STOP"
+    class="secondary"
+    style="width: 100%"
+    id="submit-answers"
+    name="submit-answers"
+  >
+    STOP
+  </button>
 </form>

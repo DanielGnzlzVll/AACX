@@ -174,8 +174,7 @@ hr {
   padding-right: 10px;
 }
 
-.party_current_answers form div div input[type="text"],
-.party_current_answers form div button[type="submit"] {
+.party_current_answers form div div input[type="text"] {
   flex: 1;
   margin: 0px !important;
 }
@@ -189,6 +188,15 @@ hr {
 
 .word_column input {
   background-color: #eaeaea;
+}
+.word_column label {
+  font-weight: bold;
+}
+ul.errorlist {
+  display: none;
+}
+.word_column.word-error > input{
+  background-color: red;
 }
 
 #current_round_letter {

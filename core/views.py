@@ -10,7 +10,7 @@ from django.http import Http404
 from django.views import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
-from core import models
+from core import models, forms
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +119,9 @@ class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
         self.party = context["party"]
         context["current_round"] = self.party.get_current_or_next_round()
         context["rounds"] = self.party.get_answers_for_user(self.request.user)
+        context["form"] = forms.CurrentAnswersForm(
+            current_round=context["current_round"],
+        )
         return context
 
     def get_template_names(self):

@@ -1,6 +1,7 @@
+import json
 import logging
 
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 
 import datetime
 
@@ -13,7 +14,7 @@ from django.db import transaction
 
 from django.template.loader import render_to_string
 
-from core import models
+from core import models, forms
 
 logger = logging.getLogger(__name__)
 
@@ -39,30 +40,46 @@ class PartyConsumer(AsyncWebsocketConsumer):
             },
         )
 
-        party = await models.Party.objects.aget(id=self.party_id)
+        self.party = await models.Party.objects.aget(id=self.party_id)
 
-        if not party.started_at:
+        if not self.party.started_at:
             logger.info(f"party no started yet {self.party_id=}")
             await self.channel_layer.send(
                 "party-state-machine",
                 {
                     "type": "party_started",
-                    "party_name": party.name,
-                    "party_id": party.id,
+                    "party_name": self.party.name,
+                    "party_id": self.party.id,
                 },
             )
             await self.send(text_data="waiting for players to join")
 
     async def receive(self, text_data):
         logger.info(f"receive {text_data=}")
+        data = json.loads(text_data)
+        if data["HEADERS"]["HX-Trigger"] == "party_current_answers_form":
+            current_round = await sync_to_async(self.party.get_current_or_next_round)()
+            form = forms.CurrentAnswersForm(
+                data,
+                current_round=current_round,
+            )
+            template_string = render_to_string(
+                "party_current_answers.html",
+                {
+                    "party": self.party,
+                    "current_round": current_round,
+                    "form": form,
+                },
+            )
+            await self.html({"message": template_string})
 
     async def html(self, event):
-        logger.info(f"html event {event=}")
         await self.send(text_data=event["message"])
 
     async def disconnect(self, close_code):
         logger.info(
-            f"player disconnected from party: {self.party_id} {self.scope['user'].username=}"
+            "player disconnected from party: "
+            f"{self.party_id} {self.scope['user'].username=}"
         )
 
 
