@@ -99,6 +99,9 @@ class CurrentAnswersForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean().copy()
 
+        if cleaned_data.get("submit_stop"):
+            return cleaned_data
+
         for field, value in cleaned_data.items():
             if (
                 value
