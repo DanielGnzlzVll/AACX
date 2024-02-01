@@ -7,6 +7,8 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from asgiref.sync import async_to_sync, sync_to_async
+
 
 class Party(models.Model):
     name = models.CharField(max_length=50)
@@ -28,13 +30,9 @@ class Party(models.Model):
         return self.closed_at is None or self.closed_at <= timezone.now()
 
     def get_current_or_next_round(self):
-        round = (
-            PartyRound.objects.filter(party_id=self.id, closed_at__isnull=True)
-            .order_by("started_at")
-            .first()
-        )
-        if round:
-            return round
+        current = async_to_sync(self.get_current_round)()
+        if current.closed_at is None:
+            return current
         letter = random.choice(string.ascii_uppercase)
         while PartyRound.objects.filter(party_id=self.id, letter=letter).exists():
             letter = random.choice(string.ascii_uppercase)
@@ -43,6 +41,12 @@ class Party(models.Model):
             letter=letter,
             started_at=timezone.now(),
         )
+
+    async def get_current_round(self):
+        round = await (
+            PartyRound.objects.filter(party_id=self.id).order_by("-started_at").afirst()
+        )
+        return round
 
     def get_players_scores(self):
         scores = defaultdict(float)
@@ -109,6 +113,28 @@ class PartyRound(models.Model):
 
     def __str__(self):
         return f"{self.party} - {self.letter}"
+
+    async def close(self):
+        self.closed_at = timezone.now()
+        await self.save()
+
+    async def save_user_answers(self, user, answers):
+        answers_list = []
+        for field, value in answers:
+            answers_list.append(
+                UserRoundAnswer(
+                    round=self,
+                    user=user,
+                    field=field,
+                    value=value,
+                )
+            )
+        await UserRoundAnswer.objects.abulk_create(
+            answers_list,
+            update_conflicts=True,
+            update_fields=["value"],
+            unique_fields=["round", "user", "field"],
+        )
 
 
 class UserRoundAnswer(models.Model):

@@ -32,19 +32,20 @@
 <form
   id="party_current_answers_form"
   action="post"
-  ws-send
-  hx-trigger="input[target.value.length > 1] delay:200ms, click from:#submit-answers"
   hx-push-url="true"
->
+  {% if not disabled %}
+    ws-send
+    hx-trigger="input[target.value.length > 1] delay:200ms, click from:#submit_stop"
+  {% endif %}
+  >
   <div id="random">{{ form.as_div }}</div>
   <button
     type="submit"
-    value="STOP"
+    value="true"
     class="secondary"
     style="width: 100%"
-    id="submit-answers"
-    name="submit-answers"
-  >
-    STOP
-  </button>
+    id="submit_stop"
+    name="submit_stop"
+    {% if disabled %}disabled{% endif %}
+  >STOP</button>
 </form>
