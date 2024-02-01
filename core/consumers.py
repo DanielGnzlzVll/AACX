@@ -68,6 +68,7 @@ class PartyConsumer(AsyncWebsocketConsumer):
                 self.form = form
                 await self.save_form(form, current_round)
                 if form.is_valid() and form.cleaned_data['submit_stop']:
+                    all_users_anwswers = await current_round.close_round_and_calculate_scores()
                     await self.channel_layer.group_send(
                         self.party_group_name,
                         {

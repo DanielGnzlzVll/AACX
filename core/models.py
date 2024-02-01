@@ -1,3 +1,4 @@
+import collections
 import random
 import string
 from collections import defaultdict
@@ -49,38 +50,15 @@ class Party(models.Model):
         return round
 
     def get_players_scores(self):
-        scores = defaultdict(float)
-
-        for round in self.partyround_set.filter(closed_at__isnull=True):
-            user_answer = defaultdict(lambda: defaultdict(str))
-            for answer in round.userroundanswer_set.all().order_by("field"):
-                user_answer[answer.field][answer.user.username] = (
-                    answer.value
-                    if answer.value.lower().startswith(round.letter.lower())
-                    else ""
-                )
-
-            for field in user_answer:
-                seen = set()
-                for username in user_answer[field]:
-                    if user_answer[field][username]:
-                        seen.add(user_answer[field][username])
-
-                for username in user_answer[field]:
-                    if not user_answer[field][username]:
-                        continue
-                    if user_answer[field][username] in seen:
-                        scores[username] += 1
-                        continue
-                    scores[username] += 2
-
-        scores = {
-            "Dani": 25,
-            "Juancho": int(random.random() * 24),
-            "Gonzalo": int(random.random() * 24),
-            "Lucas": int(random.random() * 24),
-        }
-        return dict(sorted(scores.items(), key=lambda x: x[1], reverse=True))
+        points_grouped = (
+            UserRoundAnswer.objects.filter(round__party_id=self.id)
+            .values("user__username")
+            .annotate(
+                scored_points=models.Sum("scored_points"),
+            ).order_by("-scored_points")
+            .values_list("user__username", "scored_points")
+        )
+        return dict(points_grouped)
 
     def get_answers_for_user(self, user):
         # UserRoundAnswer.objects.filter(user=user, round__party_id=self.id)
@@ -93,7 +71,8 @@ class Party(models.Model):
         answerlist = []
         for letter, answers in groupby(answers_dict, lambda x: x["round__letter"]):
             answerlist.append(
-                {"letter": letter} | {answer["field"]: answer["value"] for answer in answers}
+                {"letter": letter}
+                | {answer["field"]: answer["value"] for answer in answers}
             )
 
         return answerlist
@@ -136,6 +115,29 @@ class PartyRound(models.Model):
             unique_fields=["round", "user", "field"],
         )
 
+    async def close_round_and_calculate_scores(self):
+        await self.close()
+
+        answers_to_save = []
+        answers_by_field = collections.defaultdict(list)
+        for answer in await UserRoundAnswer.objects.afilter(round=self):
+            answers_by_field[answer.field].append(answer)
+
+        for field, answers in answers_by_field.items():
+            all_users_for_field_answers = defaultdict(int)
+            for answer in answers:
+                all_users_for_field_answers[answer.value] += 1
+
+            for answer in answers:
+                if not answer.value:
+                    continue
+                if not answer.value.lower().startswith(self.letter.lower()):
+                    continue
+                answer.scored_points = 100 // all_users_for_field_answers[answer.value]
+                answers_to_save.append(answer)
+
+        return await UserRoundAnswer.objects.abulk_update(answers_to_save)
+
 
 class UserRoundAnswer(models.Model):
     NAME_CHOICE = "name"
@@ -161,6 +163,8 @@ class UserRoundAnswer(models.Model):
 
     field = models.CharField(max_length=50, choices=FIELD_CHOICES)
     value = models.CharField(max_length=50)
+
+    scored_points = models.IntegerField(null=True, blank=True)
 
     saved_at = models.DateTimeField(auto_now=True)
 
