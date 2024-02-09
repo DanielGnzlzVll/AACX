@@ -167,14 +167,18 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
     async def event_party_started(self, event):
         party_id = event["party_id"]
         logger.info(f"starting {party_id=}")
-        party = await self.handle_transaction_wait_players_to_join(
-            party_id
-        )
+        party = await self.handle_transaction_wait_players_to_join(party_id)
 
         await self.new_round(party)
 
-        for i in range(2):
-            await self.channel_layer.receive(f"party_new_round_{party_id}")
+        for _ in range(2):
+            try:
+                asyncio.wait_for(
+                    self.channel_layer.receive(f"party_new_round_{party_id}"),
+                    timeout=300,
+                )
+            except TimeoutError:
+                pass
             await self.update_scores()
             await self.new_round(party)
 
