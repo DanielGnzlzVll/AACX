@@ -202,14 +202,12 @@ class PartyStateMachine(SyncConsumer):
                 logger.info("all players joined")
                 party.started_at = datetime.datetime.now()
                 party.save()
-                self.party = party
-
-                self.new_round()
+                self.new_round(party)
 
         for i in range(2):
             async_to_sync(self.channel_layer.receive)(f"party_new_round_{party_id}")
             self.update_scores()
-            self.new_round()
+            self.new_round(party)
 
         self.update_scores()
 
@@ -239,12 +237,12 @@ class PartyStateMachine(SyncConsumer):
     def update_scores(self):
         pass
 
-    def new_round(self):
+    def new_round(self, party):
         template_string = render_to_string(
             "party.html",
             {
-                "party": self.party,
-                "current_round": self.party.get_current_or_next_round(),
+                "party": party,
+                "current_round": party.get_current_or_next_round(),
                 "base_template": "base_partial.html",
             },
         )
