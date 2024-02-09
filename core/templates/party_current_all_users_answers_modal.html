@@ -1,0 +1,27 @@
+<div id="modal" class="party_past_answers" hx-target="#modal">
+  <dialog id="modal_dialog" {{ open }}>
+    <article>
+      <h3>{{ current_round.letter }}</h3>
+      <p>{{ field }}</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Jugador</th>
+            <th>Respuesta</th>
+            <th>Puntos Obtenidos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for answer in answers %}
+          <tr>
+            <td>{{ answer.username }}</td>
+            <td>{{ answer.value }}</td>
+            <td>{{ answer.scored_points }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </article>
+  </dialog>
+</div>
