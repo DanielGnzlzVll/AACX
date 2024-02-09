@@ -145,52 +145,13 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         await current_round.save_user_answers(self.scope["user"], data.items())
 
     async def display_all_answers(self, answers, current_round):
-        grouped_answers = collections.defaultdict(list)
-
-        for answer in answers:
-            grouped_answers[answer.field].append(
-                {
-                    "value": answer.value,
-                    "scored_points": answer.scored_points,
-                    "username": await sync_to_async(lambda: answer.user.username)(),
-                }
-            )
-
-        times = [0.5] + [2] * len(models.UserRoundAnswer.FIELD_CHOICES)
-
-        for field, _ in models.UserRoundAnswer.FIELD_CHOICES:
-            answers = grouped_answers[field]
-            template_string = render_to_string(
-                "party_current_all_users_answers_modal.html",
-                {
-                    "party": self.party,
-                    "current_round": current_round,
-                    "answers": answers,
-                    "field": field,
-                    "open": "open",
-                },
-            )
-
-            await self.channel_layer.group_send(
-                self.party_group_name,
-                {
-                    "type": "event_defer_group_html",
-                    "sleep": times.pop(0),
-                    "message": template_string,
-                },
-            )
-
-        template_string = render_to_string(
-            "party_current_all_users_answers_modal.html",
-            {"open": ""},
-        )
-
-        await self.channel_layer.group_send(
-            self.party_group_name,
+        await self.channel_layer.send(
+            STATE_MACHINE_CHANNEL_NAME,
             {
-                "type": "event_defer_group_html",
-                "sleep": times.pop(0),
-                "message": template_string,
+                "type": "event_display_all_answers",
+                "answers": answers,
+                "current_round": current_round,
+                "party_id": self.party_id,
             },
         )
 
@@ -282,5 +243,61 @@ class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
                 "hola": "mundo",
                 "date": datetime.datetime.now().isoformat(),
                 "event": event,
+            },
+        )
+
+    async def event_display_all_answers(self, event):
+        answers = event["answers"]
+        current_round = event["current_round"]
+        party = event["party"]
+        await self.display_all_answers(answers, current_round, party)
+
+    async def display_all_answers(self, answers, current_round, party):
+        grouped_answers = collections.defaultdict(list)
+
+        for answer in answers:
+            grouped_answers[answer.field].append(
+                {
+                    "value": answer.value,
+                    "scored_points": answer.scored_points,
+                    "username": await sync_to_async(lambda: answer.user.username)(),
+                }
+            )
+
+        times = [0.5] + [2] * len(models.UserRoundAnswer.FIELD_CHOICES)
+
+        for field, _ in models.UserRoundAnswer.FIELD_CHOICES:
+            answers = grouped_answers[field]
+            template_string = render_to_string(
+                "party_current_all_users_answers_modal.html",
+                {
+                    "party": self.party,
+                    "current_round": current_round,
+                    "answers": answers,
+                    "field": field,
+                    "open": "open",
+                },
+            )
+
+            await self.channel_layer.group_send(
+                self.get_party_group_name(party=party),
+                {
+                    "type": "event_defer_group_html",
+                    "sleep": times.pop(0),
+                    "message": template_string,
+                },
+            )
+
+        template_string = render_to_string(
+            "party_current_all_users_answers_modal.html",
+            {"open": ""},
+        )
+
+        await self.channel_layer.group_send(
+            self.get_party_group_name(party=party),
+            {
+                "type": "event_defer_group_html",
+                "sleep": times.pop(0),
+                "message": template_string,
             },
         )
