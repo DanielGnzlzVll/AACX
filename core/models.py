@@ -95,7 +95,7 @@ class PartyRound(models.Model):
 
     async def close(self):
         self.closed_at = timezone.now()
-        await self.save()
+        await self.asave()
 
     async def save_user_answers(self, user, answers):
         answers_list = []
@@ -120,7 +120,7 @@ class PartyRound(models.Model):
 
         answers_to_save = []
         answers_by_field = collections.defaultdict(list)
-        for answer in await UserRoundAnswer.objects.afilter(round=self):
+        async for answer in UserRoundAnswer.objects.filter(round=self):
             answers_by_field[answer.field].append(answer)
 
         for field, answers in answers_by_field.items():
