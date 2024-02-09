@@ -31,6 +31,14 @@ class PartyConsumerMixin:
             return "party_%s" % party.id
         return "party_%s" % party_id
 
+    def get_party_player_connected_channel_name(
+        self, *, party: models.Party | None, party_id: int | None
+    ) -> str:
+        assert party_id or party, "either party or party_id must be provided"
+        if party:
+            return "party_players_%s" % party.id
+        return "party_players_%s" % party_id
+
 
 class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
     async def connect(self):
@@ -43,7 +51,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         await self.channel_layer.group_add(self.party_group_name, self.channel_name)
 
         await self.channel_layer.send(
-            f"party_players_{self.party_id}",
+            self.get_party_player_connected_channel_name(party_id=self.party_id),
             {
                 "hola": "mundo",
                 "date": datetime.datetime.now().isoformat(),
@@ -188,12 +196,12 @@ class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
         for i in range(2):
             logger.info("---- waiting new player to join")
             player_data = async_to_sync(self.channel_layer.receive)(
-                f"party_players_{party.pk}"
+                self.get_party_player_connected_channel_name(party=party)
             )
             party.joined_users.add(player_data["user_id"])
 
             current_players = async_to_sync(self.get_connected_players)(
-                f"party_{party.pk}"
+                self.get_party_group_name(party=party)
             )
             msg = f"""<div id="party_content">
                 Esperando Mas Jugadores...
@@ -201,7 +209,7 @@ class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
             </div>
             """
             async_to_sync(self.channel_layer.group_send)(
-                f"party_{party.pk}", {"type": "html", "message": msg}
+                self.get_party_group_name(party=party), {"type": "html", "message": msg}
             )
 
             logger.info(f"player joined {player_data=}")
@@ -223,7 +231,7 @@ class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
             </div>
             """
         async_to_sync(self.channel_layer.group_send)(
-            f"party_{self.party.pk}", {"type": "html", "message": msg}
+            self.get_party_group_name(party=party), {"type": "html", "message": msg}
         )
 
     async def get_connected_players(self, group):
@@ -238,7 +246,7 @@ class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
         party_id = event["party_id"]
         logger.info(f"player joining to party {party_id=}")
         self.channel_layer.send(
-            f"party_players_{party_id}",
+            self.get_party_player_connected_channel_name(party_id=party_id),
             {
                 "hola": "mundo",
                 "date": datetime.datetime.now().isoformat(),
