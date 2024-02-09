@@ -21,14 +21,24 @@ from core import models, forms
 logger = logging.getLogger(__name__)
 
 
-class PartyConsumer(AsyncWebsocketConsumer):
+class PartyConsumerMixin:
+    def get_party_group_name(
+        self, *, party: models.Party | None, party_id: int | None
+    ) -> str:
+        assert party_id or party, "either party or party_id must be provided"
+        if party:
+            return "party_%s" % party.id
+        return "party_%s" % party_id
+
+
+class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
     async def connect(self):
         self.party_id = self.scope["url_route"]["kwargs"]["party_id"]
         user = self.scope["user"]
         await self.accept()
         logger.info(f"player connected to party: {self.party_id} {user.username=}")
 
-        self.party_group_name = "party_%s" % self.party_id
+        self.party_group_name = self.get_party_group_name(party_id=self.party_id)
         await self.channel_layer.group_add(self.party_group_name, self.channel_name)
 
         await self.channel_layer.send(
@@ -189,7 +199,7 @@ class PartyConsumer(AsyncWebsocketConsumer):
         await self.html(event)
 
 
-class PartyStateMachine(SyncConsumer):
+class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
     def party_started(self, event):
         party_id = event["party_id"]
         logger.info(f"starting {party_id=}")
