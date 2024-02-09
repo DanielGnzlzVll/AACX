@@ -32,5 +32,5 @@ class PartyRoundAdmin(admin.ModelAdmin):
 
 @admin.register(UserRoundAnswer)
 class UserRoundAnswerAdmin(admin.ModelAdmin):
-    list_display = ('id', 'round', 'user', 'field', 'value', 'saved_at')
+    list_display = ('id', 'round', 'user', 'field', 'value', 'scored_points', 'saved_at')
     list_filter = ('round', 'user', 'saved_at')
