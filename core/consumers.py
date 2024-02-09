@@ -19,6 +19,7 @@ from django.template.loader import render_to_string
 from core import models, forms
 
 logger = logging.getLogger(__name__)
+STATE_MACHINE_CHANNEL_NAME = "party-state-machine"
 
 
 class PartyConsumerMixin:
@@ -57,7 +58,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         if not self.party.started_at:
             logger.info(f"party no started yet {self.party_id=}")
             await self.channel_layer.send(
-                "party-state-machine",
+                STATE_MACHINE_CHANNEL_NAME,
                 {
                     "type": "event_party_started",
                     "party_name": self.party.name,
