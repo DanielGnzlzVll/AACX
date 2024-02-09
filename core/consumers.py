@@ -67,14 +67,16 @@ class PartyConsumer(AsyncWebsocketConsumer):
                 form.is_valid()
                 self.form = form
                 await self.save_form(form, current_round)
-                if form.is_valid() and form.cleaned_data['submit_stop']:
+                if form.is_valid() and form.cleaned_data["submit_stop"]:
                     await self.channel_layer.group_send(
                         self.party_group_name,
                         {
                             "type": "party_round_stopped",
                         },
                     )
-                    all_users_anwswers = await current_round.close_round_and_calculate_scores()
+                    all_users_answers = (
+                        await current_round.close_round_and_calculate_scores()
+                    )
                     return
                 template_string = render_to_string(
                     "party_current_answers.html",
@@ -90,7 +92,7 @@ class PartyConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=event["message"])
 
     async def party_round_stopped(self, event):
-        logger.info(f"round stopped {self.party_id=}")  
+        logger.info(f"round stopped {self.party_id=}")
         current_round = await self.party.get_current_round()
         template_string = render_to_string(
             "party_current_answers.html",
@@ -100,9 +102,9 @@ class PartyConsumer(AsyncWebsocketConsumer):
                 "form": forms.CurrentAnswersForm(
                     current_round=current_round,
                     disabled=True,
-                    initial=self.form.cleaned_data
+                    initial=self.form.cleaned_data,
                 ),
-                "disabled": True
+                "disabled": True,
             },
         )
         await self.html({"message": template_string})
@@ -122,12 +124,11 @@ class PartyConsumer(AsyncWebsocketConsumer):
     async def save_form(self, form, current_round):
         data = {
             field: value
-            for field, value
-            in form.cleaned_data.items()
+            for field, value in form.cleaned_data.items()
             if field in dict(models.UserRoundAnswer.FIELD_CHOICES)
         }
 
-        await current_round.save_user_answers(self.scope['user'], data.items())
+        await current_round.save_user_answers(self.scope["user"], data.items())
 
 
 class PartyStateMachine(SyncConsumer):
@@ -148,9 +149,7 @@ class PartyStateMachine(SyncConsumer):
                 self.new_round()
 
         for i in range(2):
-            async_to_sync(self.channel_layer.receive)(
-                f"party_new_round_{party_id}"
-            )
+            async_to_sync(self.channel_layer.receive)(f"party_new_round_{party_id}")
             self.update_scores()
             self.new_round()
 
