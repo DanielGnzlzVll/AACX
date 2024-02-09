@@ -130,13 +130,16 @@ class PartyRound(models.Model):
 
             for answer in answers:
                 if not answer.value:
+                    answers_to_save.append(answer)
                     continue
                 if not answer.value.lower().startswith(self.letter.lower()):
+                    answers_to_save.append(answer)
                     continue
                 answer.scored_points = 100 // all_users_for_field_answers[answer.value]
                 answers_to_save.append(answer)
 
-        return await UserRoundAnswer.objects.abulk_update(answers_to_save)
+        await UserRoundAnswer.objects.abulk_update(answers_to_save, ["scored_points"])
+        return answers_to_save
 
 
 class UserRoundAnswer(models.Model):
