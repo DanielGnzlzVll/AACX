@@ -59,7 +59,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
             await self.channel_layer.send(
                 "party-state-machine",
                 {
-                    "type": "party_started",
+                    "type": "event_party_started",
                     "party_name": self.party.name,
                     "party_id": self.party.id,
                 },
@@ -83,7 +83,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
                     await self.channel_layer.group_send(
                         self.party_group_name,
                         {
-                            "type": "party_round_stopped",
+                            "type": "event_party_round_stopped",
                         },
                     )
                     all_users_answers = (
@@ -200,7 +200,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
 
 class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
-    def party_started(self, event):
+    def event_party_started(self, event):
         party_id = event["party_id"]
         logger.info(f"starting {party_id=}")
         with transaction.atomic():
@@ -272,7 +272,7 @@ class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
         )
         return await connection.zrange(key, 0, -1)
 
-    def party_join(self, event):
+    def event_party_join(self, event):
         party_id = event["party_id"]
         logger.info(f"player joining to party {party_id=}")
         self.channel_layer.send(
