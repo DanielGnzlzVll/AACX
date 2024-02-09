@@ -124,6 +124,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
                 "form": forms.CurrentAnswersForm(
                     current_round=current_round,
                     disabled=True,
+                    # TODO: read from db and avoid using instance attributes
                     initial=self.form.cleaned_data,
                 ),
                 "disabled": True,
