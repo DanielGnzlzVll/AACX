@@ -1,22 +1,15 @@
 import asyncio
 import collections
+import datetime
 import json
 import logging
 
 from asgiref.sync import async_to_sync, sync_to_async
-
-import datetime
-
-from channels.generic.websocket import (
-    SyncConsumer,
-    AsyncWebsocketConsumer,
-)
-
+from channels.generic.websocket import AsyncConsumer, AsyncWebsocketConsumer
 from django.db import transaction
-
 from django.template.loader import render_to_string
 
-from core import models, forms
+from core import forms, models
 
 logger = logging.getLogger(__name__)
 STATE_MACHINE_CHANNEL_NAME = "party-state-machine"
@@ -170,38 +163,46 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         await self.html(event)
 
 
-class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
-    def event_party_started(self, event):
+class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
+    async def event_party_started(self, event):
         party_id = event["party_id"]
         logger.info(f"starting {party_id=}")
+        party = await self.handle_transaction_wait_players_to_join(
+            party_id
+        )
+
+        await self.new_round(party)
+
+        for i in range(2):
+            await self.channel_layer.receive(f"party_new_round_{party_id}")
+            await self.update_scores()
+            await self.new_round(party)
+
+        await self.update_scores()
+
+    @sync_to_async
+    def handle_transaction_wait_players_to_join(self, party_id):
+        # should be sync code since django does not support async transactions
         with transaction.atomic():
             for party in models.Party.objects.select_for_update(
                 skip_locked=True
             ).filter(id=party_id, started_at=None):
-                self.ensure_players_join(party)
-
+                async_to_sync(self.ensure_players_join)(party)
                 logger.info("all players joined")
                 party.started_at = datetime.datetime.now()
                 party.save()
-                self.new_round(party)
+        return party
 
-        for i in range(2):
-            async_to_sync(self.channel_layer.receive)(f"party_new_round_{party_id}")
-            self.update_scores()
-            self.new_round(party)
-
-        self.update_scores()
-
-    def ensure_players_join(self, party):
+    async def ensure_players_join(self, party):
         logger.info("---- waiting players to join")
         for i in range(2):
             logger.info("---- waiting new player to join")
-            player_data = async_to_sync(self.channel_layer.receive)(
+            player_data = await self.channel_layer.receive(
                 self.get_party_player_connected_channel_name(party=party)
             )
-            party.joined_users.add(player_data["user_id"])
+            await party.joined_users.aadd(player_data["user_id"])
 
-            current_players = async_to_sync(self.get_connected_players)(
+            current_players = await self.get_connected_players(
                 self.get_party_group_name(party=party)
             )
             msg = f"""<div id="party_content">
@@ -209,16 +210,16 @@ class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
                 Actualmente hay {len(current_players)} jugadores
             </div>
             """
-            async_to_sync(self.channel_layer.group_send)(
+            await self.channel_layer.group_send(
                 self.get_party_group_name(party=party), {"type": "html", "message": msg}
             )
 
             logger.info(f"player joined {player_data=}")
 
-    def update_scores(self):
+    async def update_scores(self):
         pass
 
-    def new_round(self, party):
+    async def new_round(self, party):
         template_string = render_to_string(
             "party.html",
             {
@@ -231,7 +232,7 @@ class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
                 {template_string}
             </div>
             """
-        async_to_sync(self.channel_layer.group_send)(
+        await self.channel_layer.group_send(
             self.get_party_group_name(party=party), {"type": "html", "message": msg}
         )
 
@@ -243,7 +244,7 @@ class PartyStateMachine(SyncConsumer, PartyConsumerMixin):
         )
         return await connection.zrange(key, 0, -1)
 
-    def event_party_join(self, event):
+    async def event_party_join(self, event):
         party_id = event["party_id"]
         logger.info(f"player joining to party {party_id=}")
         self.channel_layer.send(
