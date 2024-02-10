@@ -17,7 +17,7 @@ STATE_MACHINE_CHANNEL_NAME = "party-state-machine"
 
 class PartyConsumerMixin:
     def get_party_group_name(
-        self, *, party: models.Party | None, party_id: int | None
+        self, *, party: models.Party | None = None, party_id: int | None = None
     ) -> str:
         assert party_id or party, "either party or party_id must be provided"
         if party:
@@ -25,7 +25,7 @@ class PartyConsumerMixin:
         return "party_%s" % party_id
 
     def get_party_player_connected_channel_name(
-        self, *, party: models.Party | None, party_id: int | None
+        self, *, party: models.Party | None = None, party_id: int | None = None
     ) -> str:
         assert party_id or party, "either party or party_id must be provided"
         if party:
