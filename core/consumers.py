@@ -179,7 +179,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
         for _ in range(2):
             try:
-                asyncio.wait_for(
+                await asyncio.wait_for(
                     self.channel_layer.receive(f"party_new_round_{party_id}"),
                     timeout=300,
                 )
