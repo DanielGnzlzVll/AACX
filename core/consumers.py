@@ -202,7 +202,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
     async def ensure_players_join(self, party):
         timeout_task_name = "timeout"
-        timeout_task = await asyncio.create_task(
+        timeout_task = asyncio.create_task(
             asyncio.sleep(self.MAX_WAITING_TIME),
             name=timeout_task_name,
         )
