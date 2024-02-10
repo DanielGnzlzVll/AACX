@@ -164,6 +164,9 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
 
 class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
+    MAX_WAITING_PLAYERS = 2
+    MAX_WAITING_TIME = 120
+
     async def event_party_started(self, event):
         party_id = event["party_id"]
         logger.info(f"starting {party_id=}")
@@ -198,12 +201,31 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         return party
 
     async def ensure_players_join(self, party):
+        timeout_task_name = "timeout"
+        timeout_task = await asyncio.create_task(
+            asyncio.sleep(self.MAX_WAITING_TIME),
+            name=timeout_task_name,
+        )
+
         logger.info("---- waiting players to join")
-        for i in range(2):
+        for _ in range(self.MAX_WAITING_PLAYERS):
             logger.info("---- waiting new player to join")
-            player_data = await self.channel_layer.receive(
-                self.get_party_player_connected_channel_name(party=party)
+
+            receive_task = asyncio.create_task(
+                self.channel_layer.receive(
+                    self.get_party_player_connected_channel_name(party=party)
+                ),
             )
+            done, _ = await asyncio.wait(
+                (timeout_task, receive_task),
+                return_when=asyncio.FIRST_COMPLETED,
+            )
+            task_done = done.pop()
+            if task_done.get_name() == timeout_task_name:
+                logger.info("---- timeout waiting new player to join")
+                break
+            player_data = task_done.result()
+
             await party.joined_users.aadd(player_data["user_id"])
 
             current_players = await self.get_connected_players(
