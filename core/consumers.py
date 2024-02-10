@@ -198,7 +198,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 logger.info("all players joined")
                 party.started_at = datetime.datetime.now()
                 party.save()
-        return party
+                return party
 
     async def ensure_players_join(self, party):
         timeout_task_name = "timeout"
