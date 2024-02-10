@@ -169,8 +169,11 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
     async def event_party_started(self, event):
         party_id = event["party_id"]
-        logger.info(f"starting {party_id=}")
         party = await self.handle_transaction_wait_players_to_join(party_id)
+        if not party:
+            logger.info("Party already locked so skipping")
+            return
+        logger.info(f"starting {party_id=}")
 
         await self.new_round(party)
 
