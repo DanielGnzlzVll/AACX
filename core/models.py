@@ -30,35 +30,35 @@ class Party(models.Model):
     def is_active(self):
         return self.closed_at is None or self.closed_at <= timezone.now()
 
-    def get_current_or_next_round(self):
-        current = async_to_sync(self.get_current_round)()
+    async def aget_current_or_next_round(self):
+        current = await self.aget_current_round()
         if current and current.closed_at is None:
             return current
         letter = random.choice(string.ascii_uppercase)
-        while PartyRound.objects.filter(party_id=self.id, letter=letter).exists():
+        while await PartyRound.objects.filter(party_id=self.id, letter=letter).aexists():
             letter = random.choice(string.ascii_uppercase)
-        return PartyRound.objects.create(
+        return await PartyRound.objects.acreate(
             party=self,
             letter=letter,
             started_at=timezone.now(),
         )
 
-    async def get_current_round(self):
+    async def aget_current_round(self):
         round = await (
             PartyRound.objects.filter(party_id=self.id).order_by("-started_at").afirst()
         )
         return round
 
-    def get_players_scores(self):
+    async def aget_players_scores(self,):
         points_grouped = (
-            UserRoundAnswer.objects.filter(round__party_id=self.id)
+            UserRoundAnswer.objects
+            .filter(round__party_id=self.id)
             .values("user__username")
-            .annotate(
-                scored_points=models.Sum("scored_points"),
-            ).order_by("-scored_points")
+            .annotate(scored_points=models.Sum("scored_points"))
+            .order_by("-scored_points")
             .values_list("user__username", "scored_points")
         )
-        return dict(points_grouped)
+        return {username: points async for username, points in points_grouped}
 
     def get_answers_for_user(self, user):
         # UserRoundAnswer.objects.filter(user=user, round__party_id=self.id)
@@ -76,6 +76,10 @@ class Party(models.Model):
             )
 
         return answerlist
+
+    get_current_or_next_round = async_to_sync(aget_current_or_next_round)
+    get_current_round = async_to_sync(aget_current_round)
+    get_players_scores = async_to_sync(aget_players_scores)
 
 
 class PartyRound(models.Model):

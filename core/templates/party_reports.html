@@ -15,7 +15,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for user_name, points in party.get_players_scores.items %}
+      {% for user_name, points in players_scores.items %}
       <tr>
         <td class="reports-username">{{ user_name }}</td>
         <td class="reports-points">{{ points }}</td>

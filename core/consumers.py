@@ -73,7 +73,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         data = json.loads(text_data)
         if data["HEADERS"]["HX-Trigger"] == "party_current_answers_form":
             if await self.party_is_available():
-                current_round = await self.party.get_current_round()
+                current_round = await self.party.aget_current_round()
                 form = forms.CurrentAnswersForm(
                     data,
                     current_round=current_round,
@@ -108,7 +108,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
     async def party_round_stopped(self, event):
         logger.info(f"round stopped {self.party_id=}")
-        current_round = await self.party.get_current_round()
+        current_round = await self.party.aget_current_round()
         template_string = render_to_string(
             "party_current_answers.html",
             {
@@ -132,7 +132,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         )
 
     async def party_is_available(self):
-        current_round = await self.party.get_current_round()
+        current_round = await self.party.aget_current_round()
         if current_round.closed_at is None:
             return True
         return False
@@ -253,7 +253,8 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             "party.html",
             {
                 "party": party,
-                "current_round": party.get_current_or_next_round(),
+                "players_scores": await party.aget_players_scores(),
+                "current_round": await party.aget_current_or_next_round(),
                 "base_template": "base_partial.html",
             },
         )
