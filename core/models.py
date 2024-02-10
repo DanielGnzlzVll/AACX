@@ -32,7 +32,7 @@ class Party(models.Model):
 
     def get_current_or_next_round(self):
         current = async_to_sync(self.get_current_round)()
-        if current.closed_at is None:
+        if current and current.closed_at is None:
             return current
         letter = random.choice(string.ascii_uppercase)
         while PartyRound.objects.filter(party_id=self.id, letter=letter).exists():
