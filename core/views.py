@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from asgiref.sync import async_to_sync
@@ -7,10 +8,11 @@ from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import Http404
+from django.utils import timezone
 from django.views import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
-from core import models, forms
+from core import forms, models
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +113,12 @@ class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
         party_qs = models.Party.objects.filter(id=kwargs["party_id"]) & (
             models.Party.objects.filter(started_at__isnull=True)
             | models.Party.objects.filter(joined_users__pk=self.request.user.id)
+            | models.Party.objects.filter(
+                started_at__gte=timezone.now() - datetime.timedelta(minutes=1),
+                closed_at__isnull=True,
+            )
         )
+        party_qs = party_qs.order_by("pk").distinct("pk")
         if not party_qs.exists():
             raise Http404()
 
