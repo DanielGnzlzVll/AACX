@@ -210,7 +210,7 @@ LOGGING = {
             "propagate": False,
         },
         "django":{
-            "level": "INFO",
+            "level": "ERROR",
         }
     },
 }
