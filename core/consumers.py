@@ -178,7 +178,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             party = await models.Party.objects.aget(id=party_id)
         logger.info(f"starting {party_id=}")
 
-        await self.new_round(party)
+        await self.next_round(party)
 
         for _ in range(2):
             try:
@@ -189,7 +189,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             except TimeoutError:
                 pass
             await self.update_scores()
-            await self.new_round(party)
+            await self.next_round(party)
 
         await self.update_scores()
 
@@ -251,7 +251,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
     async def update_scores(self):
         pass
 
-    async def new_round(self, party):
+    async def next_round(self, party):
         template_string = render_to_string(
             "party.html",
             {
