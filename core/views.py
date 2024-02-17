@@ -111,10 +111,8 @@ class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         party_qs = models.Party.objects.filter(id=kwargs["party_id"]) & (
-            models.Party.objects.filter(started_at__isnull=True)
-            | models.Party.objects.filter(joined_users__pk=self.request.user.id)
+            models.Party.objects.filter(joined_users__pk=self.request.user.id)
             | models.Party.objects.filter(
-                started_at__gte=timezone.now() - datetime.timedelta(minutes=1),
                 closed_at__isnull=True,
             )
         )

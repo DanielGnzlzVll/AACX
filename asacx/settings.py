@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import os
+from distutils.util import strtobool
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -62,7 +64,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
-    "core.middleware.latency_simulator_middleware"
+    "core.middleware.latency_simulator_middleware",
 ]
 
 ROOT_URLCONF = "asacx.urls"
@@ -182,7 +184,7 @@ LOGGING = {
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
-            "formatter": "simple"
+            "formatter": "simple",
         },
         "mail_admins": {
             "level": "ERROR",
@@ -209,9 +211,9 @@ LOGGING = {
             "handlers": ["console"],
             "propagate": False,
         },
-        "django":{
+        "django": {
             "level": "ERROR",
-        }
+        },
     },
 }
 
@@ -219,8 +221,8 @@ CACHES = {
     "default": {
         "BACKEND": "redis_lock.django_cache.RedisCache",
         "LOCATION": "redis://cache:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient"
-        }
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
     }
 }
+
+IS_CHANNELS_WORKER_MASTER = strtobool(os.environ.get("CHANNELS_WORKER_MASTER", "False"))

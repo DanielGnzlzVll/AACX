@@ -56,8 +56,8 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
         self.party = await models.Party.objects.aget(id=self.party_id)
 
-        if not self.party.started_at:
-            logger.info(f"party no started yet {self.party_id=}")
+        if not self.party.closed_at:
+            logger.info(f"party no finalized yet {self.party_id=} trying to start")
             await self.channel_layer.send(
                 STATE_MACHINE_CHANNEL_NAME,
                 {
@@ -169,10 +169,13 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
     async def event_party_started(self, event):
         party_id = event["party_id"]
+        force_start = event.get("force_start", False)
         party = await self.handle_transaction_wait_players_to_join(party_id)
-        if not party:
+        if not party and not force_start:
             logger.info("Party already locked so skipping")
             return
+        elif not party and force_start:
+            party = await models.Party.objects.aget(id=party_id)
         logger.info(f"starting {party_id=}")
 
         await self.new_round(party)
@@ -181,7 +184,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             try:
                 await asyncio.wait_for(
                     self.channel_layer.receive(f"party_new_round_{party_id}"),
-                    timeout=300,
+                    timeout=30,
                 )
             except TimeoutError:
                 pass
