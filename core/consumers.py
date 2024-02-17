@@ -72,36 +72,38 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         logger.info(f"receive {text_data=}")
         data = json.loads(text_data)
         if data["HEADERS"]["HX-Trigger"] == "party_current_answers_form":
-            if await self.party_is_available():
-                current_round = await self.party.aget_current_round()
-                form = forms.CurrentAnswersForm(
-                    data,
-                    current_round=current_round,
-                )
-                form.is_valid()
-                self.form = form
-                await self.save_form(form, current_round)
-                if form.is_valid() and form.cleaned_data["submit_stop"]:
-                    await self.channel_layer.group_send(
-                        self.party_group_name,
-                        {
-                            "type": "event_party_round_stopped",
-                        },
-                    )
-                    all_users_answers = (
-                        await current_round.close_round_and_calculate_scores()
-                    )
-                    await self.display_all_answers(all_users_answers, current_round)
-                    return
-                template_string = render_to_string(
-                    "party_current_answers.html",
-                    {
-                        "party": self.party,
-                        "current_round": current_round,
-                        "form": form,
-                    },
-                )
-                await self.html({"message": template_string})
+            await self.handle_form_submit(data)
+
+    async def handle_form_submit(self, form_data):
+        if not await self.party_is_available():
+            return
+        current_round = await self.party.aget_current_round()
+        form = forms.CurrentAnswersForm(
+            form_data,
+            current_round=current_round,
+        )
+        form.is_valid()
+        self.form = form
+        await self.save_form(form, current_round)
+        if form.is_valid() and form.cleaned_data["submit_stop"]:
+            await self.channel_layer.send(
+                STATE_MACHINE_CHANNEL_NAME,
+                {
+                    "type": "event_party_round_stopped",
+                    "party": self.party,
+                    "current_round": current_round,
+                },
+            )
+            return
+        template_string = render_to_string(
+            "party_current_answers.html",
+            {
+                "party": self.party,
+                "current_round": current_round,
+                "form": form,
+            },
+        )
+        await self.html({"message": template_string})
 
     async def html(self, event):
         await self.send(text_data=event["message"])
@@ -146,17 +148,6 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
         await current_round.save_user_answers(self.scope["user"], data.items())
 
-    async def display_all_answers(self, answers, current_round):
-        await self.channel_layer.send(
-            STATE_MACHINE_CHANNEL_NAME,
-            {
-                "type": "event_display_all_answers",
-                "answers": answers,
-                "current_round": current_round,
-                "party_id": self.party_id,
-            },
-        )
-
     async def event_defer_group_html(self, event):
         sleep = event.pop("sleep", 0)
         await asyncio.sleep(sleep)
@@ -188,10 +179,10 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 )
             except TimeoutError:
                 logger.info("timeout waiting for new round")
-            await self.update_scores()
+            await self.update_scores(party)
             await self.next_round(party)
 
-        await self.update_scores()
+        await self.update_scores(party)
         logger.info(f"party {party_id} finished")
 
     @sync_to_async
@@ -249,8 +240,11 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
             logger.info(f"player joined {player_data=}")
 
-    async def update_scores(self):
-        pass
+    async def update_scores(self, party):
+        current_round = await party.aget_current_or_next_round()
+        all_users_answers = await current_round.close_round_and_calculate_scores()
+        await self.display_all_answers(all_users_answers, current_round, party)
+        # TODO: update scores
 
     async def next_round(self, party):
         template_string = render_to_string(
@@ -315,7 +309,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             template_string = render_to_string(
                 "party_current_all_users_answers_modal.html",
                 {
-                    "party": self.party,
+                    "party": party,
                     "current_round": current_round,
                     "answers": answers,
                     "field": field,
@@ -345,3 +339,10 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 "message": template_string,
             },
         )
+
+    async def event_party_round_stopped(self, event):
+        await self.channel_layer.group_send(
+            self.get_party_group_name(party=event["party"]),
+            {"type": "event_party_round_stopped"},
+        )
+        await self.channel_layer.send(f"party_new_round_{event['party'].id}", {})
