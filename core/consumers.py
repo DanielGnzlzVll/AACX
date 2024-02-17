@@ -187,11 +187,12 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                     timeout=30,
                 )
             except TimeoutError:
-                pass
+                logger.info("timeout waiting for new round")
             await self.update_scores()
             await self.next_round(party)
 
         await self.update_scores()
+        logger.info(f"party {party_id} finished")
 
     @sync_to_async
     def handle_transaction_wait_players_to_join(self, party_id):
