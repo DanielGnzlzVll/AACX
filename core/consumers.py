@@ -247,21 +247,20 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         # TODO: update scores
 
     async def next_round(self, party):
+        next_or_current_round = await party.aget_current_or_next_round()
         template_string = render_to_string(
-            "party.html",
+            "_party_content.html",
             {
                 "party": party,
                 "players_scores": await party.aget_players_scores(),
-                "current_round": await party.aget_current_or_next_round(),
+                "current_round": next_or_current_round,
                 "base_template": "base_partial.html",
+                "form": forms.CurrentAnswersForm(current_round=next_or_current_round),
             },
         )
-        msg = f"""<div id="party_content">
-                {template_string}
-            </div>
-            """
         await self.channel_layer.group_send(
-            self.get_party_group_name(party=party), {"type": "html", "message": msg}
+            self.get_party_group_name(party=party),
+            {"type": "html", "message": template_string},
         )
 
     async def get_connected_players(self, group):
