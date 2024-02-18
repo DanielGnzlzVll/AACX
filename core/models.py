@@ -35,8 +35,16 @@ class Party(models.Model):
         if current and current.closed_at is None:
             return current
         letter = random.choice(string.ascii_uppercase)
-        while await PartyRound.objects.filter(party_id=self.id, letter=letter).aexists():
-            letter = random.choice(string.ascii_uppercase)
+        parties_letters = {
+            letter async for letter in PartyRound.objects.filter(party_id=self.id).values_list(
+                "letter", flat=True
+            )
+        }
+        left_letters = set(list(string.ascii_uppercase))
+        left_letters = left_letters.difference(parties_letters)
+        if not left_letters:
+            raise Exception("All letters are used")
+        letter = random.choice(list(left_letters))
         return await PartyRound.objects.acreate(
             party=self,
             letter=letter,
