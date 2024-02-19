@@ -83,6 +83,7 @@ class CurrentAnswersForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.current_round = kwargs.pop("current_round")
         self.disabled = kwargs.pop("disabled", False)
+        self.autofocus_name = kwargs.pop("autofocus_name", False)
         placeholder = self.current_round.letter.upper()
 
         super(CurrentAnswersForm, self).__init__(*args, **kwargs)
@@ -90,6 +91,9 @@ class CurrentAnswersForm(forms.Form):
         for _, field in self.fields.items():
             field.widget.attrs["placeholder"] = placeholder
             field.widget.attrs["disabled"] = self.disabled
+        
+        if self.autofocus_name:
+            self.fields["name"].widget.attrs["autofocus"] = True
 
     def as_div(self):
         return SafeString(

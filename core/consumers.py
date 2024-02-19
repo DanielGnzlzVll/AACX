@@ -151,10 +151,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
     async def event_update_past_answers(self, event):
         rounds = await self.party.aget_answers_for_user(self.scope["user"])
         template_string = render_to_string(
-            "party_answers.html",
-            context={
-                "rounds": rounds
-            }
+            "party_answers.html", context={"rounds": rounds}
         )
         await self.html({"message": template_string})
 
@@ -268,7 +265,9 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 "players_scores": await party.aget_players_scores(),
                 "current_round": next_or_current_round,
                 "base_template": "base_partial.html",
-                "form": forms.CurrentAnswersForm(current_round=next_or_current_round),
+                "form": forms.CurrentAnswersForm(
+                    current_round=next_or_current_round, autofocus_name=True
+                ),
             },
         )
         await self.channel_layer.group_send(
