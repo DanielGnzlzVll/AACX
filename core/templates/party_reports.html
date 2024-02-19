@@ -18,7 +18,7 @@
       {% for user_name, points in players_scores.items %}
       <tr>
         <td class="reports-username">{{ user_name }}</td>
-        <td class="reports-points">{{ points }}</td>
+        <td class="reports-points">{{ points|default_if_none:"0" }}</td>
       </tr>
       {% endfor %}
     </tbody>
