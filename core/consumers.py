@@ -69,13 +69,13 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
             await self.send(text_data="waiting for players to join")
 
     async def receive(self, text_data):
-        logger.info(f"receive {text_data=}")
         data = json.loads(text_data)
         if data["HEADERS"]["HX-Trigger"] == "party_current_answers_form":
             await self.handle_form_submit(data)
 
     async def handle_form_submit(self, form_data):
         if not await self.party_is_available():
+            logger.info(f"skipping form submit {form_data=} since party is closed")
             return
         current_round = await self.party.aget_current_round()
         form = forms.CurrentAnswersForm(
@@ -148,10 +148,6 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
         await current_round.save_user_answers(self.scope["user"], data.items())
 
-    async def event_defer_group_html(self, event):
-        sleep = event.pop("sleep", 0)
-        await asyncio.sleep(sleep)
-        await self.html(event)
 
     async def event_update_past_answers(self, event):
         rounds = await self.party.aget_answers_for_user(self.scope["user"])
@@ -333,29 +329,27 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                     "open": "open",
                 },
             )
-
             await self.channel_layer.group_send(
                 self.get_party_group_name(party=party),
                 {
-                    "type": "event_defer_group_html",
-                    "sleep": times.pop(0),
+                    "type": "html",
                     "message": template_string,
                 },
             )
+            await asyncio.sleep(times.pop(0))
 
         template_string = render_to_string(
             "party_current_all_users_answers_modal.html",
             {"open": ""},
         )
-
         await self.channel_layer.group_send(
             self.get_party_group_name(party=party),
             {
-                "type": "event_defer_group_html",
-                "sleep": times.pop(0),
+                "type": "html",
                 "message": template_string,
             },
         )
+        await asyncio.sleep(times.pop(0))
 
     async def event_party_round_stopped(self, event):
         await self.channel_layer.group_send(
