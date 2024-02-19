@@ -16,8 +16,8 @@
           {% for answer in answers %}
           <tr>
             <td>{{ answer.username }}</td>
-            <td>{{ answer.value }}</td>
-            <td>{{ answer.scored_points }}</td>
+            <td>{{ answer.value|default:"-" }}</td>
+            <td>{{ answer.scored_points|default_if_none:"0" }}</td>
           </tr>
           {% endfor %}
         </tbody>
