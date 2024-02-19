@@ -153,6 +153,16 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         await asyncio.sleep(sleep)
         await self.html(event)
 
+    async def event_update_past_answers(self, event):
+        rounds = await self.party.aget_answers_for_user(self.scope["user"])
+        template_string = render_to_string(
+            "party_answers.html",
+            context={
+                "rounds": rounds
+            }
+        )
+        await self.html({"message": template_string})
+
 
 class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
     MAX_WAITING_PLAYERS = 2
@@ -244,6 +254,10 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         current_round = await party.aget_current_or_next_round()
         all_users_answers = await current_round.close_round_and_calculate_scores()
         await self.display_all_answers(all_users_answers, current_round, party)
+        await self.channel_layer.group_send(
+            self.get_party_group_name(party=party),
+            {"type": "event_update_past_answers"},
+        )
         # TODO: update scores
 
     async def next_round(self, party):
