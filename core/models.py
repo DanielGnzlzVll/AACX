@@ -36,7 +36,8 @@ class Party(models.Model):
             return current
         letter = random.choice(string.ascii_uppercase)
         parties_letters = {
-            letter async for letter in PartyRound.objects.filter(party_id=self.id).values_list(
+            letter
+            async for letter in PartyRound.objects.filter(party_id=self.id).values_list(
                 "letter", flat=True
             )
         }
@@ -57,10 +58,11 @@ class Party(models.Model):
         )
         return round
 
-    async def aget_players_scores(self,):
+    async def aget_players_scores(
+        self,
+    ):
         points_grouped = (
-            UserRoundAnswer.objects
-            .filter(round__party_id=self.id)
+            UserRoundAnswer.objects.filter(round__party_id=self.id)
             .values("user__username")
             .annotate(scored_points=models.Sum("scored_points"))
             .order_by("-scored_points")
@@ -71,8 +73,8 @@ class Party(models.Model):
     async def aget_answers_for_user(self, user):
         # UserRoundAnswer.objects.filter(user=user, round__party_id=self.id)
         answers_dict = [
-            round async for round in 
-            UserRoundAnswer.objects.all()
+            round
+            async for round in UserRoundAnswer.objects.all()
             .order_by("round")
             .values("field", "value", "round__letter")
         ]
@@ -154,6 +156,12 @@ class PartyRound(models.Model):
 
         await UserRoundAnswer.objects.abulk_update(answers_to_save, ["scored_points"])
         return answers_to_save
+
+    async def aget_initial_data_for_user(self, user):
+        return {
+            answer.field: answer.value
+            async for answer in UserRoundAnswer.objects.filter(round=self, user=user)
+        }
 
 
 class UserRoundAnswer(models.Model):
