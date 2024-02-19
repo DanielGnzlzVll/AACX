@@ -192,9 +192,11 @@ hr {
 .word_column label {
   font-weight: bold;
 }
-ul.errorlist {
+
+.word-error ul.errorlist {
   display: none;
 }
+
 .word_column.word-error > input{
   background-color: red;
 }
@@ -239,4 +241,34 @@ td:first-child {
 ::view-transition-new(slide-it) {
   animation: 420ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
   600ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
+}
+
+.fieldWrapper ul.errorlist {
+  margin: 0px;
+}
+
+.errorlist li {
+  color: red;
+  font-weight: bold;
+  font-size: 0.8em;
+}
+
+.fieldWrapper .helptext {
+  font-size: 0.7em;
+  color: #888;
+  text-align: right;
+  margin-bottom: 0.5em;
+}
+
+.fieldWrapper input {
+  margin: 0.3em 1em !important;
+  padding: 0.3em 1em !important;
+}
+
+.fieldWrapper label {
+  font-weight: bold;
+}
+
+.secondary {
+  margin-top: 1em;
 }

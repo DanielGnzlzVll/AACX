@@ -4,11 +4,11 @@ import string
 from collections import defaultdict
 from itertools import groupby
 
+from asgiref.sync import async_to_sync, sync_to_async
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
-
-from asgiref.sync import async_to_sync, sync_to_async
 
 
 class Party(models.Model):
@@ -21,6 +21,25 @@ class Party(models.Model):
 
     joined_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="parties"
+    )
+
+    min_players = models.IntegerField(
+        default=2, blank=True, null=True, validators=[MinValueValidator(2)],
+        help_text="The minimum number of players required to start the game."
+    )
+    max_round_duration = models.IntegerField(
+        default=120, blank=True, null=True, validators=[MinValueValidator(30)],
+        help_text="The maximum duration of a round in seconds."
+    )
+    max_rounds = models.IntegerField(
+        default=5,
+        blank=True,
+        null=True,
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(len(string.ascii_uppercase)),
+        ],
+        help_text="The maximum number of rounds."
     )
 
     def __str__(self):

@@ -72,24 +72,34 @@ class Home(
 
 
 class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
+    error = None
+
     def get_template_names(self):
-        if self.request.method == "POST":
+        if self.request.method == "POST" and self.error is None:
             return ["home.html"]
         return ["create_party.html"]
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
+        context["form"] = forms.PartyForm()
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        name = request.POST.get("party_name")
-        party, created = models.Party.objects.get_or_create(name=name)
+        form = forms.PartyForm(request.POST)
+        context = self.get_context_data(**kwargs)
+        if not form.is_valid():
+            self.error = form.errors
+            context["form"] = form
+            return self.render_to_response(context)
+
+        party, created = models.Party.objects.update_or_create(
+            name=form.cleaned_data["name"], defaults=form.cleaned_data
+        )
         if created:
             messages.add_message(
                 request, messages.SUCCESS, f"'{party.name}' created successfully."
             )
 
-        context = self.get_context_data(**kwargs)
         context["parties"] = models.Party.objects.filter(
             started_at__isnull=True
         ).order_by("-pk")

@@ -158,7 +158,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
 
 class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
-    MAX_WAITING_PLAYERS = 2
+
     MAX_WAITING_TIME = 120
 
     async def event_party_started(self, event):
@@ -174,11 +174,11 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
         await self.next_round(party)
 
-        for _ in range(2):
+        for _ in range(party.max_rounds):
             try:
                 await asyncio.wait_for(
                     self.channel_layer.receive(f"party_new_round_{party_id}"),
-                    timeout=30,
+                    timeout=party.max_round_duration,
                 )
             except TimeoutError:
                 logger.info("timeout waiting for new round")
@@ -213,7 +213,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         )
 
         logger.info("---- waiting players to join")
-        for _ in range(self.MAX_WAITING_PLAYERS):
+        for _ in range(party.min_players):
             logger.info("---- waiting new player to join")
 
             receive_task = asyncio.create_task(

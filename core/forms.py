@@ -1,10 +1,23 @@
 from django import forms
 from django.utils.safestring import SafeString
 
+from core import models
+
 
 class NoRenderedWidget(forms.HiddenInput):
     def render(self, *args, **kwargs):
         return ""
+
+
+class PartyForm(forms.ModelForm):
+    class Meta:
+        model = models.Party
+        fields = [
+            "name",
+            "min_players",
+            "max_round_duration",
+            "max_rounds",
+        ]
 
 
 class CurrentAnswersForm(forms.Form):
@@ -91,7 +104,7 @@ class CurrentAnswersForm(forms.Form):
         for _, field in self.fields.items():
             field.widget.attrs["placeholder"] = placeholder
             field.widget.attrs["disabled"] = self.disabled
-        
+
         if self.autofocus_name:
             self.fields["name"].widget.attrs["autofocus"] = True
 
