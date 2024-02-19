@@ -68,13 +68,14 @@ class Party(models.Model):
         )
         return {username: points async for username, points in points_grouped}
 
-    def get_answers_for_user(self, user):
+    async def aget_answers_for_user(self, user):
         # UserRoundAnswer.objects.filter(user=user, round__party_id=self.id)
-        answers_dict = list(
+        answers_dict = [
+            round async for round in 
             UserRoundAnswer.objects.all()
             .order_by("round")
             .values("field", "value", "round__letter")
-        )
+        ]
 
         answerlist = []
         for letter, answers in groupby(answers_dict, lambda x: x["round__letter"]):
@@ -85,6 +86,7 @@ class Party(models.Model):
 
         return answerlist
 
+    get_answers_for_user = async_to_sync(aget_answers_for_user)
     get_current_or_next_round = async_to_sync(aget_current_or_next_round)
     get_current_round = async_to_sync(aget_current_round)
     get_players_scores = async_to_sync(aget_players_scores)
