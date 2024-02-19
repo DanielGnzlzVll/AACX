@@ -189,6 +189,10 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 )
             except TimeoutError:
                 logger.info("timeout waiting for new round")
+                await self.channel_layer.group_send(
+                    self.get_party_group_name(party_id=party_id),
+                    {"type": "event_party_round_stopped"},
+                )
             await self.update_scores(party)
             await self.next_round(party)
 
