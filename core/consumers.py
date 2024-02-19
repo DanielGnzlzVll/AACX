@@ -148,7 +148,6 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
         await current_round.save_user_answers(self.scope["user"], data.items())
 
-
     async def event_update_past_answers(self, event):
         rounds = await self.party.aget_answers_for_user(self.scope["user"])
         template_string = render_to_string(
