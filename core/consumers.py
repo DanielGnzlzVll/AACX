@@ -108,7 +108,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
     async def html(self, event):
         await self.send(text_data=event["message"])
 
-    async def party_round_stopped(self, event):
+    async def event_party_round_stopped(self, event):
         logger.info(f"round stopped {self.party_id=}")
         current_round = await self.party.aget_current_round()
         template_string = render_to_string(
