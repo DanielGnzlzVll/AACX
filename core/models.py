@@ -11,6 +11,15 @@ from django.db import models
 from django.utils import timezone
 
 
+class PartyQuerySet(models.QuerySet):
+    def get_available_parties(self, user):
+        return self.filter(
+            started_at__isnull=True
+        ).order_by("-pk") | self.filter(
+            closed_at__isnull=True, joined_users__pk=user.id
+        )
+
+
 class Party(models.Model):
     name = models.CharField(max_length=50)
 
@@ -41,6 +50,8 @@ class Party(models.Model):
         ],
         help_text="The maximum number of rounds."
     )
+
+    objects = PartyQuerySet.as_manager()
 
     def __str__(self):
         return self.name

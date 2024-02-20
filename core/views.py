@@ -59,10 +59,8 @@ class Home(
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["parties"] = models.Party.objects.filter(
-            started_at__isnull=True
-        ).order_by("-pk") | models.Party.objects.filter(
-            closed_at__isnull=True, joined_users__pk=self.request.user.id
+        context["parties"] = models.Party.objects.get_available_parties(
+            self.request.user
         )
         return context
 
@@ -100,9 +98,9 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
                 request, messages.SUCCESS, f"'{party.name}' created successfully."
             )
 
-        context["parties"] = models.Party.objects.filter(
-            started_at__isnull=True
-        ).order_by("-pk")
+        context["parties"] = models.Party.objects.get_available_parties(
+            self.request.user
+        )
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.send)(
             "party_state_machine",
