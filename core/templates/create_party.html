@@ -1,7 +1,15 @@
 {% extends base_template %}
 {% load static %}
 {% block content%}
-<form method="POST" action="{% url 'create_party' %}" class="container">
+<form
+    id="create_party_form"
+    class="container"
+    hx-post="{% url 'create_party' %}"
+    hx-trigger="input delay:500ms, click from:#submit"
+    hx-push-url="true"
+    hx-swap="outerHTML"
+    novalidate
+>
     {% csrf_token %}
     {{ form.non_field_errors }}
     {% for field in form %}
@@ -20,7 +28,7 @@
             {% endif %}
         </div>
     {% endfor %}
-    <input type="submit" value="Create new party"  role="button" class="secondary"/>
+    <button id="submit" type="submit" name="submit" value="true"  role="button" class="secondary">Create new party</button>
 </form>
 {% endblock %}
 

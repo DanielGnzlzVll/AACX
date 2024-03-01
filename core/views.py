@@ -70,10 +70,10 @@ class Home(
 
 
 class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
-    error = None
+    form_saved = False
 
     def get_template_names(self):
-        if self.request.method == "POST" and self.error is None:
+        if self.request.method == "POST" and self.form_saved is True:
             return ["home.html"]
         return ["create_party.html"]
 
@@ -86,10 +86,17 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
         form = forms.PartyForm(request.POST)
         context = self.get_context_data(**kwargs)
         if not form.is_valid():
-            self.error = form.errors
             context["form"] = form
-            return self.render_to_response(context)
+            return self.render_to_response(
+                context, headers={"HX-Reswap": "outerHTML transition:false"}
+            )
+        if request.POST.get("submit") != "true":
+            context["form"] = form
+            return self.render_to_response(
+                context, headers={"HX-Reswap": "outerHTML transition:false"}
+            )
 
+        self.form_saved = True
         party, created = models.Party.objects.update_or_create(
             name=form.cleaned_data["name"], defaults=form.cleaned_data
         )
@@ -110,7 +117,9 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
                 "party_id": party.id,
             },
         )
-        return self.render_to_response(context)
+        return self.render_to_response(
+            context, headers={"HX-Reswap": "outerHTML transition:true"}
+        )
 
 
 class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
