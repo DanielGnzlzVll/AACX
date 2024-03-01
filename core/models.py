@@ -101,11 +101,12 @@ class Party(models.Model):
         return {username: points async for username, points in points_grouped}
 
     async def aget_answers_for_user(self, user):
-        # UserRoundAnswer.objects.filter(user=user, round__party_id=self.id)
         answers_dict = [
             round
-            async for round in UserRoundAnswer.objects.all()
-            .order_by("round")
+            async for round in UserRoundAnswer.objects.filter(
+                user_id=user.id,
+                round__party_id=self.id,
+            ).order_by("round")
             .values("field", "value", "round__letter")
         ]
 

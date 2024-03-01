@@ -153,8 +153,18 @@ hr {
   padding: 15px 10px 15px 0px;
 }
 
+.party_reports_row {
+  cursor: pointer;
+}
+
+.reports-username {
+  padding: 15px 0px 15px 0px;
+}
+
 .reports-points {
   padding: 15px 5px 15px 0px;
+  text-align: right;
+  width: fit-content;
 }
 
 .party_current_answers form {
@@ -272,3 +282,9 @@ td:first-child {
 .secondary {
   margin-top: 1em;
 }
+
+
+dialog article{
+  max-width: 90vw;
+}
+

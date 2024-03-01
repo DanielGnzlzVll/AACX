@@ -16,8 +16,14 @@
     </thead>
     <tbody>
       {% for user_name, points in players_scores.items %}
-      <tr>
-        <td class="reports-username">{{ user_name }}</td>
+      <tr
+        hx-get="{% url 'party_answers' party_id user_name %}"
+        hx-target="#modal"
+        hx-swap="outerHTML transition:true"
+        class="party_reports_row"
+        title="Ver respuestas"
+      >
+        <td class="reports-username">&#x25BA; {{ user_name }}</td>
         <td class="reports-points">{{ points|default_if_none:"0" }}</td>
       </tr>
       {% endfor %}

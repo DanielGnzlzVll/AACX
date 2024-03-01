@@ -1,4 +1,3 @@
-import datetime
 import logging
 
 from asgiref.sync import async_to_sync
@@ -151,6 +150,29 @@ class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
         if self.party.started_at:
             return ["party.html"]
         return ["party_no_started.html"]
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
+
+class PartyAnswers(LoginRequiredMixin, HTMXPartialMixin, View):
+    template_name = "party_modal_answers.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        party_qs = models.Party.objects.filter(id=kwargs["party_id"]) & (
+            models.Party.objects.filter(joined_users__pk=self.request.user.id)
+        )
+        party_qs = party_qs.order_by("pk").distinct("pk")
+        if not party_qs.exists():
+            raise Http404()
+
+        context["party"] = party_qs.get()
+        user = User.objects.get(username=kwargs["username"])
+        context["rounds"] = context["party"].get_answers_for_user(user)
+        context["open"] = "open"
+        return context
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
