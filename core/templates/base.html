@@ -12,7 +12,7 @@
     content="black"
   />
   {% block tittle %}
-    <title>ASACX | Game</title>
+    <title>AACX | Juego</title>
   {% endblock %}
   {% block static_files %}
     <link
@@ -32,10 +32,10 @@
   <body id="body" hx-ext="debug">
     {% block navbar%}
         <nav class="navbar">
-            <li><strong>ASACX</strong></li>
+            <li><strong>AACX</strong></li>
             <ul>
-                <li><a href="{% url 'home' %}" hx-get="{% url 'home' %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true">Home</a></li>
-                <li><a href="{% url 'create_party' %}" hx-get="{% url 'create_party' %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true">Create new party</a></li>
+                <li><a href="{% url 'home' %}" hx-get="{% url 'home' %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true">Inicio</a></li>
+                <li><a href="{% url 'create_party' %}" hx-get="{% url 'create_party' %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true">Crear nueva partida</a></li>
             </ul>
             <li>
                 <img class="avatar" src="https://i.pravatar.cc/150?u={{ user }}">
