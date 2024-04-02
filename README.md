@@ -82,4 +82,4 @@ In developing AACX, several key decisions were made:
 1. Integration of Django Channels: Exploring real-time operations via websockets in Python, diverging from the conventional Node.js or Golang implementations.
 1. Adoption of HTMX: Experimenting with HTMX to create richly interactive pages with minimal JavaScript.
 1. Incorporation of View Transitions: Embracing Google Chrome's new view transitions as a potential future standard for web pages, acknowledging the evolving landscape of web technologies.
-
+1. While testing is typically a vital aspect of software development, it was approached differently in this project. Despite acknowledging its importance and usually prioritizing testing before code implementation, the nature of this project involved numerous new technologies and uncertain decisions. Therefore, testing was not conducted in the traditional sense. Instead, the development process was more of an experimental trial-and-error endeavor. Each decision was made cautiously, with constant exploration and adaptation to the evolving landscape of technologies.
