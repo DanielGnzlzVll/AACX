@@ -25,8 +25,6 @@ services:
       context: .
     volumes:
       - .:/app
-    depends_on:
-      - cache
     ports: [ ]
     command: watchmedo auto-restart --directory=/app --ignore-pattern=*sqlite3 --pattern=*.py --recursive -- python manage.py custom_runworker *
     environment:
