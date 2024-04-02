@@ -17,7 +17,7 @@
     <tbody>
       {% for user_name, points in players_scores.items %}
       <tr
-        hx-get="{% url 'party_answers' party_id user_name %}"
+        hx-get="{% url 'party_answers' party.id user_name %}"
         hx-target="#modal"
         hx-swap="outerHTML transition:true"
         class="party_reports_row"
