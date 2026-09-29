@@ -148,3 +148,16 @@ async def test_non_participant_connected_before_start_cannot_play(
     await assert_still_open(communicator)
     assert not await models.UserRoundAnswer.objects.filter(user=bob).aexists()
     assert consumers.STATE_MACHINE_CHANNEL_NAME not in channel_layer.channels
+
+
+async def test_answer_longer_than_model_field_is_rejected(
+    ws_communicator, started_party, alice
+):
+    communicator, _, _ = await connect(ws_communicator, alice, started_party.id)
+
+    await communicator.send_to(text_data=answers_message(name="A" * 51, city="Arica"))
+
+    assert "word-error" in await communicator.receive_from()
+    await assert_still_open(communicator)
+    answers = models.UserRoundAnswer.objects.filter(user=alice).exclude(value="")
+    assert {a.field: a.value async for a in answers} == {"city": "Arica"}
