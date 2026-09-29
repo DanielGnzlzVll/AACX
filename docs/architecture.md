@@ -120,14 +120,14 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | `type` | Payload | Producer | Handler behavior |
 |---|---|---|---|
-| `event_party_started` | `party_id`, `party_name` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. The party reconciler on every worker, for started parties without a live lease. | Starts a task that runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). It does nothing if this worker already has a task for the party. Only the worker that takes the party's lease runs it, the rest log "run by another worker" and return. A party that hasn't started also needs the waiting-room claim (step 1). A started party is resumed from the database. |
+| `event_party_started` | `party_id`, `party_name` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. The party reconciler on every worker, for started parties without a live lease. | Starts a task that runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). It does nothing if this worker already has a task for the party. Only the worker that takes the party's lease runs it, the rest log "run by another worker" and return. A started party is resumed from the database. |
 | `event_party_round_stopped` | `party_id`, `round_id` | `PartyConsumer.handle_form_submit` when a valid form has `submit_stop` | Closes the round with a conditional `UPDATE ... SET closed_at = now(), closed_reason = 'stop' WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`). If the round was already closed, the STOP is logged and ignored, so duplicate STOPs are harmless. Otherwise it sends `event_party_round_stopped` to group `party_{id}` and `{round_id}` to `party_new_round_{id}`. |
 
 ### Channel `party_players_{id}`
 
 | Payload | Producer | Consumer |
 |---|---|---|
-| `user_id` | `PartyConsumer`, when a connection to a party that hasn't started joins or leaves the waiting room | `PartyStateMachine.ensure_players_join` treats each message as a wake-up and recounts the players from `PartyConnection`. Messages sent after the party starts are never read. |
+| `user_id` | `PartyConsumer`, when a connection to a party that hasn't started joins or leaves the waiting room | `PartyStateMachine.wait_players_to_join` treats each message as a wake-up and recounts the players from `PartyConnection`. Messages sent after the party starts are never read. |
 
 ### Channel `party_new_round_{id}`
 
@@ -171,14 +171,12 @@ sequenceDiagram
     C->>R: send party-state-machine {event_party_started}
     R->>SM: event_party_started
     SM->>SM: run_party task takes the PartyLease
-    SM->>DB: claim the waiting room (waiting_started_at)
     loop until min_players distinct users are connected
         SM->>DB: count distinct users with a live PartyConnection
         SM->>R: group_send html (#party_content)
         SM->>R: receive party_players_{id}, or poll after 10 s
-        SM->>DB: renew the claim
     end
-    SM->>DB: started_at = now()
+    SM->>DB: UPDATE party SET started_at WHERE status = waiting
     loop until Party.closed_at is set
         SM->>DB: create round (or reuse the open one)
         SM->>R: group_send event_new_round
@@ -215,8 +213,8 @@ sequenceDiagram
 
 The party's state is `Party.status`: `waiting`, `playing`, `finished` or `abandoned`. It is a stored generated column that Postgres derives from `started_at`, `closed_at` and `closed_reason`, so code writes the timestamps and can filter on the status. A round is open while its `closed_at` is NULL. The lifecycle is driven by one `asyncio.Task` per party. `PartyStateMachine.event_party_started` starts `run_party`, which takes the party's lease and runs `play_party`:
 
-1. The waiting room. A worker claims the party with a conditional `UPDATE` of `waiting_started_at`, and `ensure_players_join` renews that claim at least every `WAITING_POLL_INTERVAL` (10 s). A claim older than `WAITING_CLAIM_TTL` (60 s) belongs to a dead worker and can be taken over. The party starts once `min_players` distinct users are connected at the same time. There is no deadline: the party never starts with fewer players, however long it waits. When the last player leaves, the worker releases the claim and stops waiting, and the party stays open to join. The next connection claims it again. A waiting room that stays empty is abandoned by the reconciler (see below). The claim and the start are conditional on `status = waiting`, so an abandoned party can't be claimed or started. Each connected player's heartbeat also re-sends `event_party_started`, so a waiting room whose worker died gets a new one once the claim expires. `started_at` is set with a conditional `UPDATE` that only succeeds for the current claim.
-2. If the party is already closed, `play_party` returns. If it has already started, it is resumed: a latest round that is closed may have lost its runner before scoring, so it is scored again. Scoring is idempotent, and it closes the party after the last round.
+1. The waiting room, while the party is `waiting`. The lease is its only owner mechanism, as for the rest of the party. `wait_players_to_join` recounts the players on each join or leave, and at least every `WAITING_POLL_INTERVAL` (10 s). Once `min_players` distinct users are connected at the same time, `start_party` sets `started_at` with an `UPDATE ... WHERE status = waiting`. There is no deadline: the party never starts with fewer players, however long it waits. When the last player leaves, the runner stops waiting and releases the lease, and the party stays open to join. The next connection starts a new runner. A waiting room that stays empty is abandoned by the reconciler (see below). Each connected player's heartbeat re-sends `event_party_started` while the party hasn't started, so a waiting room whose worker died is taken over at the first heartbeat after its lease expires, within `PartyLease.TTL + HEARTBEAT_INTERVAL`.
+2. If the party is `playing`, whether it was just started or is being resumed, `play_party` runs it. Otherwise it returns: the party is finished, or was abandoned before it could start. A latest round that is closed may have lost its runner before scoring, so it is scored again. Scoring is idempotent, and it closes the party after the last round.
 3. While `Party.closed_at` is NULL:
    - `next_round` returns the open round, or creates the next one, numbered from 1, with an unused letter, and broadcasts it.
    - `wait_for_round_end` waits for a STOP on `party_new_round_{id}` or until the round's `deadline_at`, and makes sure the round is closed, with `closed_reason` `timeout` unless a STOP closed it first. A round saves `deadline_at` as `started_at` plus `max_round_duration` when it opens, so a resumed round only gets the time it has left.
@@ -225,13 +223,13 @@ The party's state is `Party.status`: `waiting`, `playing`, `finished` or `abando
 
 **Abandoned waiting rooms**: `PartyConsumer` sets `Party.last_seen_at` when a player joins or leaves the waiting room. Each reconciler pass runs `PartyQuerySet.aabandon_idle`, which sets `closed_at` and `closed_reason = abandoned` on every `waiting` party whose `last_seen_at` (or `created_at`, if nobody ever joined) is older than `PARTY_ABANDON_AFTER` (30 min by default) and that has no `PartyConnection` seen since then. That last check covers connections that died without disconnecting, so a crash doesn't make the party look idle since the player joined. An abandoned party is closed: it leaves the lobby, frees its name, and nobody can open it. A player who connects while the party is abandoned is refused: `connect` touches `last_seen_at` with an `UPDATE ... WHERE closed_at IS NULL` before `accept()`. Both updates lock the party row, so either the touch wins and the sweep's recheck of `last_seen_at` skips the party, or the sweep wins and the touch updates nothing and the connection is closed with 4403.
 
-Each party has a single owner: the worker that holds its `PartyLease` (`core/leases.py`), a `python-redis-lock` lock on `lock:party-lease:{id}` that expires after `TTL` (15 s). `run_party` takes it without blocking and runs the party through `PartyLease.run_while_held`, which renews the lease every `RENEW_INTERVAL` (5 s) from an asyncio task. If a renewal finds the lease gone, or Redis errors leave too little time before it would expire, the party task is cancelled before another worker can take over. The lease is released when the party ends or crashes, so duplicate `event_party_started` messages and restarts never start a second loop. As a second guard, `aget_current_or_next_round` and scoring lock the `Party` row, so a stale runner can't open a round next to the owner's or after the last one. When a worker dies, its lease expires and the reconcilers of the remaining workers send `event_party_started` again. The worker that takes the lease resumes from the database: the open round keeps its letter and its deadline, and the stop condition counts closed rounds, so the party plays exactly `max_rounds` rounds.
+Each party has a single owner: the worker that holds its `PartyLease` (`core/leases.py`), a `python-redis-lock` lock on `lock:party-lease:{id}` that expires after `TTL` (15 s). `run_party` takes it without blocking and runs the party through `PartyLease.run_while_held`, which renews the lease every `RENEW_INTERVAL` (5 s) from an asyncio task. If a renewal finds the lease gone, or Redis errors leave too little time before it would expire, the party task is cancelled before another worker can take over. The lease is released when the party ends or crashes, so duplicate `event_party_started` messages and restarts never start a second loop. As a second guard, `aget_current_or_next_round` and scoring lock the `Party` row, so a stale runner can't open a round next to the owner's or after the last one. The conditional start does the same for the waiting room: a stale runner can't start the party a second time or start an abandoned one. If it starts the party just before the owner, the owner's start matches nothing, and the owner runs the party anyway. When a worker dies, its lease expires and the reconcilers of the remaining workers send `event_party_started` again. The worker that takes the lease resumes from the database: the open round keeps its letter and its deadline, and the stop condition counts closed rounds, so the party plays exactly `max_rounds` rounds.
 
 ```mermaid
 stateDiagram-v2
     [*] --> Created: CreateParty
-    Created --> Waiting: event_party_started claims the waiting room
-    Waiting --> Created: last player leaves, claim released
+    Created --> Waiting: event_party_started, lease taken
+    Waiting --> Created: last player leaves, lease released
     Created --> Abandoned: empty for PARTY_ABANDON_AFTER, closed_at set
     Abandoned --> [*]
     Waiting --> RoundOpen: min_players distinct users connected, started_at set
@@ -249,7 +247,7 @@ stateDiagram-v2
 
 ### Target
 
-The target is proposed in [#1] and recorded in [ADR 0004](adr/0004-persisted-event-driven-party-state-machine.md). State is persisted in `Party.status`, transitions are conditional DB updates, events carry ids only, and each party runs as its own `asyncio.Task` owned by one worker through a Redis lease. The per-party tasks, the lease and the reconciler are implemented (see above). So are the round's `number`, `deadline_at` and `closed_reason`, and `Party.status` with `ABANDONED`, whose `IN_PROGRESS` is called `playing`.
+The target is proposed in [#1] and recorded in [ADR 0004](adr/0004-persisted-event-driven-party-state-machine.md). State is persisted in `Party.status`, transitions are conditional DB updates, events carry ids only, and each party runs as its own `asyncio.Task` owned by one worker through a Redis lease. All of it is implemented (see above), with `IN_PROGRESS` called `playing`, and the lease owns the party from the waiting room to the end.
 
 ```mermaid
 stateDiagram-v2
@@ -347,7 +345,7 @@ erDiagram
 - **A party is closed** once it has `max_rounds` closed rounds. `close_round_and_calculate_scores` sets `Party.closed_at` in the same transaction as the scores, with a conditional `UPDATE ... WHERE closed_at IS NULL`. Migration `0014_close_finished_parties` backfilled parties that had already played all their rounds. `Party.is_active` means `closed_at` is NULL.
 - **A party is abandoned** when its waiting room stays empty for `PARTY_ABANDON_AFTER`. `closed_at` is set too, so every check for a closed party applies. Migration `0023_party_status_abandoned` set `closed_reason = finished` on the parties that were already closed.
 - **`Party.status`** is generated from `closed_reason = abandoned`, then `closed_at`, then `started_at`, in that order, so it always matches them.
-- **A party has started** once `started_at` is set. It is set once, by the worker that holds the waiting-room claim.
+- **A party has started** once `started_at` is set. It is set once, by an `UPDATE ... WHERE status = waiting`, so racing runners start it exactly once and an abandoned party never starts.
 - **`joined_users`** gets every user who connects to the party's websocket before it starts, so everyone who waited can play. After the start, only those users can connect. The HTTP views don't change it.
 - **Waiting-room presence** is one `PartyConnection` row per websocket connected while the party waits. The consumer refreshes `last_seen_at` every `HEARTBEAT_INTERVAL` (20 s) and deletes the row on disconnect. Rows older than `TTL` (60 s) belong to dead connections: they aren't counted, and the next connection to that party deletes them. Players are counted as distinct users, so several tabs count once.
 - **Available parties** (`PartyQuerySet.get_available_parties`) are `waiting` parties, plus `playing` parties the user joined. Each one is annotated with `joined_players` and `connected_players` (distinct users with a live `PartyConnection`). `DetailParty` and `PartyConsumer.can_join` share one policy, `Party.aget_access`: participants and anyone opening a party that hasn't started can play. A non-participant of a started party gets the read-only page and the websocket refuses them with 4403. A non-participant of a closed party gets a 404 and a 4403, even if the party never started.

@@ -24,7 +24,7 @@ async def waiting_room(channel_layer, monkeypatch):
     tasks = []
 
     def wait(party):
-        task = asyncio.create_task(machine.wait_players_to_join(party.id))
+        task = asyncio.create_task(machine.wait_players_to_join(party))
         tasks.append(task)
         return task
 
@@ -74,8 +74,7 @@ async def test_one_user_with_several_connections_counts_once(
 
     await assert_still_waiting(party, task)
     await connect_players(party, bob)
-    started = await asyncio.wait_for(task, timeout=5)
-    assert started.started_at is not None
+    assert await asyncio.wait_for(task, timeout=5)
     assert await joined_usernames(party) == {"alice", "bob"}
 
 
@@ -141,8 +140,8 @@ async def test_empty_waiting_room_releases_the_party(
 
     await alice_ws.disconnect()
 
-    assert await asyncio.wait_for(task, timeout=5) is None
+    assert not await asyncio.wait_for(task, timeout=5)
     await party.arefresh_from_db()
-    assert (party.waiting_started_at, party.started_at) == (None, None)
+    assert party.started_at is None
     await connect_players(party, alice, bob)
     assert await asyncio.wait_for(waiting_room(party), timeout=5)

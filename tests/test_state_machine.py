@@ -6,7 +6,7 @@ import types
 import pytest
 import redis
 import redis_lock
-from asgiref.sync import sync_to_async
+from asgiref.sync import async_to_sync, sync_to_async
 from asgiref.testing import ApplicationCommunicator
 from channels.routing import ChannelNameRouter
 from django.apps import apps
@@ -181,6 +181,59 @@ async def test_a_party_runs_once_across_duplicate_starts_and_workers(
     await asyncio.sleep(0.2)
     assert len(first.consumer.party_tasks) + len(second.consumer.party_tasks) == 1
     assert await models.PartyRound.objects.filter(party=party).acount() == 1
+
+
+async def test_a_waiting_room_is_taken_over_once_its_dead_owner_lease_expires(
+    worker, ready_party
+):
+    party = await ready_party()
+    dead_owner_lease = redis_lock.Lock(
+        get_redis_client(), f"party-lease:{party.id}", expire=1
+    )
+    assert dead_owner_lease.acquire(blocking=False)
+
+    await start(worker, party)
+    await asyncio.sleep(0.2)
+    assert await open_round(party) is None
+
+    await asyncio.sleep(1)
+    await start(worker, party)
+    await eventually(lambda: open_round(party), timeout=1)
+
+
+async def test_racing_runners_start_a_waiting_room_once(ready_party, state_machine):
+    party = await ready_party()
+
+    def start_party():
+        try:
+            return async_to_sync(state_machine.start_party)(party)
+        finally:
+            connection.close()
+
+    started = await asyncio.gather(
+        asyncio.to_thread(start_party), asyncio.to_thread(start_party)
+    )
+
+    assert sorted(started) == [False, True]
+
+
+async def test_the_lease_holder_runs_a_party_a_stale_runner_started(
+    worker, ready_party, monkeypatch
+):
+    start_party = consumers.PartyStateMachine.start_party
+
+    async def started_by_a_stale_runner_first(self, party):
+        assert await start_party(self, party)
+        return await start_party(self, party)
+
+    monkeypatch.setattr(
+        consumers.PartyStateMachine, "start_party", started_by_a_stale_runner_first
+    )
+    party = await ready_party()
+
+    await start(worker, party)
+
+    await eventually(lambda: open_round(party))
 
 
 @pytest.fixture

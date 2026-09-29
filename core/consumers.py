@@ -6,7 +6,6 @@ import logging
 
 from channels.generic.websocket import AsyncConsumer, AsyncWebsocketConsumer
 from django.conf import settings
-from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 
@@ -291,7 +290,6 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
 class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
     WAITING_POLL_INTERVAL = 10
-    WAITING_CLAIM_TTL = 60
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -324,18 +322,16 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
     async def play_party(self, party_id):
         party = await models.Party.objects.aget(id=party_id)
-        if party.closed_at:
-            logger.info(f"party {party_id} already finished so skipping")
-            return
-        if party.started_at:
-            logger.info(f"resuming {party_id=}")
-            await self.score_interrupted_round(party)
-        else:
-            party = await self.wait_players_to_join(party_id)
-            if not party:
-                logger.info("Party already claimed so skipping")
+        if party.status == models.PartyStatus.WAITING:
+            if not await self.wait_players_to_join(party):
                 return
-            logger.info(f"starting {party_id=}")
+            if await self.start_party(party):
+                logger.info(f"starting {party_id=}")
+            await party.arefresh_from_db()
+        if party.status != models.PartyStatus.PLAYING:
+            logger.info(f"party {party_id} is {party.status} so skipping")
+            return
+        await self.score_interrupted_round(party)
 
         while not party.closed_at:
             current_round = await self.next_round(party)
@@ -377,61 +373,22 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 {"type": "event_party_round_stopped"},
             )
 
-    async def wait_players_to_join(self, party_id):
-        claimed_at = await self.claim_waiting_room(party_id)
-        if not claimed_at:
-            return None
-
-        party = await models.Party.objects.aget(id=party_id)
-        claimed_at = await self.ensure_players_join(party, claimed_at)
-        if not claimed_at:
-            return None
-        logger.info("all players joined")
-        started = await models.Party.objects.filter(
-            id=party_id,
-            status=models.PartyStatus.WAITING,
-            waiting_started_at=claimed_at,
-        ).aupdate(started_at=timezone.now())
-        if not started:
-            return None
-        await party.arefresh_from_db(fields=["started_at"])
-        return party
-
-    async def claim_waiting_room(self, party_id, claimed_at=None):
-        # The claim is renewed while the party waits and expires otherwise, so a
-        # crashed worker can't strand the party.
-        now = timezone.now()
-        if claimed_at:
-            claim = Q(waiting_started_at=claimed_at)
-        else:
-            claim = Q(waiting_started_at__isnull=True) | Q(
-                waiting_started_at__lt=now
-                - datetime.timedelta(seconds=self.WAITING_CLAIM_TTL)
-            )
-        claimed = await models.Party.objects.filter(
-            claim, id=party_id, status=models.PartyStatus.WAITING
-        ).aupdate(waiting_started_at=now)
-        return now if claimed else None
-
-    async def ensure_players_join(self, party, claimed_at):
-        # Returns the renewed claim once min_players distinct users are connected,
-        # or None when the claim is lost or the room empties. The next connection
-        # claims the party again.
+    async def wait_players_to_join(self, party):
+        # Returns False when the room empties. The next connection starts a new
+        # runner.
         channel = self.get_party_player_connected_channel_name(party=party)
         shown_players, notified = None, True
         while True:
             players = await party.acount_connected_players()
             if not players:
                 logger.info(f"waiting room of {party.id=} is empty")
-                await models.Party.objects.filter(
-                    id=party.id, waiting_started_at=claimed_at
-                ).aupdate(waiting_started_at=None)
-                return None
+                return False
             if notified or players != shown_players:
                 await self.show_waiting_players(party, players)
                 shown_players = players
             if players >= party.min_players:
-                return claimed_at
+                logger.info("all players joined")
+                return True
 
             try:
                 async with asyncio.timeout(self.WAITING_POLL_INTERVAL):
@@ -439,9 +396,15 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 notified = True
             except TimeoutError:
                 notified = False
-            claimed_at = await self.claim_waiting_room(party.id, claimed_at)
-            if not claimed_at:
-                return None
+
+    async def start_party(self, party):
+        # Conditional, so a runner that lost its lease but isn't cancelled yet
+        # can't start the party a second time.
+        return bool(
+            await models.Party.objects.filter(
+                id=party.id, status=models.PartyStatus.WAITING
+            ).aupdate(started_at=timezone.now())
+        )
 
     async def show_waiting_players(self, party, players):
         msg = render_to_string(

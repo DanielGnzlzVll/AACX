@@ -162,13 +162,12 @@ async def test_abandoned_party_page_is_not_found(idle_party, alice, logged_in_cl
     assert response.status_code == 404
 
 
-async def test_abandoned_party_cannot_be_claimed_or_started(idle_party, state_machine):
+async def test_abandoned_party_cannot_be_started(idle_party, state_machine):
     party = await idle_party()
-    claimed_at = await state_machine.claim_waiting_room(party.id)
     await models.Party.objects.aabandon_idle(IDLE_FOR)
 
-    assert await state_machine.claim_waiting_room(party.id) is None
-    assert await state_machine.claim_waiting_room(party.id, claimed_at) is None
+    assert not await state_machine.start_party(party)
+    assert await status(party) == models.PartyStatus.ABANDONED
 
 
 async def test_joining_and_leaving_the_waiting_room_marks_the_party_as_seen(

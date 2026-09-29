@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted, to be superseded by [0004](0004-persisted-event-driven-party-state-machine.md)
+Superseded by [0004](0004-persisted-event-driven-party-state-machine.md)
 
 ## Context
 
