@@ -130,6 +130,10 @@ body {
     "current_answers current_answers current_answers current_answers current_answers party_reports";
 }
 
+.party_content {
+  display: contents;
+}
+
 .party_past_answers {
   grid-area: past_answers;
   background-color:  #dff9ec;
