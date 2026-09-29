@@ -25,6 +25,7 @@ Let's get started with setting up and running the application.
         ```bash
         docker compose up
         ```
+   - If `db` fails with "database files are incompatible with server", the `pgdata` volume was created by a different PostgreSQL major version. Reset it with `docker compose down -v`.
 
 3. **Populate the Database**:
     The database is automatically created and populated with necessary data.
