@@ -124,7 +124,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | `type` | Payload | Producer | `PartyConsumer` handler |
 |---|---|---|---|
-| `html` | `message`: HTML | `ensure_players_join` (waiting-room count), `display_all_answers` (one modal per category, then an empty modal), `finish_party` (`party_finished_update.html`) | `html`: forwards the HTML to the socket as-is. |
+| `html` | `message`: HTML | `ensure_players_join` (`_waiting_room.html` with the player count), `display_all_answers` (one modal per category, then an empty modal), `finish_party` (`party_finished_update.html`) | `html`: forwards the HTML to the socket as-is. |
 | `event_new_round` | `round_id` | `PartyStateMachine.next_round` | Renders `_party_content.html` for that round, with that user's past answers, the scores and the answers form filled with that user's saved answers. |
 | `event_party_round_stopped` | none | State machine, by whichever path closed the round (timeout or STOP) | Renders `party_current_answers.html` disabled, pre-filled with that user's answers. |
 | `event_update_past_answers` | none | `PartyStateMachine.update_scores` | Renders `party_answers.html` with that user's answers from every round. |
@@ -329,7 +329,7 @@ The UI is Django templates plus HTMX, with no custom JavaScript ([ADR 0001](adr/
 Every page template starts with `{% extends base_template %}`. `HTMXPartialMixin` (`core/views.py`) sets the context variable:
 
 - On an HTMX request (`request.htmx`, from `django-htmx`), `base_template` is `base_partial.html`. That renders only the flash messages and the `content` block.
-- Otherwise it is `base.html`, the full page: navbar, `<main id="content">` and an empty `<div id="modal">`.
+- Otherwise it is `base.html`, the full page: navbar, `<main id="content">` and an empty `<div id="modal">`. `#modal` sits outside `#content`, so navigating with HTMX doesn't remove it.
 
 The same URL therefore works both as a full page load and as an HTMX fragment. Navbar and party links use `hx-get` with `hx-target="#content"`, `hx-swap="innerHTML transition:true"` and `hx-push-url="true"`. `#content` has the `slide-it` class, which gives it a `view-transition-name`, so the browser animates navigation with the View Transitions API. `login.html` always extends `base.html` and removes the navbar.
 
@@ -343,8 +343,8 @@ The ws extension handles each server message as an HTML fragment. Every top-leve
 
 | Target id | Defined in | Replaced by | Sent by |
 |---|---|---|---|
-| `party_content` | `party_no_started.html` | Inline HTML in `ensure_players_join` ("Esperando Mas Jugadores...") | `PartyStateMachine`, group `html` |
-| `party_content` | `party_no_started.html`, `_party_content.html` (included by `party.html`) | `_party_content.html` | `PartyConsumer.event_new_round` |
+| `party_content` | `_waiting_room.html` (included by `party_no_started.html`) | `_waiting_room.html` with the player count | `PartyStateMachine.show_waiting_players`, group `html` |
+| `party_content` | `_waiting_room.html`, `_party_content.html` (included by `party.html`) | `_party_content.html` | `PartyConsumer.event_new_round` |
 | `party_current_answers`, `party_reports` | `_party_content.html` | `party_finished_update.html` (final results in place of the form) | `PartyStateMachine.finish_party`, group `html` |
 | `party_current_answers_form` | `party_current_answers.html` (the id is also the waiting placeholder when no round is open) | `party_current_answers.html` | `PartyConsumer.event_party_round_stopped` (disabled form) |
 | `answer_error_<field>` | `_answer_error.html`, included once per field by `party_current_answers.html` | `party_current_answers_errors.html` | `PartyConsumer`: autosave reply to its own socket |

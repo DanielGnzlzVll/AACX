@@ -1,15 +1,16 @@
-<div id="modal" class="party_past_answers" hx-target="#modal">
+<div id="modal" hx-target="#modal">
   <dialog id="modal_dialog" {{ open }}>
-    <article>
-      <h3>{{ current_round.letter }}</h3>
-      <p>{{ field }}</p>
-
+    <article class="reveal">
+      <header class="reveal-header">
+        <span class="letter-tile">{{ current_round.letter }}</span>
+        <h3>{{ field }}</h3>
+      </header>
       <table>
         <thead>
           <tr>
             <th>Jugador</th>
             <th>Respuesta</th>
-            <th>Puntos Obtenidos</th>
+            <th class="points-cell">Puntos obtenidos</th>
           </tr>
         </thead>
         <tbody>
@@ -17,7 +18,11 @@
           <tr>
             <td>{{ answer.username }}</td>
             <td>{{ answer.value|default:"-" }}</td>
-            <td>{{ answer.scored_points|default_if_none:"0" }}</td>
+            <td class="points-cell"><span class="points-badge{% if not answer.scored_points %} is-zero{% endif %}">{{ answer.scored_points|default_if_none:"0" }}</span></td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="3" class="empty-row">Nadie respondió esta categoría.</td>
           </tr>
           {% endfor %}
         </tbody>

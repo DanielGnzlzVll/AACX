@@ -420,11 +420,9 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 return None
 
     async def show_waiting_players(self, party, players):
-        msg = f"""<div id="party_content">
-            Esperando Mas Jugadores...
-            Actualmente hay {players} jugadores
-        </div>
-        """
+        msg = render_to_string(
+            "_waiting_room.html", {"party": party, "players": players}
+        )
         await self.channel_layer.group_send(
             self.get_party_group_name(party=party), {"type": "html", "message": msg}
         )

@@ -14,7 +14,7 @@
   <tbody>
     {% for round in rounds %}
       <tr>
-        <td>{{ round.letter }}</td>
+        <td><span class="letter-chip">{{ round.letter }}</span></td>
         <td>{{ round.name }}</td>
         <td>{{ round.last_name }}</td>
         <td>{{ round.country }}</td>
@@ -22,6 +22,10 @@
         <td>{{ round.animal }}</td>
         <td>{{ round.thing }}</td>
         <td>{{ round.color }}</td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="8" class="empty-row">Todavía no hay rondas terminadas.</td>
       </tr>
     {% endfor %}
   </tbody>

@@ -109,11 +109,11 @@ async def test_player_count_is_accurate_after_disconnects(
     party = await sync_to_async(party_factory)(min_players=3)
     alice_ws, _, bob_ws = await connect_players(party, alice, alice, bob)
     waiting_room(party)
-    await receive_until(alice_ws, "Actualmente hay 2 jugadores")
+    await receive_until(alice_ws, "2 de 3")
 
     await bob_ws.disconnect()
 
-    await receive_until(alice_ws, "Actualmente hay 1 jugadores")
+    await receive_until(alice_ws, "1 de 3")
 
 
 async def test_stale_connections_are_not_counted(
@@ -122,13 +122,13 @@ async def test_stale_connections_are_not_counted(
     party = await sync_to_async(party_factory)(min_players=3)
     alice_ws, _ = await connect_players(party, alice, bob)
     waiting_room(party)
-    await receive_until(alice_ws, "Actualmente hay 2 jugadores")
+    await receive_until(alice_ws, "2 de 3")
 
     await models.PartyConnection.objects.filter(user=bob).aupdate(
         last_seen_at=timezone.now() - 2 * models.PartyConnection.TTL
     )
 
-    await receive_until(alice_ws, "Actualmente hay 1 jugadores")
+    await receive_until(alice_ws, "1 de 3")
 
 
 async def test_empty_waiting_room_releases_the_party(
@@ -137,7 +137,7 @@ async def test_empty_waiting_room_releases_the_party(
     party = await sync_to_async(party_factory)(min_players=2)
     (alice_ws,) = await connect_players(party, alice)
     task = waiting_room(party)
-    await receive_until(alice_ws, "Actualmente hay 1 jugadores")
+    await receive_until(alice_ws, "1 de 2")
 
     await alice_ws.disconnect()
 

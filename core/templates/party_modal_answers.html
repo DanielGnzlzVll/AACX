@@ -1,7 +1,8 @@
 <div id="modal">
   <dialog id="modal_dialog" {{ open }}>
-    <article>
-      <div class="party_past_answers">{% include "party_answers.html" %}</div>
+    <article class="player-answers">
+      <h3>Respuestas de {{ player.username }}</h3>
+      <div class="table-scroll">{% include "party_answers.html" %}</div>
       <footer>
         <button
           type="button"

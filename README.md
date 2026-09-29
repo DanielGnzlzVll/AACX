@@ -34,47 +34,64 @@ Let's get started with setting up and running the application.
 
 To embark on your gaming journey, simply open your browser and navigate to http://localhost:8000/home/ (nothing is served at `/`). You'll be asked for a nickname: pick any free one and you're in. The nickname stays tied to that browser, see [ADR 0003](docs/adr/0003-passwordless-nickname-login.md).
 
+<img src="docs/screenshots/01-login.png" alt="Login page" width=650 height="auto" />
+
 ### home page
 
 Explore existing parties or create your own.
 
-<img src="https://github.com/DanielGnzlzVll/AACX/assets/22230373/3f04b56b-15c4-45b8-b185-e11eadf9df6f" alt="image" width=650 height="auto" />
+<img src="docs/screenshots/02-home.png" alt="Home page with the list of parties" width=650 height="auto" />
 
 ### Create a new party
 
 Personalize your party by giving it a unique name or adjusting its settings to your liking.
 
-
-<img src="https://github.com/DanielGnzlzVll/AACX/assets/22230373/3e33e576-d66a-4a97-a82d-8dfe72beda9a" alt="img" width=650 height="auto" />
+<img src="docs/screenshots/03-create-party.png" alt="Create party form" width=650 height="auto" />
 
 Upon successful creation, a confirmation message will appear
 
-<img src="https://github.com/DanielGnzlzVll/AACX/assets/22230373/c78bef61-cee1-4c33-be93-d14d70463883" alt="image" width=650 height="auto" />
-
-
+<img src="docs/screenshots/04-party-created.png" alt="Confirmation message after creating a party" width=650 height="auto" />
 
 ### Join a party
 
-Simply click on a party to join. Depending on the settings, you may need to wait for other players to join before starting.
+Simply click on a party to join. Depending on the settings, you may need to wait for other players to join before starting (you can change the minimum number of players when creating the party).
 
-However you may have to wait until all players joins the party(you can change the minium number of players when creating the party)
-
-<img src="https://github.com/DanielGnzlzVll/AACX/assets/22230373/13dd942f-9700-4d96-ac83-aa34c5625e38" alt="img" width=650 height="auto" />
-
+<img src="docs/screenshots/05-waiting-room.png" alt="Waiting room" width=650 height="auto" />
 
 ### Gameplay
 
 Once the party begins, your task is to provide answers for each round, starting with the designated letter. Track your progress, view other players' scores, and their answers too.
 
-<img src="https://github.com/DanielGnzlzVll/AACX/assets/22230373/d3182bc3-93fb-413f-838e-b28fabd00464" alt="img" width=650 height="auto" />
+<img src="docs/screenshots/06-game.png" alt="Game screen" width=650 height="auto" />
+
+The game screen also works on phones.
+
+<img src="docs/screenshots/06-game-mobile.png" alt="Game screen on a phone" width=260 height="auto" />
 
 Incorrect answers will be highlighted for your attention.
 
-<img src="https://github.com/DanielGnzlzVll/AACX/assets/22230373/57ac5690-41a0-47ad-b9fc-27b1e46d0af0" alt="img" width=650 height="auto" />
+<img src="docs/screenshots/07-incorrect-answer.png" alt="Answer that doesn't start with the round letter" width=650 height="auto" />
 
 When a round ends, either due to timeout or player intervention, all answers will be revealed, and scores updated.
 
-<img src="https://github.com/DanielGnzlzVll/AACX/assets/22230373/c9541cf1-caf9-4c2f-af96-89c5d904c2ca" alt="img" width=650 height="auto" />
+<img src="docs/screenshots/08-answers-reveal.png" alt="Answers reveal at the end of a round" width=650 height="auto" />
+
+Click a player in the scores table to see their answers from past rounds.
+
+<img src="docs/screenshots/09-player-answers.png" alt="A player's answers from past rounds" width=650 height="auto" />
+
+When the last round ends, the winners are announced.
+
+<img src="docs/screenshots/10-final-results.png" alt="Final results" width=650 height="auto" />
+
+### Updating the screenshots
+
+`scripts/screenshots.py` regenerates every image above with Playwright: two players log in, create a party, play two rounds and see the final results. Run it against a fresh database:
+
+```bash
+docker compose down -v && docker compose up -d
+uv run scripts/screenshots.py
+```
 
 ## Testing
 
