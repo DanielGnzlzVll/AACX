@@ -1,0 +1,412 @@
+abeja
+abejorro
+abubilla
+águila
+ajolote
+alacrán
+albatros
+alcaraván
+alce
+almeja
+alondra
+alpaca
+anaconda
+ánade
+anchoa
+anémona
+anguila
+antílope
+araña
+ardilla
+armadillo
+arrendajo
+asno
+atún
+atún rojo
+avefría
+avestruz
+avispa
+avutarda
+babosa
+babosa de mar
+babuino
+bacalao
+bagre
+ballena
+ballena azul
+barbo
+barracuda
+becerro
+beluga
+besugo
+bisonte
+bisonte americano
+boa
+bonobo
+boquerón
+buey
+búfalo
+búfalo de agua
+búho
+buitre
+burro
+caballito de mar
+caballo
+cabra
+cabra montés
+cacatúa
+cachalote
+cachorro
+caimán
+calamar
+calamar gigante
+camaleón
+camarón
+camello
+canario
+cangrejo
+cangrejo ermitaño
+canguro
+capibara
+caracal
+caracol
+caribú
+carnero
+carpa
+cascabel
+castor
+cebra
+cebú
+cerdo
+cernícalo
+chacal
+chapulín
+chigüire
+chigüiro
+chimpancé
+chinche
+chinchilla
+chivo
+chorlito
+chucha
+ciempiés
+ciervo
+cigarra
+cigüeña
+cisne
+civeta
+coatí
+cobaya
+cobra
+cocodrilo
+codorniz
+colibrí
+comadreja
+cóndor
+conejillo de indias
+conejo
+cordero
+corvina
+cotorra
+coyote
+cucaracha
+cuervo
+cuervo marino
+culebra
+cuy
+dálmata
+danta
+delfín
+diablo de tasmania
+dingo
+dorada
+dragón de komodo
+dromedario
+elefante
+emú
+equidna
+erizo
+erizo de mar
+escarabajo
+escarabajo pelotero
+escorpión
+estrella de mar
+esturión
+faisán
+flamenco
+foca
+foca monje
+fragata
+gacela
+gallina
+gallinazo
+gallipato
+gallo
+gamo
+ganso
+garrapata
+garza
+gato
+gato montés
+gavilán
+gaviota
+gecko
+geco
+gerbo
+gibón
+golondrina
+gorgojo
+gorila
+gorrión
+grillo
+grulla
+guacamaya
+guacamayo
+guacharaca
+guanaco
+guatín
+guatusa
+guepardo
+guppy
+gusano
+halcón
+halcón peregrino
+hámster
+hiena
+hipocampo
+hipopótamo
+hormiga
+huemul
+hurón
+ibis
+iguana
+impala
+jabalí
+jabirú
+jaguar
+jaguarundí
+jerbo
+jilguero
+jirafa
+kiwi
+koala
+koi
+kril
+lagartija
+lagarto
+langosta
+langosta de mar
+langostino
+lechuza
+lémur
+lenguado
+león
+león marino
+leopardo
+leopardo de las nieves
+libélula
+liebre
+liebre ártica
+lince
+lince ibérico
+lirón
+llama
+lobo
+lobo marino
+lombriz
+lombriz de tierra
+lora
+loro
+lubina
+luciérnaga
+lucio
+macaco
+mamba
+mamut
+manatí
+mandril
+manta raya
+mantarraya
+mantis
+mapache
+mariposa
+mariquita
+marmota
+marta
+martín pescador
+medusa
+mejillón
+merluza
+mico
+mirla
+mirlo
+mofeta
+mono
+mono araña
+mono aullador
+morena
+morsa
+mosca
+mosca de la fruta
+mosquito
+mula
+murciélago
+musaraña
+ñandú
+narval
+nautilo
+nécora
+ñeque
+ñu
+nutria
+nutria gigante
+oca
+ocelote
+okapi
+orangután
+orca
+ornitorrinco
+oropéndola
+oruga
+oso
+oso de anteojos
+oso hormiguero
+oso malayo
+oso negro
+oso panda
+oso pardo
+oso perezoso
+oso polar
+ostra
+ostra perlera
+oveja
+pájaro
+pájaro carpintero
+paloma
+paloma mensajera
+panda
+pangolín
+pantera
+papagayo
+pargo
+pato
+pato real
+pavo
+pavo real
+pecarí
+pejelagarto
+pelícano
+perdiz
+perezoso
+perico
+periquito
+perro
+perro de la pradera
+pez
+pez espada
+pez globo
+pez payaso
+pez sierra
+picaflor
+pingüino
+pinzón
+piojo
+piraña
+pitón
+platija
+polilla
+pollito
+pollo
+potro
+puercoespín
+pulga
+pulpo
+pulpo gigante
+puma
+quetzal
+quirquincho
+rana
+rana toro
+rape
+rata
+rata topo
+ratón
+raya
+rémora
+renacuajo
+reno
+rinoceronte
+rinoceronte blanco
+róbalo
+rodaballo
+ruiseñor
+sabueso
+salamandra
+salmón
+salmonete
+saltamontes
+sanguijuela
+sapo
+sapo cornudo
+sardina
+sepia
+serpiente
+serpiente de cascabel
+suricata
+suricato
+tábano
+tapir
+tarántula
+tarpón
+tejón
+termita
+ternera
+ternero
+tiburón
+tiburón ballena
+tiburón blanco
+tiburón martillo
+tigre
+tigre de bengala
+tigrillo
+tilapia
+titi
+tití
+tlacuache
+topo
+tordo
+toro
+tórtola
+tortolita
+tortuga
+tortuga marina
+trucha
+tucán
+tuna
+tuza
+urogallo
+urraca
+vaca
+vampiro
+venado
+venado cola blanca
+vencejo
+víbora
+vicuña
+vieira
+visón
+vizcacha
+wombat
+yacaré
+yaguar
+yaguareté
+yak
+yegua
+zancudo
+zángano
+zarigüeya
+zopilote
+zorrillo
+zorro
+zorro ártico
+zorzal

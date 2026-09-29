@@ -1,0 +1,103 @@
+aguamarina
+almendra
+amaranto
+amarillo
+amatista
+ámbar
+añil
+arena
+azul
+azul celeste
+azul cielo
+azul marino
+azul petróleo
+azul rey
+azul turquesa
+azulado
+beige
+bermejo
+bermellón
+blanco
+blanco hueso
+borgoña
+bronce
+café
+canela
+caoba
+caqui
+caramelo
+carbón
+carmesí
+carmín
+castaño
+celeste
+cereza
+champán
+chocolate
+cian
+ciruela
+cobalto
+cobre
+coral
+crema
+dorado
+escarlata
+esmeralda
+fucsia
+granate
+gris
+gris perla
+grisáceo
+guinda
+hueso
+índigo
+jade
+kaki
+lavanda
+lila
+lima
+magenta
+malva
+mandarina
+marfil
+marrón
+melocotón
+menta
+miel
+morado
+mostaza
+naranja
+negro
+ocre
+oliva
+oro
+perla
+plata
+plateado
+púrpura
+rojo
+rosa
+rosa palo
+rosado
+rubí
+salmón
+sepia
+siena
+terracota
+tostado
+turquesa
+ultramar
+vainilla
+verde
+verde agua
+verde botella
+verde esmeralda
+verde lima
+verde menta
+verde militar
+verde oliva
+vino
+vino tinto
+vinotinto
+violeta
+zafiro

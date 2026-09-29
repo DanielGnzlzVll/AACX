@@ -240,3 +240,14 @@ if env.bool("DJANGO_HTTPS", default=False):
     SECURE_HSTS_PRELOAD = True
     if env.bool("DJANGO_BEHIND_TLS_PROXY", default=False):
         SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+ANSWER_VALIDATORS = env.list(
+    "ANSWER_VALIDATORS",
+    default=[
+        "core.answer_validation.LexiconValidator",
+        "core.answer_validation.DictionaryValidator",
+    ],
+)
+ANSWER_VALIDATION_TIMEOUT = env.float("ANSWER_VALIDATION_TIMEOUT", default=5)
+OLLAMA_URL = env.str("OLLAMA_URL", default="http://ollama:11434")
+OLLAMA_MODEL = env.str("OLLAMA_MODEL", default="qwen2.5:1.5b")

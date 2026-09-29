@@ -17,7 +17,11 @@
           {% for answer in answers %}
           <tr>
             <td>{{ answer.username }}</td>
+            {% if answer.rejected %}
+            <td><del>{{ answer.value }}</del> <small class="answer-rejected">No válida</small></td>
+            {% else %}
             <td>{{ answer.value|default:"-" }}</td>
+            {% endif %}
             <td class="points-cell"><span class="points-badge{% if not answer.scored_points %} is-zero{% endif %}">{{ answer.scored_points|default_if_none:"0" }}</span></td>
           </tr>
           {% empty %}

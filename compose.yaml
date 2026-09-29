@@ -32,6 +32,9 @@ services:
     command: watchmedo auto-restart --directory=/app --ignore-pattern=*sqlite3 --pattern=*.py --recursive -- python manage.py custom_runworker *
     environment:
       - CHANNELS_WORKER_MASTER=1
+      - ANSWER_VALIDATORS
+      - ANSWER_VALIDATION_TIMEOUT
+      - OLLAMA_MODEL
   channel-worker:
     extends:
       service: channel-master
@@ -40,6 +43,23 @@ services:
     deploy:
       mode: replicated
       replicas: 3
+  ollama:
+    image: ollama/ollama:0.34.4
+    profiles: [llm]
+    restart: unless-stopped
+    environment:
+      - OLLAMA_KEEP_ALIVE=-1
+    volumes:
+      - ollama:/root/.ollama
+  ollama-pull:
+    image: ollama/ollama:0.34.4
+    profiles: [llm]
+    restart: "no"
+    environment:
+      - OLLAMA_HOST=ollama:11434
+    command: ["pull", "${OLLAMA_MODEL:-qwen2.5:1.5b}"]
+    depends_on:
+      - ollama
   cache:
     image: redis:7
     restart: unless-stopped
@@ -65,3 +85,4 @@ services:
 
 volumes:
   pgdata:
+  ollama:
