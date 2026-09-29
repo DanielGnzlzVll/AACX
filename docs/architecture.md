@@ -22,7 +22,7 @@ Design decisions are recorded as ADRs in [`docs/adr/`](adr/README.md).
 | `server` | `manage.py runserver 0.0.0.0:8000` | Because `daphne` is in `INSTALLED_APPS`, `runserver` is Daphne's ASGI server. It serves HTTP views and the `PartyConsumer` websocket on port 8000. |
 | `channel-master` | `watchmedo auto-restart ... manage.py custom_runworker *` with `CHANNELS_WORKER_MASTER=1` | Channels worker for the `party-state-machine` channel. On startup it also re-sends `event_party_started` for interrupted parties (see below). |
 | `channel-worker` ×3 | Same as `channel-master`, with `CHANNELS_WORKER_MASTER=0` | Additional `party-state-machine` workers. They don't run startup recovery. |
-| `cache` | `redis:7`, healthcheck `redis-cli ping` | Redis database 0 is the Channels layer (`channels_redis.core.RedisChannelLayer`). Database 1 is Django's cache (`redis_lock.django_cache.RedisCache`), which app code doesn't use. |
+| `cache` | `redis:7`, healthcheck `redis-cli ping` | Redis database 0 is the Channels layer (`channels_redis.core.RedisChannelLayer`). Database 1 is Django's cache (`redis_lock.django_cache.RedisCache`), which holds the per-IP nickname creation counters of `/login/` ([ADR 0003](adr/0003-passwordless-nickname-login.md)). |
 | `db` | `postgres:16` with the `pgdata` volume, healthcheck `pg_isready` over TCP | Django's database. Some queries depend on Postgres (`.distinct("pk")` in the party views). |
 
 **`custom_runworker *`**: `runworker` needs explicit channel names. `core/management/commands/custom_runworker.py` expands `*` to every key of `core.routing.channel_routing`, which is just `party-state-machine`.

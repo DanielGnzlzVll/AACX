@@ -2,11 +2,13 @@ import logging
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import LogoutView
+from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
@@ -34,6 +36,26 @@ NICKNAME_CLAIM_SALT = "core.views.Login.nickname_claim"
 NICKNAME_CLAIM_MAX_AGE = 60 * 60 * 24 * 365
 NICKNAME_CLAIM_LIMIT = 10
 LOGIN_REJECTED_MESSAGE = "No es posible iniciar sesión con ese nombre de usuario."
+LOGIN_RATE_LIMITED_MESSAGE = "Demasiados intentos. Inténtalo de nuevo más tarde."
+NICKNAME_CREATION_CACHE_KEY = "core.views.Login.nickname_creations:{ip}"
+
+
+class NicknameCreationLimited(Exception):
+    pass
+
+
+def get_client_ip(request):
+    """Return the client IP, trusting only the header set by our reverse proxy.
+
+    A proxy appends the address it saw, so only the last entry can't be forged
+    by the client.
+    """
+    if settings.CLIENT_IP_HEADER:
+        forwarded = request.META.get(settings.CLIENT_IP_HEADER, "")
+        client_ip = forwarded.rsplit(",", 1)[-1].strip()
+        if client_ip:
+            return client_ip
+    return request.META["REMOTE_ADDR"]
 
 
 class Login(
@@ -49,29 +71,36 @@ class Login(
 
     def post(self, request, *args, **kwargs):
         form = forms.LoginForm(request.POST)
+        status = 200
         if form.is_valid():
-            user = self.get_nickname_user(form.cleaned_data["nickname"])
-            if user is not None:
-                login(request, user)
-                response = redirect(self.get_success_url())
-                claimed = [user.pk] + [
-                    pk for pk in self.get_claimed_pks() if pk != user.pk
-                ]
-                response.set_signed_cookie(
-                    NICKNAME_CLAIM_COOKIE,
-                    ",".join(map(str, claimed[:NICKNAME_CLAIM_LIMIT])),
-                    salt=NICKNAME_CLAIM_SALT,
-                    max_age=NICKNAME_CLAIM_MAX_AGE,
-                    secure=request.is_secure(),
-                    httponly=True,
-                    samesite="Lax",
-                )
-                return response
-            form.add_error(None, LOGIN_REJECTED_MESSAGE)
+            try:
+                user = self.get_nickname_user(form.cleaned_data["nickname"])
+            except NicknameCreationLimited:
+                form.add_error(None, LOGIN_RATE_LIMITED_MESSAGE)
+                status = 429
+            else:
+                if user is not None:
+                    return self.login_and_redirect(user)
+                form.add_error(None, LOGIN_REJECTED_MESSAGE)
 
         context = self.get_context_data(**kwargs)
         context["form"] = form
-        return self.render_to_response(context)
+        return self.render_to_response(context, status=status)
+
+    def login_and_redirect(self, user):
+        login(self.request, user)
+        response = redirect(self.get_success_url())
+        claimed = [user.pk] + [pk for pk in self.get_claimed_pks() if pk != user.pk]
+        response.set_signed_cookie(
+            NICKNAME_CLAIM_COOKIE,
+            ",".join(map(str, claimed[:NICKNAME_CLAIM_LIMIT])),
+            salt=NICKNAME_CLAIM_SALT,
+            max_age=NICKNAME_CLAIM_MAX_AGE,
+            secure=self.request.is_secure(),
+            httponly=True,
+            samesite="Lax",
+        )
+        return response
 
     def get_nickname_user(self, nickname):
         """Return the user for this nickname, or None if this browser may not use it.
@@ -82,6 +111,7 @@ class Login(
         """
         user = User.objects.filter(username__iexact=nickname).order_by("pk").first()
         if user is None:
+            self.count_nickname_creation()
             user = User(username=nickname)
             user.set_unusable_password()
             try:
@@ -101,6 +131,18 @@ class Login(
         if user.pk not in self.get_claimed_pks():
             return None
         return user
+
+    def count_nickname_creation(self):
+        key = NICKNAME_CREATION_CACHE_KEY.format(ip=get_client_ip(self.request))
+        window = settings.LOGIN_NICKNAME_CREATION_WINDOW
+        cache.add(key, 0, timeout=window)
+        try:
+            count = cache.incr(key)
+        except ValueError:
+            cache.set(key, 1, timeout=window)
+            count = 1
+        if count > settings.LOGIN_NICKNAME_CREATION_LIMIT:
+            raise NicknameCreationLimited
 
     def get_claimed_pks(self):
         value = self.request.get_signed_cookie(

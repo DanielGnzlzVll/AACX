@@ -150,6 +150,11 @@ ASGI_APPLICATION = "asacx.asgi.application"
 
 LOGIN_URL = "/login/"
 
+LOGIN_NICKNAME_CREATION_LIMIT = 20
+LOGIN_NICKNAME_CREATION_WINDOW = 60 * 60
+
+CLIENT_IP_HEADER = os.environ.get("CLIENT_IP_HEADER")
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
