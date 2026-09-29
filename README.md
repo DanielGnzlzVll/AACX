@@ -86,16 +86,17 @@ Run it inside Docker:
 docker compose run --rm server pytest
 ```
 
-Or locally with Python 3.11, pointing the tests at any Postgres instance:
+Or locally with Python 3.11, pointing the tests at any Postgres and Redis instances:
 
 ```bash
 pip install -r requirements-dev.txt
 docker run -d --name aacx-test-db -p 5432:5432 \
     -e POSTGRES_USER=django_user -e POSTGRES_PASSWORD=django_password postgres:16
-POSTGRES_HOST=localhost POSTGRES_PORT=5432 pytest
+docker run -d --name aacx-test-redis -p 6379:6379 redis:7
+POSTGRES_HOST=localhost POSTGRES_PORT=5432 REDIS_HOST=localhost REDIS_PORT=6379 pytest
 ```
 
-Tests use `asacx/settings_test.py`, which swaps Redis for an in-memory channel layer and cache.
+Tests use `asacx/settings_test.py`, which swaps Redis for an in-memory channel layer and cache. Party leases still need a real Redis.
 
 ## Architecture
 

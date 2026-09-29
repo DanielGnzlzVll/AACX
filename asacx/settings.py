@@ -231,4 +231,6 @@ CACHES = {
     }
 }
 
+LEASE_REDIS_URL = "redis://cache:6379/1"
+
 IS_CHANNELS_WORKER_MASTER = strtobool(os.environ.get("CHANNELS_WORKER_MASTER", "False"))

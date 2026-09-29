@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed. Tracked in [#1]. Rounds already close through a conditional update, STOP events carry ids ([#4]), and the end of a party is persisted ([#5]). Supersedes [0002](0002-party-state-machine-as-channels-worker.md) once implemented.
+Proposed. Tracked in [#1]. Rounds already close through a conditional update, STOP events carry ids ([#4]), the end of a party is persisted ([#5]), and each party has a single owner that resumes it after a restart ([#10]). Supersedes [0002](0002-party-state-machine-as-channels-worker.md) once implemented.
 
 ## Context
 

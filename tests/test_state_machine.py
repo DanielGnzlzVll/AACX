@@ -1,15 +1,50 @@
 import asyncio
+import datetime
 import logging
 import types
 
 import pytest
+import redis_lock
 from asgiref.sync import sync_to_async
 from asgiref.testing import ApplicationCommunicator
+from channels.routing import ChannelNameRouter
+from django.apps import apps
+from django.db import connections
 from django.utils import timezone
 
-from core import consumers, models
+from core import consumers, models, routing
+from core.leases import PartyLease, get_redis_client
+from core.management.commands import custom_runworker
 
 pytestmark = pytest.mark.django_db(transaction=True)
+
+
+@pytest.fixture(autouse=True)
+def clear_leases():
+    def clear():
+        client = get_redis_client()
+        for key in client.scan_iter("lock:party-lease:*"):
+            client.delete(key)
+
+    clear()
+    yield
+    clear()
+
+
+@pytest.fixture
+def state_machine(channel_layer):
+    machine = consumers.PartyStateMachine()
+    machine.channel_layer = channel_layer
+    return machine
+
+
+@pytest.fixture
+def instant_reveal(monkeypatch):
+    monkeypatch.setattr(consumers.PartyStateMachine, "display_all_answers", noop)
+
+
+async def noop(*args, **kwargs):
+    pass
 
 
 @pytest.fixture
@@ -164,4 +199,150 @@ async def test_a_party_runs_once_across_duplicate_starts_and_workers(
     await eventually(lambda: open_round(party))
     await asyncio.sleep(0.2)
     assert len(first.consumer.party_tasks) + len(second.consumer.party_tasks) == 1
+    assert await models.PartyRound.objects.filter(party=party).acount() == 1
+
+
+@pytest.fixture
+def started_party(party_factory, alice):
+    async def create(**fields):
+        fields.setdefault("started_at", timezone.now())
+        return await sync_to_async(party_factory)(joined_users=[alice], **fields)
+
+    return create
+
+
+async def open_round_started_ago(party, seconds, letter="A"):
+    round = await models.PartyRound.objects.acreate(party=party, letter=letter)
+    round.started_at = timezone.now() - datetime.timedelta(seconds=seconds)
+    await round.asave(update_fields=["started_at"])
+    return round
+
+
+def test_app_startup_runs_no_queries(django_assert_num_queries, settings):
+    settings.IS_CHANNELS_WORKER_MASTER = True
+
+    with django_assert_num_queries(0):
+        apps.get_app_config("core").ready()
+
+
+async def test_resumed_round_only_waits_for_the_time_left(
+    state_machine, started_party, instant_reveal
+):
+    party = await started_party(max_rounds=1, max_round_duration=60)
+    round = await open_round_started_ago(party, 59.5)
+
+    await asyncio.wait_for(state_machine.play_party(party.id), timeout=5)
+
+    assert await is_closed(round)
+    assert await models.PartyRound.objects.filter(party=party).acount() == 1
+    await party.arefresh_from_db()
+    assert party.closed_at is not None
+
+
+async def test_resume_scores_an_unscored_last_round_without_opening_another(
+    state_machine, started_party, instant_reveal, alice
+):
+    party = await started_party(max_rounds=2, max_round_duration=60)
+    first = await open_round_started_ago(party, 120)
+    await first.close_round_and_calculate_scores()
+    last = await open_round_started_ago(party, 10, letter="B")
+    await models.UserRoundAnswer.objects.acreate(
+        round=last, user=alice, field="name", value="Bea"
+    )
+    await last.close()
+
+    await asyncio.wait_for(state_machine.play_party(party.id), timeout=5)
+
+    assert await models.PartyRound.objects.filter(party=party).acount() == 2
+    answer = await models.UserRoundAnswer.objects.aget(round=last)
+    assert answer.scored_points == 100
+    await party.arefresh_from_db()
+    assert party.closed_at is not None
+
+
+async def test_a_party_owned_by_another_worker_is_not_run_again(worker, started_party):
+    party = await started_party()
+    other_worker_lease = PartyLease(party.id)
+    assert await other_worker_lease.acquire()
+
+    try:
+        await start(worker, party)
+        await asyncio.sleep(0.3)
+        assert not worker.consumer.party_tasks
+        assert not await models.PartyRound.objects.filter(party=party).aexists()
+    finally:
+        await other_worker_lease.release()
+
+
+async def test_only_orphaned_parties_are_resumed(channel_layer, started_party):
+    orphaned = await started_party()
+    owned = await started_party()
+    await started_party(closed_at=timezone.now())
+    await started_party(started_at=None)
+    lease = PartyLease(owned.id)
+    assert await lease.acquire()
+
+    try:
+        await consumers.resume_orphaned_parties(channel_layer)
+    finally:
+        await lease.release()
+
+    message = await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+    assert message["type"] == "event_party_started"
+    assert message["party_id"] == orphaned.id
+    with pytest.raises(TimeoutError):
+        async with asyncio.timeout(0.2):
+            await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+
+
+async def test_a_party_is_resumed_once_its_dead_owner_lease_expires(
+    channel_layer, started_party
+):
+    party = await started_party()
+    dead_owner_lease = redis_lock.Lock(
+        get_redis_client(), f"party-lease:{party.id}", expire=1
+    )
+    assert dead_owner_lease.acquire(blocking=False)
+
+    await consumers.resume_orphaned_parties(channel_layer)
+    with pytest.raises(TimeoutError):
+        async with asyncio.timeout(0.2):
+            await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+
+    await asyncio.sleep(1.2)
+    await consumers.resume_orphaned_parties(channel_layer)
+    message = await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+    assert message["party_id"] == party.id
+
+
+@pytest.fixture
+async def master_worker(channel_layer, settings, monkeypatch):
+    settings.IS_CHANNELS_WORKER_MASTER = True
+    monkeypatch.setattr(custom_runworker, "RECONCILE_INTERVAL", 0.05)
+    worker = custom_runworker.PartyWorker(
+        application=ChannelNameRouter(routing.channel_routing),
+        channels=[consumers.STATE_MACHINE_CHANNEL_NAME],
+        channel_layer=channel_layer,
+    )
+    handle = asyncio.create_task(worker.handle())
+
+    yield worker
+
+    tasks = [task for task in asyncio.all_tasks() if task is not asyncio.current_task()]
+    for task in tasks:
+        task.cancel()
+    await asyncio.gather(handle, *tasks, return_exceptions=True)
+    await sync_to_async(connections.close_all)()
+
+
+async def test_restarted_master_continues_an_interrupted_party_at_its_round(
+    started_party, master_worker
+):
+    party = await started_party(max_rounds=3, max_round_duration=60)
+    round = await open_round_started_ago(party, 10)
+
+    await eventually(lambda: PartyLease.is_held(party.id))
+
+    await asyncio.sleep(0.2)
+    assert await open_round(party) == round
     assert await models.PartyRound.objects.filter(party=party).acount() == 1
