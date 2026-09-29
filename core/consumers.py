@@ -4,10 +4,11 @@ import datetime
 import json
 import logging
 
-from asgiref.sync import async_to_sync, sync_to_async
+from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncConsumer, AsyncWebsocketConsumer
-from django.db import transaction
+from django.db.models import Q
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 from core import forms, models
 
@@ -161,12 +162,34 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
     MAX_WAITING_TIME = 120
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.party_tasks: dict[int, asyncio.Task] = {}
+
     async def event_party_started(self, event):
+        # Channels dispatches one message at a time per worker, so the party runs in
+        # its own task and this handler returns right away.
         party_id = event["party_id"]
-        force_start = event.get("force_start", False)
-        party = await self.handle_transaction_wait_players_to_join(party_id)
+        if party_id in self.party_tasks:
+            logger.info(f"party {party_id} already running on this worker")
+            return
+        task = asyncio.create_task(
+            self.run_party(party_id, force_start=event.get("force_start", False)),
+            name=f"party-{party_id}",
+        )
+        self.party_tasks[party_id] = task
+        task.add_done_callback(lambda _: self.party_tasks.pop(party_id, None))
+
+    async def run_party(self, party_id, force_start=False):
+        try:
+            await self.play_party(party_id, force_start)
+        except Exception:
+            logger.exception(f"party {party_id} crashed")
+
+    async def play_party(self, party_id, force_start=False):
+        party = await self.wait_players_to_join(party_id)
         if not party and not force_start:
-            logger.info("Party already locked so skipping")
+            logger.info("Party already claimed so skipping")
             return
         elif not party and force_start:
             party = await models.Party.objects.aget(id=party_id)
@@ -203,18 +226,32 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 {"type": "event_party_round_stopped"},
             )
 
-    @sync_to_async
-    def handle_transaction_wait_players_to_join(self, party_id):
-        # should be sync code since django does not support async transactions
-        with transaction.atomic():
-            for party in models.Party.objects.select_for_update(
-                skip_locked=True
-            ).filter(id=party_id, started_at=None):
-                async_to_sync(self.ensure_players_join)(party)
-                logger.info("all players joined")
-                party.started_at = datetime.datetime.now()
-                party.save()
-                return party
+    async def wait_players_to_join(self, party_id):
+        # The claim expires so a crashed worker can't strand the party, but it
+        # outlives the join wait so a live waiter never loses it.
+        claimed_at = timezone.now()
+        claim_expired = claimed_at - datetime.timedelta(
+            seconds=2 * self.MAX_WAITING_TIME
+        )
+        claimed = await models.Party.objects.filter(
+            Q(waiting_started_at__isnull=True)
+            | Q(waiting_started_at__lt=claim_expired),
+            id=party_id,
+            started_at=None,
+        ).aupdate(waiting_started_at=claimed_at)
+        if not claimed:
+            return None
+
+        party = await models.Party.objects.aget(id=party_id)
+        await self.ensure_players_join(party)
+        logger.info("all players joined")
+        started = await models.Party.objects.filter(
+            id=party_id, started_at=None, waiting_started_at=claimed_at
+        ).aupdate(started_at=timezone.now())
+        if not started:
+            return None
+        await party.arefresh_from_db(fields=["started_at"])
+        return party
 
     async def ensure_players_join(self, party):
         timeout_task_name = "timeout"

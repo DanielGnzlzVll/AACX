@@ -24,6 +24,7 @@ class PartyQuerySet(models.QuerySet):
 class Party(models.Model):
     name = models.CharField(max_length=50)
 
+    waiting_started_at = models.DateTimeField(blank=True, null=True)
     started_at = models.DateTimeField(blank=True, null=True)
     closed_at = models.DateTimeField(blank=True, null=True)
 
