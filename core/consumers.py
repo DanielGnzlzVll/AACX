@@ -81,8 +81,9 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
             )
 
     async def can_join(self, user):
-        if self.party.started_at is None:
-            return True
+        return self.party.started_at is None or await self.is_participant(user)
+
+    async def is_participant(self, user):
         return await self.party.joined_users.filter(pk=user.pk).aexists()
 
     async def receive(self, text_data=None, bytes_data=None):
@@ -98,6 +99,9 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
             logger.warning(f"ignoring unknown message {self.party_id=} {trigger=}")
 
     async def handle_form_submit(self, form_data):
+        if not await self.is_participant(self.scope["user"]):
+            logger.info(f"skipping form submit from non-participant {self.party_id=}")
+            return
         if not await self.party_is_available():
             logger.info(f"skipping form submit {form_data=} since party is closed")
             return

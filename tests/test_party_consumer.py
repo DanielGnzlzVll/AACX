@@ -123,9 +123,28 @@ async def test_malformed_messages_are_ignored(
 async def test_answers_before_first_round_are_ignored(
     ws_communicator, party_factory, alice
 ):
-    party = await sync_to_async(party_factory)()
+    party = await sync_to_async(party_factory)(joined_users=[alice])
     communicator, _, _ = await connect(ws_communicator, alice, party.id)
 
     await communicator.send_to(text_data=answers_message(name="Ana"))
 
     await assert_still_open(communicator)
+
+
+async def test_non_participant_connected_before_start_cannot_play(
+    ws_communicator, channel_layer, party_factory, alice, bob
+):
+    party = await sync_to_async(party_factory)(joined_users=[alice])
+    communicator, _, _ = await connect(ws_communicator, bob, party.id)
+    await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+    party.started_at = timezone.now()
+    await party.asave()
+    await models.PartyRound.objects.acreate(party=party, letter="A")
+
+    await communicator.send_to(
+        text_data=answers_message(name="Ana", submit_stop="on")
+    )
+
+    await assert_still_open(communicator)
+    assert not await models.UserRoundAnswer.objects.filter(user=bob).aexists()
+    assert consumers.STATE_MACHINE_CHANNEL_NAME not in channel_layer.channels
