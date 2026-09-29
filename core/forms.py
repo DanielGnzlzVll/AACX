@@ -5,6 +5,8 @@ from django.core.validators import RegexValidator
 
 from core import models
 
+Category = models.UserRoundAnswer.Category
+
 
 class NoRenderedWidget(forms.HiddenInput):
     def render(self, *args, **kwargs):
@@ -76,14 +78,6 @@ def answer_field(label):
 
 
 class CurrentAnswersForm(forms.Form):
-    name = answer_field("Nombre")
-    last_name = answer_field("Apellido")
-    country = answer_field("País")
-    city = answer_field("Ciudad")
-    animal = answer_field("Animal")
-    thing = answer_field("Cosa")
-    color = answer_field("Color")
-
     # It is already in the template as button
     submit_stop = forms.BooleanField(
         widget=NoRenderedWidget(),
@@ -98,12 +92,16 @@ class CurrentAnswersForm(forms.Form):
 
         super(CurrentAnswersForm, self).__init__(*args, **kwargs)
 
+        self.fields = {
+            category.value: answer_field(category.label) for category in Category
+        } | self.fields
+
         for _, field in self.fields.items():
             field.widget.attrs["placeholder"] = placeholder
             field.widget.attrs["disabled"] = self.disabled
 
         if self.autofocus_name:
-            self.fields["name"].widget.attrs["autofocus"] = True
+            self.fields[Category.NAME].widget.attrs["autofocus"] = True
 
     def clean(self):
         cleaned_data = super().clean().copy()

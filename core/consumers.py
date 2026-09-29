@@ -231,7 +231,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
     async def save_form(self, form, current_round):
         data = {
             field: form.cleaned_data.get(field, "")
-            for field, _ in models.UserRoundAnswer.FIELD_CHOICES
+            for field in models.UserRoundAnswer.Category
         }
 
         await current_round.save_user_answers(self.scope["user"], data.items())
@@ -474,9 +474,9 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 }
             )
 
-        times = [0.5] + [2] * len(models.UserRoundAnswer.FIELD_CHOICES)
+        times = [0.5] + [2] * len(models.UserRoundAnswer.Category)
 
-        for field, label in models.UserRoundAnswer.FIELD_CHOICES:
+        for field in models.UserRoundAnswer.Category:
             answers = grouped_answers[field]
             template_string = render_to_string(
                 "party_current_all_users_answers_modal.html",
@@ -484,7 +484,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                     "party": party,
                     "current_round": current_round,
                     "answers": answers,
-                    "field": label,
+                    "field": field.label,
                     "open": "open",
                 },
             )

@@ -1,6 +1,6 @@
 # AACX architecture
 
-AACX is a multiplayer word game in the style of "Stop" (Basta, Tutti Frutti). Each round has a letter, and players race to fill seven categories (name, last name, country, city, animal, thing, color) with words that start with it. It is a single Django project (`asacx`) with one app (`core`). Django Channels handles the real-time part, and the UI is server-rendered HTML driven by HTMX.
+AACX is a multiplayer word game in the style of "Stop" (Basta, Tutti Frutti). Each round has a letter, and players race to fill seven categories (name, last name, country, city, animal, thing, color, all defined in `UserRoundAnswer.Category`) with words that start with it. It is a single Django project (`asacx`) with one app (`core`). Django Channels handles the real-time part, and the UI is server-rendered HTML driven by HTMX.
 
 Design decisions are recorded as ADRs in [`docs/adr/`](adr/README.md).
 

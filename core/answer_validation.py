@@ -14,7 +14,7 @@ from core import models
 logger = logging.getLogger(__name__)
 
 LEXICONS = Path(__file__).resolve().parent / "lexicons"
-Answer = models.UserRoundAnswer
+Category = models.UserRoundAnswer.Category
 
 
 @functools.cache
@@ -59,13 +59,13 @@ class LexiconValidator:
     cache_verdicts = False
     closed_fields = frozenset(
         {
-            Answer.NAME_CHOICE,
-            Answer.LAST_NAME_CHOICE,
-            Answer.COUNTRY_CHOICE,
-            Answer.CITY_CHOICE,
+            Category.NAME,
+            Category.LAST_NAME,
+            Category.COUNTRY,
+            Category.CITY,
         }
     )
-    soft_fields = frozenset({Answer.ANIMAL_CHOICE, Answer.COLOR_CHOICE})
+    soft_fields = frozenset({Category.ANIMAL, Category.COLOR})
 
     def validate(self, pairs):
         verdicts = {}
@@ -82,7 +82,7 @@ class LexiconValidator:
 class PartialLexiconValidator(LexiconValidator):
     """Only rejects unlisted countries, and leaves other misses to a model."""
 
-    closed_fields = frozenset({Answer.COUNTRY_CHOICE})
+    closed_fields = frozenset({Category.COUNTRY})
     soft_fields = frozenset()
 
 
@@ -95,7 +95,7 @@ class DictionaryValidator:
 
     source = "dictionary"
     cache_verdicts = False
-    fields = frozenset({Answer.THING_CHOICE})
+    fields = frozenset({Category.THING})
 
     def validate(self, pairs):
         return {
@@ -106,13 +106,13 @@ class DictionaryValidator:
 
 
 CATEGORY_LABELS = {
-    Answer.NAME_CHOICE: "nombre de pila",
-    Answer.LAST_NAME_CHOICE: "apellido",
-    Answer.COUNTRY_CHOICE: "país",
-    Answer.CITY_CHOICE: "ciudad",
-    Answer.ANIMAL_CHOICE: "animal",
-    Answer.THING_CHOICE: "cosa u objeto",
-    Answer.COLOR_CHOICE: "color",
+    Category.NAME: "nombre de pila",
+    Category.LAST_NAME: "apellido",
+    Category.COUNTRY: "país",
+    Category.CITY: "ciudad",
+    Category.ANIMAL: "animal",
+    Category.THING: "cosa u objeto",
+    Category.COLOR: "color",
 }
 
 OLLAMA_SYSTEM_PROMPT = (
