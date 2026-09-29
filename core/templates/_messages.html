@@ -2,7 +2,7 @@
 {% for message in messages %}
     <div class="message {{ message.level_tag }}">
         {{ message }}
-        <span class="closebtn" onclick="this.parentElement.style.display='none';" >&times;</span>
+        <button type="button" class="closebtn" aria-label="Cerrar" onclick="this.parentElement.style.display='none';">&times;</button>
     </div>
 {% endfor %}
 {% endif %}

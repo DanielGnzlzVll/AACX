@@ -2,19 +2,15 @@
 
 {% load static %}
 {% block content%}
-<div class="grid">
 {% if parties %}
-<ul>
+<ul class="party-list">
     {% for party in parties %}
-        {% if party.is_active %}
-            <a href="{% url 'detail_party' party.id %}" hx-get="{% url 'detail_party' party.id %}" hx-swap="innerHTML transition:true" hx-target="#content" role="button" hx-push-url="true" class="party is_active">{{ party.name }}</a>
-        {% else %}
-            <a href="{% url 'detail_party' party.id %}" hx-get="{% url 'detail_party' party.id %}" hx-swap="innerHTML transition:true" hx-target="#content" role="button" hx-push-url="true" class="party not_is_active">{{ party.name }}</a>
-        {% endif %}
+        <li>
+            <a href="{% url 'detail_party' party.id %}" hx-get="{% url 'detail_party' party.id %}" hx-swap="innerHTML transition:true" hx-target="#content" role="button" hx-push-url="true" class="party {% if party.is_active %}is_active{% else %}not_is_active{% endif %}" title="{{ party.name }}">{{ party.name }}</a>
+        </li>
     {% endfor %}
 </ul>
 {% else %}
     <p>No hay partidas disponibles.</p>
 {% endif %}
-</div>
 {% endblock %}
