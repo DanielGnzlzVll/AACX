@@ -4,7 +4,6 @@ import datetime
 import json
 import logging
 
-from asgiref.sync import sync_to_async
 from channels.generic.websocket import AsyncConsumer, AsyncWebsocketConsumer
 from django.db.models import Q
 from django.template.loader import render_to_string
@@ -438,7 +437,6 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             self.get_party_group_name(party=party),
             {"type": "event_update_past_answers"},
         )
-        # TODO: update scores
 
     async def next_round(self, party):
         next_or_current_round = await party.aget_current_or_next_round()
@@ -463,18 +461,6 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             {"type": "html", "message": template_string},
         )
 
-    async def event_party_join(self, event):
-        party_id = event["party_id"]
-        logger.info(f"player joining to party {party_id=}")
-        self.channel_layer.send(
-            self.get_party_player_connected_channel_name(party_id=party_id),
-            {
-                "hola": "mundo",
-                "date": datetime.datetime.now().isoformat(),
-                "event": event,
-            },
-        )
-
     async def display_all_answers(self, answers, current_round, party):
         grouped_answers = collections.defaultdict(list)
 
@@ -484,7 +470,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                     "value": answer.value,
                     "scored_points": answer.scored_points,
                     "rejected": answer.verdict == models.UserRoundAnswer.Verdict.INVALID,
-                    "username": await sync_to_async(lambda: answer.user.username)(),
+                    "username": answer.user.username,
                 }
             )
 

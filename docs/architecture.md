@@ -123,9 +123,6 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 |---|---|---|---|
 | `event_party_started` | `party_id`, `party_name` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. The party reconciler on the master, for started parties without a live lease. | Starts a task that runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). It does nothing if this worker already has a task for the party. Only the worker that takes the party's lease runs it, the rest log "run by another worker" and return. A party that hasn't started also needs the waiting-room claim (step 1). A started party is resumed from the database. |
 | `event_party_round_stopped` | `party_id`, `round_id` | `PartyConsumer.handle_form_submit` when a valid form has `submit_stop` | Closes the round with a conditional `UPDATE ... SET closed_at = now() WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`). If the round was already closed, the STOP is logged and ignored, so duplicate STOPs are harmless. Otherwise it sends `event_party_round_stopped` to group `party_{id}` and `{round_id}` to `party_new_round_{id}`. |
-| `event_party_join` | `party_id` | none | Unused handler ([#24]). |
-
-`CreateParty.post` also sends `{"type": "party_stared", ...}` to `party_state_machine` (with underscores). Nothing reads that channel, so the message expires ([#24]).
 
 ### Channel `party_players_{id}`
 
@@ -423,8 +420,6 @@ The issues that track where the implementation differs from the design:
 | Issue | Gap |
 |---|---|
 | [#1] | Umbrella for moving the lifecycle to the target state machine above |
-| [#24] | Dead and incorrect code paths (`party_stared`, unused handlers) |
 
 [#1]: https://github.com/DanielGnzlzVll/AACX/issues/1
 [#4]: https://github.com/DanielGnzlzVll/AACX/issues/4
-[#24]: https://github.com/DanielGnzlzVll/AACX/issues/24

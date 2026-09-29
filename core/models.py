@@ -345,7 +345,7 @@ class PartyRound(models.Model):
 
         answers_to_save = []
         answers_by_field = collections.defaultdict(list)
-        for answer in UserRoundAnswer.objects.filter(round=self):
+        for answer in UserRoundAnswer.objects.filter(round=self).select_related("user"):
             answers_by_field[answer.field].append(answer)
 
         letter = normalize_answer(self.letter)

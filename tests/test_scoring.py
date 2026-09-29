@@ -153,3 +153,18 @@ def test_scores_are_calculated_per_field(party_factory, alice, bob):
         ("bob", "city"): 100,
         ("alice", "color"): 100,
     }
+
+
+def test_scored_answers_come_with_their_users(
+    party_factory, alice, bob, django_assert_num_queries
+):
+    round = PartyRound.objects.create(party=party_factory(), letter="A")
+    for user in (alice, bob):
+        UserRoundAnswer.objects.create(
+            round=round, user=user, field="name", value="Ana"
+        )
+
+    answers = async_to_sync(round.close_round_and_calculate_scores)()
+
+    with django_assert_num_queries(0):
+        assert {answer.user.username for answer in answers} == {"alice", "bob"}
