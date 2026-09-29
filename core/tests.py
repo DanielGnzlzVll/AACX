@@ -13,7 +13,11 @@ from django.urls import reverse
 from django.utils import timezone
 
 from core import consumers, models, routing
-from core.views import LOGIN_REJECTED_MESSAGE, NICKNAME_CLAIM_COOKIE
+from core.views import (
+    LOGIN_REJECTED_MESSAGE,
+    NICKNAME_CLAIM_COOKIE,
+    NICKNAME_CLAIM_LIMIT,
+)
 
 SIMPLE_STORAGES = {
     "staticfiles": {
@@ -111,6 +115,48 @@ class LoginTests(TestCase):
             User.objects.get(username="ana").pk,
         )
 
+    def test_inactive_user_with_claim_is_rejected(self):
+        self.post_login({"nickname": "ana"})
+        self.client.post(reverse("logout"))
+        User.objects.filter(username="ana").update(is_active=False)
+
+        self.assert_rejected(self.post_login({"nickname": "ana"}))
+
+    def test_browser_keeps_claims_on_every_nickname_it_used(self):
+        self.post_login({"nickname": "ana"})
+        self.client.post(reverse("logout"))
+        self.post_login({"nickname": "bob"})
+        self.client.post(reverse("logout"))
+
+        for nickname in ("ana", "bob"):
+            with self.subTest(nickname):
+                response = self.post_login({"nickname": nickname})
+
+                self.assertRedirects(response, reverse("home"))
+                self.assertEqual(
+                    int(self.client.session[SESSION_KEY]),
+                    User.objects.get(username=nickname).pk,
+                )
+                self.client.post(reverse("logout"))
+
+    def test_claim_cookie_keeps_only_the_most_recent_nicknames(self):
+        nicknames = [f"player{i}" for i in range(NICKNAME_CLAIM_LIMIT + 1)]
+        for nickname in nicknames:
+            self.post_login({"nickname": nickname})
+            self.client.post(reverse("logout"))
+
+        self.assert_rejected(self.post_login({"nickname": nicknames[0]}))
+        self.assertRedirects(
+            self.post_login({"nickname": nicknames[1]}), reverse("home")
+        )
+
+    def test_claim_cookie_is_secure_only_over_https(self):
+        plain = self.post_login({"nickname": "ana"})
+        secure = Client().post(reverse("login"), {"nickname": "bob"}, secure=True)
+
+        self.assertFalse(plain.cookies[NICKNAME_CLAIM_COOKIE]["secure"])
+        self.assertTrue(secure.cookies[NICKNAME_CLAIM_COOKIE]["secure"])
+
     def test_invalid_nicknames_rerender_form_with_errors(self):
         cases = {
             "missing": {},
@@ -120,6 +166,8 @@ class LoginTests(TestCase):
             "too long": {"nickname": "a" * 31},
             "invalid characters": {"nickname": "<script>"},
             "spaces inside": {"nickname": "ana maria"},
+            "cyrillic homoglyph": {"nickname": "\u0430na"},
+            "accented letter": {"nickname": "josé"},
         }
         for case, data in cases.items():
             with self.subTest(case):
@@ -162,6 +210,12 @@ class LogoutTests(TestCase):
 
         self.assertRedirects(response, reverse("login"))
         self.assertNotIn(SESSION_KEY, self.client.session)
+
+    def test_logout_rejects_get(self):
+        response = self.client.get(reverse("logout"))
+
+        self.assertEqual(response.status_code, 405)
+        self.assertIn(SESSION_KEY, self.client.session)
 
 
 class MsgpackInMemoryChannelLayer(InMemoryChannelLayer):
