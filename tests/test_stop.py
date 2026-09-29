@@ -67,15 +67,16 @@ async def test_stop_closes_round_and_notifies_players(
 
     await party_round.arefresh_from_db()
     assert party_round.closed_at is not None
+    assert party_round.closed_reason == models.PartyRound.ClosedReason.STOP
     notification = await receive_or_none(probe)
     assert notification["type"] == "event_party_round_stopped"
     assert await receive_or_none(new_round_channel) == {"round_id": party_round.id}
 
 
 async def test_close_updates_the_instance_only_once(party_round):
-    assert await party_round.close()
+    assert await party_round.close(models.PartyRound.ClosedReason.STOP)
     assert party_round.closed_at is not None
-    assert not await party_round.close()
+    assert not await party_round.close(models.PartyRound.ClosedReason.STOP)
 
 
 async def test_duplicate_stops_end_the_round_once(
@@ -129,6 +130,7 @@ async def test_round_timeout_closes_round_and_notifies_players(
 
     await party_round.arefresh_from_db()
     assert party_round.closed_at is not None
+    assert party_round.closed_reason == models.PartyRound.ClosedReason.TIMEOUT
     notification = await receive_or_none(probe)
     assert notification["type"] == "event_party_round_stopped"
 

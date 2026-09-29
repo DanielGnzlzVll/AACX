@@ -348,7 +348,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         except TimeoutError:
             logger.info("timeout waiting for new round")
 
-        if await current_round.close():
+        if await current_round.close(models.PartyRound.ClosedReason.TIMEOUT):
             await self.channel_layer.group_send(
                 self.get_party_group_name(party=party),
                 {"type": "event_party_round_stopped"},
@@ -514,7 +514,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         party_id, round_id = event["party_id"], event["round_id"]
         closed = await models.PartyRound.objects.filter(
             id=round_id, party_id=party_id
-        ).aclose()
+        ).aclose(models.PartyRound.ClosedReason.STOP)
         if not closed:
             logger.info(f"ignoring stop for a closed round {party_id=} {round_id=}")
             return

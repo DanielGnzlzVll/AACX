@@ -230,7 +230,7 @@ async def test_resume_scores_an_unscored_last_round_without_opening_another(
     await models.UserRoundAnswer.objects.acreate(
         round=last, user=alice, field="name", value="Bea"
     )
-    await last.close()
+    await last.close(models.PartyRound.ClosedReason.STOP)
 
     await asyncio.wait_for(state_machine.play_party(party.id), timeout=5)
 
@@ -426,7 +426,7 @@ async def test_concurrent_runners_open_a_single_round(started_party):
 async def test_a_closed_party_gets_no_new_round(started_party):
     party = await started_party(closed_at=timezone.now())
     last = await open_round_started_ago(party, 10)
-    await last.close()
+    await last.close(models.PartyRound.ClosedReason.STOP)
 
     assert await party.aget_current_or_next_round() == last
     assert await models.PartyRound.objects.filter(party=party).acount() == 1
