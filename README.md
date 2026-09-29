@@ -76,6 +76,27 @@ When a round ends, either due to timeout or player intervention, all answers wil
 
 <img src="https://github.com/DanielGnzlzVll/AACX/assets/22230373/c9541cf1-caf9-4c2f-af96-89c5d904c2ca" alt="img" width=650 height="auto" />
 
+## Testing
+
+The test suite uses pytest, pytest-django and the Channels testing tools, and runs against Postgres.
+
+Run it inside Docker:
+
+```bash
+docker compose run --rm server pytest
+```
+
+Or locally with Python 3.11, pointing the tests at any Postgres instance:
+
+```bash
+pip install -r requirements-dev.txt
+docker run -d --name aacx-test-db -p 5432:5432 \
+    -e POSTGRES_USER=django_user -e POSTGRES_PASSWORD=django_password postgres:16
+POSTGRES_HOST=localhost POSTGRES_PORT=5432 pytest
+```
+
+Tests use `asacx/settings_test.py`, which swaps Redis for an in-memory channel layer and cache.
+
 ## Project decisions:
 In developing AACX, several key decisions were made:
 
