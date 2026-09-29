@@ -15,26 +15,25 @@ def backfill_deadlines(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0019_answer_verdicts'),
+        ("core", "0019_answer_verdicts"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='partyround',
-            name='started_at',
+            model_name="partyround",
+            name="started_at",
             field=models.DateTimeField(default=django.utils.timezone.now),
         ),
         migrations.AddField(
-            model_name='partyround',
-            name='deadline_at',
+            model_name="partyround",
+            name="deadline_at",
             field=models.DateTimeField(null=True),
         ),
         migrations.RunPython(backfill_deadlines, migrations.RunPython.noop),
         migrations.AlterField(
-            model_name='partyround',
-            name='deadline_at',
+            model_name="partyround",
+            name="deadline_at",
             field=models.DateTimeField(),
         ),
     ]

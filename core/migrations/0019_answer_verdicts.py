@@ -4,30 +4,62 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0018_partyconnection'),
+        ("core", "0018_partyconnection"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AnswerVerdict',
+            name="AnswerVerdict",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('field', models.CharField(choices=[('name', 'name'), ('last_name', 'last_name'), ('country', 'country'), ('city', 'city'), ('animal', 'animal'), ('thing', 'thing'), ('color', 'color')], max_length=50)),
-                ('value', models.CharField(max_length=50)),
-                ('is_valid', models.BooleanField()),
-                ('source', models.CharField(default='manual', max_length=100)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "field",
+                    models.CharField(
+                        choices=[
+                            ("name", "name"),
+                            ("last_name", "last_name"),
+                            ("country", "country"),
+                            ("city", "city"),
+                            ("animal", "animal"),
+                            ("thing", "thing"),
+                            ("color", "color"),
+                        ],
+                        max_length=50,
+                    ),
+                ),
+                ("value", models.CharField(max_length=50)),
+                ("is_valid", models.BooleanField()),
+                ("source", models.CharField(default="manual", max_length=100)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
             ],
         ),
         migrations.AddField(
-            model_name='userroundanswer',
-            name='verdict',
-            field=models.CharField(blank=True, choices=[('valid', 'válida'), ('invalid', 'no válida'), ('unverified', 'sin verificar')], max_length=10, null=True),
+            model_name="userroundanswer",
+            name="verdict",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("valid", "válida"),
+                    ("invalid", "no válida"),
+                    ("unverified", "sin verificar"),
+                ],
+                max_length=10,
+                null=True,
+            ),
         ),
         migrations.AddConstraint(
-            model_name='answerverdict',
-            constraint=models.UniqueConstraint(fields=('field', 'value'), name='unique_answer_verdict'),
+            model_name="answerverdict",
+            constraint=models.UniqueConstraint(
+                fields=("field", "value"), name="unique_answer_verdict"
+            ),
         ),
     ]

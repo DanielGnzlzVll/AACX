@@ -20,7 +20,6 @@ def close_finished_parties(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0013_alter_party_max_rounds"),
     ]

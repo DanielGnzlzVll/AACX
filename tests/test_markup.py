@@ -54,9 +54,7 @@ def page(logged_in_client, party_factory, alice, bob):
     )
     PartyRound.objects.create(party=party, letter="B")
     party_factory(joined_users=[alice])
-    started_without_alice = party_factory(
-        started_at=timezone.now(), joined_users=[bob]
-    )
+    started_without_alice = party_factory(started_at=timezone.now(), joined_users=[bob])
     urls = {
         "login": (Client(), reverse("login")),
         "home": (logged_in_client, reverse("home")),

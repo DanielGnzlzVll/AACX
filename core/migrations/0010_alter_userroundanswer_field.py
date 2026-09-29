@@ -4,15 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0009_alter_userroundanswer_field'),
+        ("core", "0009_alter_userroundanswer_field"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userroundanswer',
-            name='field',
-            field=models.CharField(choices=[('name', 'name'), ('last_name', 'last_name'), ('country', 'country'), ('city', 'city'), ('animal', 'animal'), ('thing', 'thing'), ('color', 'color')], max_length=50),
+            model_name="userroundanswer",
+            name="field",
+            field=models.CharField(
+                choices=[
+                    ("name", "name"),
+                    ("last_name", "last_name"),
+                    ("country", "country"),
+                    ("city", "city"),
+                    ("animal", "animal"),
+                    ("thing", "thing"),
+                    ("color", "color"),
+                ],
+                max_length=50,
+            ),
         ),
     ]

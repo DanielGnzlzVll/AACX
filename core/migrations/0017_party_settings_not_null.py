@@ -19,26 +19,49 @@ def backfill_party_settings(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0016_party_created_by_unique_open_name'),
+        ("core", "0016_party_created_by_unique_open_name"),
     ]
 
     operations = [
         migrations.RunPython(backfill_party_settings, migrations.RunPython.noop),
         migrations.AlterField(
-            model_name='party',
-            name='max_round_duration',
-            field=models.PositiveSmallIntegerField(default=120, help_text='Duración máxima de cada ronda en segundos (entre 30 y 600).', validators=[django.core.validators.MinValueValidator(30), django.core.validators.MaxValueValidator(600)], verbose_name='duración máxima de la ronda'),
+            model_name="party",
+            name="max_round_duration",
+            field=models.PositiveSmallIntegerField(
+                default=120,
+                help_text="Duración máxima de cada ronda en segundos (entre 30 y 600).",
+                validators=[
+                    django.core.validators.MinValueValidator(30),
+                    django.core.validators.MaxValueValidator(600),
+                ],
+                verbose_name="duración máxima de la ronda",
+            ),
         ),
         migrations.AlterField(
-            model_name='party',
-            name='max_rounds',
-            field=models.PositiveSmallIntegerField(default=5, help_text='Número de rondas de la partida (entre 1 y 26).', validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(26)], verbose_name='número de rondas'),
+            model_name="party",
+            name="max_rounds",
+            field=models.PositiveSmallIntegerField(
+                default=5,
+                help_text="Número de rondas de la partida (entre 1 y 26).",
+                validators=[
+                    django.core.validators.MinValueValidator(1),
+                    django.core.validators.MaxValueValidator(26),
+                ],
+                verbose_name="número de rondas",
+            ),
         ),
         migrations.AlterField(
-            model_name='party',
-            name='min_players',
-            field=models.PositiveSmallIntegerField(default=2, help_text='Jugadores necesarios para empezar la partida (entre 2 y 20).', validators=[django.core.validators.MinValueValidator(2), django.core.validators.MaxValueValidator(20)], verbose_name='mínimo de jugadores'),
+            model_name="party",
+            name="min_players",
+            field=models.PositiveSmallIntegerField(
+                default=2,
+                help_text="Jugadores necesarios para empezar la partida (entre 2 y 20).",
+                validators=[
+                    django.core.validators.MinValueValidator(2),
+                    django.core.validators.MaxValueValidator(20),
+                ],
+                verbose_name="mínimo de jugadores",
+            ),
         ),
     ]

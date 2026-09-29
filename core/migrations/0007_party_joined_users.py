@@ -5,16 +5,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('core', '0006_party_created_at_alter_party_closed_at_and_more'),
+        ("core", "0006_party_created_at_alter_party_closed_at_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='party',
-            name='joined_users',
-            field=models.ManyToManyField(related_name='parties', to=settings.AUTH_USER_MODEL),
+            model_name="party",
+            name="joined_users",
+            field=models.ManyToManyField(
+                related_name="parties", to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

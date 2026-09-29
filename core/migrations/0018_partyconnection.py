@@ -6,21 +6,41 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('core', '0017_party_settings_not_null'),
+        ("core", "0017_party_settings_not_null"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PartyConnection',
+            name="PartyConnection",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('channel_name', models.CharField(max_length=255, unique=True)),
-                ('last_seen_at', models.DateTimeField()),
-                ('party', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='connections', to='core.party')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("channel_name", models.CharField(max_length=255, unique=True)),
+                ("last_seen_at", models.DateTimeField()),
+                (
+                    "party",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="connections",
+                        to="core.party",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]
