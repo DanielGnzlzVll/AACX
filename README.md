@@ -115,6 +115,30 @@ POSTGRES_HOST=localhost POSTGRES_PORT=5432 REDIS_HOST=localhost REDIS_PORT=6379 
 
 Tests use `asacx/settings_test.py`, which swaps Redis for an in-memory channel layer and cache. Party leases still need a real Redis.
 
+## Production
+
+`docker build .` builds the production image: it runs `collectstatic` at build time and serves the app with `daphne asacx.asgi:application` on port 8000. Run the Channels workers from the same image with `python manage.py custom_runworker '*'`, one of them with `CHANNELS_WORKER_MASTER=1`.
+
+Settings are read from environment variables. `docker compose` uses the `dev` stage of the `Dockerfile`, which sets `DJANGO_DEBUG=true`, so the defaults below work locally without a `.env`.
+
+| Variable | Default | Notes |
+|---|---|---|
+| `DJANGO_SECRET_KEY` | dev-only key when `DJANGO_DEBUG` is on | Required otherwise. |
+| `DJANGO_DEBUG` | `false` | Also enables `debug_toolbar`, `django_extensions` and `/__debug__/`. |
+| `DJANGO_ALLOWED_HOSTS` | empty | Comma-separated. Websocket origins are checked against it too. |
+| `CSRF_TRUSTED_ORIGINS` | empty | Comma-separated, with scheme, e.g. `https://aacx.example.com`. |
+| `DATABASE_URL` | `postgres://django_user:django_password@db:5432/django_db` | |
+| `REDIS_URL` | `redis://cache:6379/0` | Channels layer. |
+| `REDIS_CACHE_URL` | `redis://cache:6379/1` | Django cache. Keep it on a different database than `REDIS_URL`, `cache.clear()` flushes the whole database. |
+| `LEASE_REDIS_URL` | `REDIS_CACHE_URL` | Party leases held by the Channels workers. |
+| `DJANGO_HTTPS` | `false` | Redirects to HTTPS, marks cookies secure and sends HSTS. |
+| `DJANGO_HSTS_SECONDS` | one year | Only with `DJANGO_HTTPS`. |
+| `DJANGO_BEHIND_TLS_PROXY` | `false` | Trust `X-Forwarded-Proto: https` from the proxy that terminates TLS. Only enable it if that proxy overwrites the header. |
+| `CLIENT_IP_HEADER` | unset | See [ADR 0003](docs/adr/0003-passwordless-nickname-login.md). |
+| `CHANNELS_WORKER_MASTER` | `false` | See [Architecture overview](docs/architecture.md). |
+
+With `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS` and `DJANGO_HTTPS=true` set, `python manage.py check --deploy` reports no issues.
+
 ## Architecture
 
 - [Architecture overview](docs/architecture.md): runtime topology, message flow between Daphne, `PartyConsumer`, `PartyStateMachine`, Redis and Postgres, the party lifecycle, the data model and the frontend model.

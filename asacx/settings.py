@@ -10,24 +10,28 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-import os
-from distutils.util import strtobool
 from pathlib import Path
+
+import environ
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
+DEBUG = env.bool("DJANGO_DEBUG", default=False)
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-qjo(vg=99ks$h-^u(o%(nuxut)gp$2xp2mkxt__n33c!(l+xuf"
+SECRET_KEY = env(
+    "DJANGO_SECRET_KEY",
+    default="django-insecure-local-development-only" if DEBUG else "",
+)
+if not SECRET_KEY:
+    raise ImproperlyConfigured("DJANGO_SECRET_KEY is required when DJANGO_DEBUG is off.")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 
-ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 
 
 # Application definition
@@ -41,20 +45,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django_extensions",
-    "debug_toolbar",
     "channels",
     "django_htmx",
     "core",
 ]
 
-INTERNAL_IPS = [
-    "localhost",
-    "127.0.0.1",
-]
-
 MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -64,8 +60,12 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
-    "core.middleware.latency_simulator_middleware",
 ]
+
+if DEBUG:
+    INSTALLED_APPS += ["django_extensions", "debug_toolbar"]
+    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    INTERNAL_IPS = ["localhost", "127.0.0.1"]
 
 ROOT_URLCONF = "asacx.urls"
 
@@ -93,14 +93,10 @@ WSGI_APPLICATION = "asacx.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "django_db",
-        "USER": "django_user",
-        "PASSWORD": "django_password",
-        "HOST": "db",
-        "PORT": 5432,
-    }
+    "default": env.db(
+        "DATABASE_URL",
+        default="postgres://django_user:django_password@db:5432/django_db",
+    )
 }
 
 
@@ -153,13 +149,13 @@ LOGIN_URL = "/login/"
 LOGIN_NICKNAME_CREATION_LIMIT = 20
 LOGIN_NICKNAME_CREATION_WINDOW = 60 * 60
 
-CLIENT_IP_HEADER = os.environ.get("CLIENT_IP_HEADER")
+CLIENT_IP_HEADER = env("CLIENT_IP_HEADER", default=None)
 
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("cache", 6379)],
+            "hosts": [env("REDIS_URL", default="redis://cache:6379/0")],
         },
     },
 }
@@ -226,11 +222,21 @@ LOGGING = {
 CACHES = {
     "default": {
         "BACKEND": "redis_lock.django_cache.RedisCache",
-        "LOCATION": "redis://cache:6379/1",
+        "LOCATION": env("REDIS_CACHE_URL", default="redis://cache:6379/1"),
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
     }
 }
 
-LEASE_REDIS_URL = "redis://cache:6379/1"
+LEASE_REDIS_URL = env("LEASE_REDIS_URL", default=CACHES["default"]["LOCATION"])
 
-IS_CHANNELS_WORKER_MASTER = strtobool(os.environ.get("CHANNELS_WORKER_MASTER", "False"))
+IS_CHANNELS_WORKER_MASTER = env.bool("CHANNELS_WORKER_MASTER", default=False)
+
+if env.bool("DJANGO_HTTPS", default=False):
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = env.int("DJANGO_HSTS_SECONDS", default=60 * 60 * 24 * 365)
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    if env.bool("DJANGO_BEHIND_TLS_PROXY", default=False):
+        SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

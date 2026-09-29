@@ -2,6 +2,7 @@ x-app: &app
   image: asacx
   build:
     context: .
+    target: dev
   volumes:
     - .:/app
   restart: unless-stopped
