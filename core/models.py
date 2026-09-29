@@ -125,6 +125,13 @@ class Party(models.Model):
     get_players_scores = async_to_sync(aget_players_scores)
 
 
+class PartyRoundQuerySet(models.QuerySet):
+    async def aclose(self):
+        return await self.filter(closed_at__isnull=True).aupdate(
+            closed_at=timezone.now()
+        )
+
+
 class PartyRound(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE)
     letter = models.CharField(max_length=1)
@@ -134,6 +141,8 @@ class PartyRound(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    objects = PartyRoundQuerySet.as_manager()
+
     class Meta:
         unique_together = ("party", "letter")
 
@@ -141,8 +150,10 @@ class PartyRound(models.Model):
         return f"{self.party} - {self.letter}"
 
     async def close(self):
-        self.closed_at = timezone.now()
-        await self.asave()
+        closed = await PartyRound.objects.filter(pk=self.pk).aclose()
+        if closed:
+            await self.arefresh_from_db(fields=["closed_at"])
+        return bool(closed)
 
     async def save_user_answers(self, user, answers):
         answers_list = []
