@@ -7,8 +7,8 @@ Each ADR records one significant design decision: the context, the decision, and
 | [0001](0001-server-rendered-html-with-htmx-over-websockets.md) | Server-rendered HTML with HTMX, including over websockets | Accepted |
 | [0002](0002-party-state-machine-as-channels-worker.md) | Run the party lifecycle as a Channels worker | Accepted, to be superseded by 0004 |
 | [0003](0003-passwordless-nickname-login.md) | Passwordless nickname login | Accepted |
-| [0004](0004-persisted-event-driven-party-state-machine.md) | Persisted, event-driven party state machine | Proposed |
-| [0005](0005-validate-answers-with-word-lists.md) | Validate answers with word lists, not a local model | Proposed |
+| [0004](0004-persisted-event-driven-party-state-machine.md) | Persisted, event-driven party state machine | Accepted, partly implemented |
+| [0005](0005-validate-answers-with-word-lists.md) | Validate answers with word lists, not a local model | Accepted |
 
 ## Writing a new ADR
 
