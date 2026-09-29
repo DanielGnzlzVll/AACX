@@ -43,21 +43,26 @@ class Party(models.Model):
         settings.AUTH_USER_MODEL, related_name="parties"
     )
 
-    min_players = models.IntegerField(
-        default=2, blank=True, null=True, validators=[MinValueValidator(2)],
-        help_text="The minimum number of players required to start the game."
+    min_players = models.PositiveSmallIntegerField(
+        "mínimo de jugadores",
+        default=2,
+        validators=[MinValueValidator(2), MaxValueValidator(20)],
+        help_text="Jugadores necesarios para empezar la partida (entre 2 y 20).",
     )
-    max_round_duration = models.IntegerField(
-        default=120, blank=True, null=True, validators=[MinValueValidator(30)],
-        help_text="The maximum duration of a round in seconds."
+    max_round_duration = models.PositiveSmallIntegerField(
+        "duración máxima de la ronda",
+        default=120,
+        validators=[MinValueValidator(30), MaxValueValidator(600)],
+        help_text="Duración máxima de cada ronda en segundos (entre 30 y 600).",
     )
-    max_rounds = models.IntegerField(
+    max_rounds = models.PositiveSmallIntegerField(
+        "número de rondas",
         default=5,
         validators=[
             MinValueValidator(1),
             MaxValueValidator(len(string.ascii_uppercase)),
         ],
-        help_text="The maximum number of rounds."
+        help_text="Número de rondas de la partida (entre 1 y 26).",
     )
 
     objects = PartyQuerySet.as_manager()

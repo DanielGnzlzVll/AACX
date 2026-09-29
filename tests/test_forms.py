@@ -1,7 +1,14 @@
 import pytest
 
-from core.forms import CurrentAnswersForm
+from core.forms import CurrentAnswersForm, PartyForm
 from core.models import PartyRound, UserRoundAnswer
+
+VALID_PARTY_DATA = {
+    "name": "new party",
+    "min_players": 2,
+    "max_round_duration": 120,
+    "max_rounds": 5,
+}
 
 
 @pytest.mark.parametrize(
@@ -40,3 +47,47 @@ def test_current_answers_form_rejects_answers_longer_than_model_field():
     assert not form.is_valid()
     assert list(form.errors) == ["city"]
     assert f'maxlength="{max_length}"' in str(form["city"])
+
+
+@pytest.mark.parametrize(
+    "field, low, high",
+    [
+        ("min_players", 2, 20),
+        ("max_round_duration", 30, 600),
+        ("max_rounds", 1, 26),
+    ],
+)
+def test_party_form_accepts_settings_within_bounds(db, field, low, high):
+    for value in (low, high):
+        form = PartyForm(VALID_PARTY_DATA | {field: value})
+
+        assert form.is_valid(), form.errors
+
+
+@pytest.mark.parametrize(
+    "field, value, error",
+    [
+        ("min_players", "", "Este campo es obligatorio."),
+        ("min_players", "abc", "Escribe un número entero."),
+        ("min_players", 1, "El valor debe ser mayor o igual a 2."),
+        ("min_players", 21, "El valor debe ser menor o igual a 20."),
+        ("max_round_duration", "", "Este campo es obligatorio."),
+        ("max_round_duration", 29, "El valor debe ser mayor o igual a 30."),
+        ("max_round_duration", 601, "El valor debe ser menor o igual a 600."),
+        ("max_rounds", "", "Este campo es obligatorio."),
+        ("max_rounds", 0, "El valor debe ser mayor o igual a 1."),
+        ("max_rounds", 27, "El valor debe ser menor o igual a 26."),
+    ],
+)
+def test_party_form_rejects_blank_or_out_of_range_settings(db, field, value, error):
+    form = PartyForm(VALID_PARTY_DATA | {field: value})
+
+    assert not form.is_valid()
+    assert form.errors == {field: [error]}
+
+
+def test_party_form_requires_every_setting(db):
+    form = PartyForm({"name": "new party"})
+
+    assert not form.is_valid()
+    assert set(form.errors) == {"min_players", "max_round_duration", "max_rounds"}

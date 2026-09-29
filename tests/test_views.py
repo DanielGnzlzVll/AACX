@@ -15,6 +15,8 @@ from core.models import (
     UserRoundAnswer,
 )
 
+PARTY_SETTINGS = {"min_players": 2, "max_round_duration": 120}
+
 
 @pytest.mark.parametrize(
     "url",
@@ -79,7 +81,7 @@ def test_create_party_creates_party(logged_in_client):
 def test_create_party_stores_its_creator(logged_in_client, alice):
     logged_in_client.post(
         reverse("create_party"),
-        {"name": "new party", "max_rounds": 4, "submit": "true"},
+        {"name": "new party", "max_rounds": 4, "submit": "true"} | PARTY_SETTINGS,
     )
 
     assert Party.objects.get(name="new party").created_by == alice
@@ -132,7 +134,7 @@ def test_create_party_reuses_the_name_of_a_closed_party(
 
     logged_in_client.post(
         reverse("create_party"),
-        {"name": "hijack", "max_rounds": 1, "submit": "true"},
+        {"name": "hijack", "max_rounds": 1, "submit": "true"} | PARTY_SETTINGS,
     )
 
     closed.refresh_from_db()
@@ -151,7 +153,7 @@ def test_create_party_losing_a_race_for_the_name_is_rejected(
     ):
         response = logged_in_client.post(
             reverse("create_party"),
-            {"name": "hijack", "max_rounds": 1, "submit": "true"},
+            {"name": "hijack", "max_rounds": 1, "submit": "true"} | PARTY_SETTINGS,
         )
 
     assert response.status_code == 200
@@ -164,10 +166,23 @@ def test_create_party_losing_a_race_for_the_name_is_rejected(
 @pytest.mark.parametrize(
     "data",
     [
-        pytest.param({"name": "new party", "max_rounds": 4}, id="validation-only"),
         pytest.param(
-            {"name": "new party", "max_rounds": 99, "submit": "true"},
+            {"name": "new party", "max_rounds": 4} | PARTY_SETTINGS,
+            id="validation-only",
+        ),
+        pytest.param(
+            {"name": "new party", "max_rounds": 99, "submit": "true"} | PARTY_SETTINGS,
             id="invalid-form",
+        ),
+        pytest.param(
+            {
+                "name": "new party",
+                "min_players": "",
+                "max_round_duration": "",
+                "max_rounds": "",
+                "submit": "true",
+            },
+            id="blank-settings",
         ),
     ],
 )
@@ -177,6 +192,21 @@ def test_create_party_does_not_create_party(logged_in_client, data):
     assert response.status_code == 200
     assert not Party.objects.exists()
     assert response.headers["HX-Reswap"] == "outerHTML transition:false"
+
+
+def test_create_party_with_blank_settings_shows_errors(logged_in_client):
+    response = logged_in_client.post(
+        reverse("create_party"),
+        {"name": "new party", "min_players": "", "max_rounds": 0, "submit": "true"},
+    )
+
+    assert response.context["form"].errors == {
+        "min_players": ["Este campo es obligatorio."],
+        "max_round_duration": ["Este campo es obligatorio."],
+        "max_rounds": ["El valor debe ser mayor o igual a 1."],
+    }
+    assert "Este campo es obligatorio." in response.content.decode()
+    assert not Party.objects.exists()
 
 
 @pytest.mark.parametrize(
