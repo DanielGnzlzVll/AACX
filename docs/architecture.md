@@ -141,7 +141,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | `type` | Payload | Producer | `PartyConsumer` handler |
 |---|---|---|---|
-| `html` | `message`: HTML | `ensure_players_join` (`_waiting_room.html` with the player count), `display_all_answers` (one modal per category, then an empty modal), `finish_party` (`party_finished_update.html`) | `html`: forwards the HTML to the socket as-is. |
+| `html` | `message`: HTML | `wait_players_to_join` via `show_waiting_players` (`_waiting_room.html` with the player count), `display_all_answers` (one modal per category, then an empty modal), `finish_party` (`party_finished_update.html`) | `html`: forwards the HTML to the socket as-is. |
 | `event_new_round` | `round_id` | `PartyStateMachine.next_round` | Renders `_party_content.html` for that round, with that user's past answers, the scores and the answers form filled with that user's saved answers. |
 | `event_party_round_stopped` | none | State machine, by whichever path closed the round (timeout or STOP) | Renders `party_current_answers.html` disabled, pre-filled with that user's answers. |
 | `event_update_past_answers` | none | `PartyStateMachine.update_scores` | Renders `party_answers.html` with that user's answers from every round. |
