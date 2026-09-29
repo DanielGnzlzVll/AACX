@@ -16,7 +16,7 @@ The lifecycle runs in `PartyStateMachine`, an `AsyncConsumer` bound to the `part
 
 - Every `PartyConsumer` connection sends `event_party_started`. The first worker to lock the `Party` row with `SELECT ... FOR UPDATE SKIP LOCKED` (where `started_at IS NULL`) runs the party. The others skip it.
 - The winning worker drives the whole party in that one coroutine. Per-party channels act as private queues: `party_players_{id}` for joins, and `party_new_round_{id}` for "end this round now". It broadcasts to the `party_{id}` group.
-- After a restart, `CoreConfig.ready()` on the worker with `CHANNELS_WORKER_MASTER=1` sends `event_party_started` with `force_start` for every party that has started but isn't closed.
+- After a restart, `CoreConfig.ready()` on the worker with `CHANNELS_WORKER_MASTER=1` sent `event_party_started` with `force_start` for every party that had started but wasn't closed. A reconciler on that worker and a per-party Redis lease (`PartyLease`) have replaced it: see [0004](0004-persisted-event-driven-party-state-machine.md) and [#10].
 
 Celery or a separate game-loop service were not adopted, because either would add infrastructure to a hobby-scale project.
 
@@ -25,7 +25,7 @@ Celery or a separate game-loop service were not adopted, because either would ad
 - There is no extra infrastructure: Redis and the Channels worker processes do everything.
 - Round timing and ordering are decided in one place, so clients can't get out of step.
 - A party takes a whole worker for its entire duration, and a busy worker keeps queuing incoming messages behind it. Concurrent parties are capped by the number of workers, and a STOP that lands on a busy worker waits for that whole party, so its round ends on timeout instead ([#9]).
-- Lifecycle state lives in the coroutine's memory apart from a few timestamps. A party's end is only recorded because scoring sets `closed_at` after the last round ([#5]). After a restart the open round's timer starts again from zero, and nothing guarantees that only one worker owns the party ([#10]).
+- Lifecycle state lives in the coroutine's memory apart from a few timestamps. A party's end is only recorded because scoring sets `closed_at` after the last round ([#5]). A resumed party has to rebuild its position from `closed_at` and `started_at` timestamps.
 - Everything sent through the channel layer has to be msgpack-serializable, so events carry ids, not model instances ([#4]).
 - The channel layer has no public API for group membership, so waiting-room presence has to be tracked separately.
 

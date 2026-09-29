@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 
 from core import forms, models
-from core.leases import PartyLease
+from core.leases import LeaseLost, PartyLease
 
 logger = logging.getLogger(__name__)
 STATE_MACHINE_CHANNEL_NAME = "party-state-machine"
@@ -289,7 +289,9 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             logger.info(f"party {party_id} is run by another worker")
             return
         try:
-            await self.play_party(party_id)
+            await lease.run_while_held(self.play_party(party_id))
+        except LeaseLost:
+            logger.warning(f"party {party_id} stopped, its lease was lost")
         except Exception:
             logger.exception(f"party {party_id} crashed")
         finally:
@@ -329,6 +331,8 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             await party.arefresh_from_db(fields=["closed_at"])
 
     async def wait_for_round_end(self, party, current_round):
+        if current_round.closed_at:
+            return
         deadline = current_round.started_at + datetime.timedelta(
             seconds=party.max_round_duration
         )

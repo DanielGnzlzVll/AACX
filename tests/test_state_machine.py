@@ -4,16 +4,17 @@ import logging
 import types
 
 import pytest
+import redis
 import redis_lock
 from asgiref.sync import sync_to_async
 from asgiref.testing import ApplicationCommunicator
 from channels.routing import ChannelNameRouter
 from django.apps import apps
-from django.db import connections
+from django.db import connection, connections
 from django.utils import timezone
 
 from core import consumers, models, routing
-from core.leases import PartyLease, get_redis_client
+from core.leases import LeaseLost, PartyLease, get_redis_client
 from core.management.commands import custom_runworker
 
 pytestmark = pytest.mark.django_db(transaction=True)
@@ -345,4 +346,78 @@ async def test_restarted_master_continues_an_interrupted_party_at_its_round(
 
     await asyncio.sleep(0.2)
     assert await open_round(party) == round
+    assert await models.PartyRound.objects.filter(party=party).acount() == 1
+
+
+async def test_a_runner_that_loses_its_lease_stops_before_anyone_takes_over(
+    start_worker, started_party, instant_reveal, monkeypatch
+):
+    monkeypatch.setattr(PartyLease, "RENEW_INTERVAL", 0.05)
+    first, second = await start_worker(), await start_worker()
+    party = await started_party(max_rounds=3, max_round_duration=60)
+    await start(first, party)
+    await eventually(lambda: open_round(party))
+
+    get_redis_client().delete(f"lock:party-lease:{party.id}")
+
+    async def first_stopped():
+        return not first.consumer.party_tasks
+
+    await eventually(first_stopped, timeout=2)
+    await models.Party.objects.filter(id=party.id).aupdate(max_round_duration=0)
+    await start(second, party)
+
+    async def party_closed():
+        await party.arefresh_from_db()
+        return party.closed_at is not None
+
+    await eventually(party_closed)
+    assert await models.PartyRound.objects.filter(party=party).acount() == 3
+
+
+async def test_the_lease_is_given_up_before_it_expires_when_renewals_fail(
+    started_party, monkeypatch
+):
+    monkeypatch.setattr(PartyLease, "TTL", 2)
+    monkeypatch.setattr(PartyLease, "RENEW_INTERVAL", 0.2)
+    party = await started_party()
+    lease = PartyLease(party.id)
+    assert await lease.acquire()
+
+    def redis_down(*args, **kwargs):
+        raise redis.ConnectionError("down")
+
+    monkeypatch.setattr(lease._lock, "extend", redis_down)
+    loop = asyncio.get_running_loop()
+    started_at = loop.time()
+
+    with pytest.raises(LeaseLost):
+        await lease.run_while_held(asyncio.sleep(10))
+
+    assert 1.5 <= loop.time() - started_at < 2
+
+
+async def test_concurrent_runners_open_a_single_round(started_party):
+    party = await started_party()
+
+    def next_round():
+        try:
+            return party._get_current_or_next_round()
+        finally:
+            connection.close()
+
+    rounds = await asyncio.gather(
+        asyncio.to_thread(next_round), asyncio.to_thread(next_round)
+    )
+
+    assert rounds[0] == rounds[1]
+    assert await models.PartyRound.objects.filter(party=party).acount() == 1
+
+
+async def test_a_closed_party_gets_no_new_round(started_party):
+    party = await started_party(closed_at=timezone.now())
+    last = await open_round_started_ago(party, 10)
+    await last.close()
+
+    assert await party.aget_current_or_next_round() == last
     assert await models.PartyRound.objects.filter(party=party).acount() == 1
