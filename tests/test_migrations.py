@@ -1,3 +1,4 @@
+import datetime
 import importlib
 
 import pytest
@@ -100,3 +101,23 @@ def test_rename_duplicate_open_parties_keeps_only_the_oldest_name(party_factory)
     assert names[other.pk] == "other"
     suffix = f" ({long_duplicate.pk})"
     assert names[long_duplicate.pk] == long_name[: 50 - len(suffix)] + suffix
+
+
+@pytest.mark.django_db(transaction=True)
+def test_round_deadline_migration_backfills_from_the_party_duration():
+    old_apps = migrate([("core", "0018_partyconnection")])
+    Party = old_apps.get_model("core", "Party")
+    PartyRound = old_apps.get_model("core", "PartyRound")
+    party = Party.objects.create(name="p", max_round_duration=90)
+    round = PartyRound.objects.create(party=party, letter="A")
+
+    try:
+        PartyRound = migrate([("core", "0019_partyround_deadline_at")]).get_model(
+            "core", "PartyRound"
+        )
+
+        round = PartyRound.objects.get(pk=round.pk)
+        assert round.deadline_at == round.started_at + datetime.timedelta(seconds=90)
+    finally:
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())

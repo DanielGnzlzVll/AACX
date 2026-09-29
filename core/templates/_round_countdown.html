@@ -1,0 +1,9 @@
+<div id="round_countdown">
+  {% if current_round and not party.closed_at %}
+  {% with seconds_left=current_round.seconds_left %}
+  <h3 class="reports-subheading">Tiempo restante</h3>
+  <p class="round-countdown{% if seconds_left < 10 %} is-warning{% endif %}" role="timer" data-seconds-left="{{ seconds_left }}">{{ seconds_left }} s</p>
+  <hr class="reports-divider">
+  {% endwith %}
+  {% endif %}
+</div>
