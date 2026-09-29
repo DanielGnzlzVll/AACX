@@ -490,7 +490,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
         times = [0.5] + [2] * len(models.UserRoundAnswer.FIELD_CHOICES)
 
-        for field, _ in models.UserRoundAnswer.FIELD_CHOICES:
+        for field, label in models.UserRoundAnswer.FIELD_CHOICES:
             answers = grouped_answers[field]
             template_string = render_to_string(
                 "party_current_all_users_answers_modal.html",
@@ -498,7 +498,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                     "party": party,
                     "current_round": current_round,
                     "answers": answers,
-                    "field": field,
+                    "field": label,
                     "open": "open",
                 },
             )

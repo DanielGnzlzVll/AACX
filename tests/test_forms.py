@@ -117,3 +117,14 @@ def test_party_form_requires_every_setting(db):
 
     assert not form.is_valid()
     assert set(form.errors) == {"min_players", "max_round_duration", "max_rounds"}
+
+
+@pytest.mark.parametrize(
+    "name, error",
+    [("", "Este campo es obligatorio."), ("x" * 51, "Asegúrese de que este valor")],
+)
+def test_party_form_name_is_labelled_and_validated_in_spanish(db, name, error):
+    form = PartyForm(VALID_PARTY_DATA | {"name": name})
+
+    assert form["name"].label == "Nombre"
+    assert [message[: len(error)] for message in form.errors["name"]] == [error]
