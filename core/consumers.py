@@ -90,8 +90,8 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
                 STATE_MACHINE_CHANNEL_NAME,
                 {
                     "type": "event_party_round_stopped",
-                    "party": self.party,
-                    "current_round": current_round,
+                    "party_id": self.party.id,
+                    "round_id": current_round.id,
                 },
             )
             return
@@ -172,25 +172,34 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             party = await models.Party.objects.aget(id=party_id)
         logger.info(f"starting {party_id=}")
 
-        await self.next_round(party)
+        current_round = await self.next_round(party)
 
         for _ in range(party.max_rounds):
-            try:
-                await asyncio.wait_for(
-                    self.channel_layer.receive(f"party_new_round_{party_id}"),
-                    timeout=party.max_round_duration,
-                )
-            except TimeoutError:
-                logger.info("timeout waiting for new round")
-                await self.channel_layer.group_send(
-                    self.get_party_group_name(party_id=party_id),
-                    {"type": "event_party_round_stopped"},
-                )
-            await self.update_scores(party)
-            await self.next_round(party)
+            await self.wait_for_round_end(party, current_round)
+            await self.update_scores(party, current_round)
+            current_round = await self.next_round(party)
 
-        await self.update_scores(party)
+        await self.update_scores(party, current_round)
         logger.info(f"party {party_id} finished")
+
+    async def wait_for_round_end(self, party, current_round):
+        try:
+            async with asyncio.timeout(party.max_round_duration):
+                while True:
+                    message = await self.channel_layer.receive(
+                        f"party_new_round_{party.id}"
+                    )
+                    if message.get("round_id") == current_round.id:
+                        return
+                    logger.info(f"ignoring stale round end {message=}")
+        except TimeoutError:
+            logger.info("timeout waiting for new round")
+
+        if await current_round.close():
+            await self.channel_layer.group_send(
+                self.get_party_group_name(party=party),
+                {"type": "event_party_round_stopped"},
+            )
 
     @sync_to_async
     def handle_transaction_wait_players_to_join(self, party_id):
@@ -247,8 +256,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
             logger.info(f"player joined {player_data=}")
 
-    async def update_scores(self, party):
-        current_round = await party.aget_current_or_next_round()
+    async def update_scores(self, party, current_round):
         all_users_answers = await current_round.close_round_and_calculate_scores()
         await self.display_all_answers(all_users_answers, current_round, party)
         await self.channel_layer.group_send(
@@ -275,6 +283,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             self.get_party_group_name(party=party),
             {"type": "html", "message": template_string},
         )
+        return next_or_current_round
 
     async def get_connected_players(self, group):
         assert self.channel_layer.valid_group_name(group), "Group name not valid"
@@ -295,12 +304,6 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 "event": event,
             },
         )
-
-    async def event_display_all_answers(self, event):
-        answers = event["answers"]
-        current_round = event["current_round"]
-        party = event["party"]
-        await self.display_all_answers(answers, current_round, party)
 
     async def display_all_answers(self, answers, current_round, party):
         grouped_answers = collections.defaultdict(list)
@@ -351,8 +354,17 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         await asyncio.sleep(times.pop(0))
 
     async def event_party_round_stopped(self, event):
+        party_id, round_id = event["party_id"], event["round_id"]
+        closed = await models.PartyRound.objects.filter(
+            id=round_id, party_id=party_id
+        ).aclose()
+        if not closed:
+            logger.info(f"ignoring stop for a closed round {party_id=} {round_id=}")
+            return
         await self.channel_layer.group_send(
-            self.get_party_group_name(party=event["party"]),
+            self.get_party_group_name(party_id=party_id),
             {"type": "event_party_round_stopped"},
         )
-        await self.channel_layer.send(f"party_new_round_{event['party'].id}", {})
+        await self.channel_layer.send(
+            f"party_new_round_{party_id}", {"round_id": round_id}
+        )
