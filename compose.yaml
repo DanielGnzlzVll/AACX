@@ -15,11 +15,8 @@ x-app: &app
 
 services:
   migrate:
-    image: asacx
-    build:
-      context: .
-    volumes:
-      - .:/app
+    <<: *app
+    restart: "no"
     command: python manage.py migrate --noinput
     depends_on:
       db:
@@ -60,7 +57,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U django_user -d django_db"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U django_user -d django_db"]
       interval: 5s
       timeout: 3s
       retries: 10
