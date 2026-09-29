@@ -5,6 +5,7 @@ import json
 import logging
 
 from channels.generic.websocket import AsyncConsumer, AsyncWebsocketConsumer
+from django.conf import settings
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -32,6 +33,13 @@ async def resume_orphaned_parties(channel_layer):
                 "party_id": party_id,
             },
         )
+
+
+async def abandon_idle_waiting_rooms():
+    idle_for = datetime.timedelta(seconds=settings.PARTY_ABANDON_AFTER)
+    abandoned = await models.Party.objects.aabandon_idle(idle_for)
+    if abandoned:
+        logger.info(f"abandoned {abandoned} idle waiting rooms")
 
 
 class PartyConsumerMixin:
@@ -71,6 +79,9 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         if not await self.can_join(user):
             await self.close(code=self.CLOSE_FORBIDDEN)
             return
+        if self.party.started_at is None and not await self.touch_waiting_room():
+            await self.close(code=self.CLOSE_FORBIDDEN)
+            return
 
         await self.accept()
         logger.info(f"player connected to party: {self.party_id} {user.username=}")
@@ -107,7 +118,17 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         await models.PartyConnection.objects.filter(
             channel_name=self.channel_name
         ).adelete()
+        await self.touch_waiting_room()
         await self.notify_presence_changed()
+
+    async def touch_waiting_room(self):
+        # Returns False once the party is closed, e.g. abandoned while this player
+        # was connecting.
+        return bool(
+            await models.Party.objects.filter(
+                id=self.party_id, closed_at__isnull=True
+            ).aupdate(last_seen_at=timezone.now())
+        )
 
     async def touch_presence(self):
         await models.PartyConnection.objects.aupdate_or_create(
@@ -365,7 +386,9 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             return None
         logger.info("all players joined")
         started = await models.Party.objects.filter(
-            id=party_id, started_at=None, waiting_started_at=claimed_at
+            id=party_id,
+            status=models.PartyStatus.WAITING,
+            waiting_started_at=claimed_at,
         ).aupdate(started_at=timezone.now())
         if not started:
             return None
@@ -384,7 +407,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 - datetime.timedelta(seconds=self.WAITING_CLAIM_TTL)
             )
         claimed = await models.Party.objects.filter(
-            claim, id=party_id, started_at=None
+            claim, id=party_id, status=models.PartyStatus.WAITING
         ).aupdate(waiting_started_at=now)
         return now if claimed else None
 

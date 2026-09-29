@@ -12,6 +12,7 @@ STATES = {
     "not-started": {},
     "started": {"started_at": timezone.now()},
     "closed": {"started_at": timezone.now(), "closed_at": timezone.now()},
+    "abandoned": {"closed_at": timezone.now(), "closed_reason": "abandoned"},
 }
 
 CASES = [
@@ -21,6 +22,8 @@ CASES = [
     ("started", True, PartyAccess.PARTICIPANT),
     ("closed", False, PartyAccess.CLOSED),
     ("closed", True, PartyAccess.PARTICIPANT),
+    ("abandoned", False, PartyAccess.CLOSED),
+    ("abandoned", True, PartyAccess.CLOSED),
 ]
 
 

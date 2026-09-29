@@ -6,8 +6,8 @@ from .models import AnswerVerdict, Party, PartyRound, UserRoundAnswer
 
 @admin.register(Party)
 class PartyAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "started_at", "closed_at")
-    list_filter = ("started_at", "closed_at")
+    list_display = ("id", "name", "status", "started_at", "closed_at")
+    list_filter = ("status", "started_at", "closed_at")
     search_fields = ("name",)
 
 

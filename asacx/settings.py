@@ -237,6 +237,8 @@ CACHES = {
 
 LEASE_REDIS_URL = env("LEASE_REDIS_URL", default=CACHES["default"]["LOCATION"])
 
+PARTY_ABANDON_AFTER = env.int("PARTY_ABANDON_AFTER", default=30 * 60)
+
 if env.bool("DJANGO_HTTPS", default=False):
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True

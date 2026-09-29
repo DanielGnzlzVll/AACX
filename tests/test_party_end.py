@@ -42,6 +42,8 @@ async def test_closing_the_last_round_closes_the_party(two_round_party):
 
     await two_round_party.arefresh_from_db()
     assert two_round_party.closed_at is not None
+    assert two_round_party.closed_reason == models.PartyClosedReason.FINISHED
+    assert two_round_party.status == models.PartyStatus.FINISHED
 
 
 @pytest.mark.django_db(transaction=True)
