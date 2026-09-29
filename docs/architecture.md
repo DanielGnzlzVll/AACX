@@ -29,7 +29,7 @@ Design decisions are recorded as ADRs in [`docs/adr/`](adr/README.md).
 
 **`CHANNELS_WORKER_MASTER`**: read into `settings.IS_CHANNELS_WORKER_MASTER`. When it is true, `CoreConfig.ready()` (`core/apps.py`) runs once per process start. It finds parties with `started_at` set and `closed_at` null, and sends `event_party_started` with `force_start: True` for each one, so a party interrupted by a restart gets a runner again. Only `channel-master` sets the flag, so the other workers don't repeat it. `ready()` runs for every Django process in that container, including management commands, and it touches the database ([#10]).
 
-**Worker concurrency**: a Channels worker runs one `PartyStateMachine` instance per channel and handles its messages one at a time. `event_party_started` doesn't return until the party is over, so a running party takes a whole worker. A busy worker also keeps receiving from `party-state-machine` and queues those messages in memory. A STOP, or another party's `event_party_started`, can therefore land on a worker that is running a party and wait until that party ends, even when other workers are idle ([#9]).
+**Worker concurrency**: a Channels worker runs one `PartyStateMachine` instance per channel and handles its messages one at a time. `event_party_started` doesn't return until the party is over, so a running party takes a whole worker. A busy worker also keeps receiving from `party-state-machine` and queues those messages in memory. A STOP, or another party's `event_party_started`, can therefore land on a worker that is running a party and wait until that party ends, even when other workers are idle. By then its round has timed out, so the STOP is ignored as stale ([#9]).
 
 ## 2. Component diagram
 
@@ -79,7 +79,7 @@ flowchart LR
 | `/home/` | `Home` | Parties the user can join or rejoin. This is the entry page. Nothing is routed at `/`, so it returns 404. |
 | `/party/create/` | `CreateParty` | Live-validated form. Saves when `submit=true`. |
 | `/party/<id>/` | `DetailParty` | Waiting page, game page, or final results once the party is closed. For a party that isn't closed, the GET creates a round if none is open ([#14]). |
-| `/party/<id>/user/<username>/answers` | `PartyAnswers` | Another player's answers, shown in a modal. |
+| `/party/<id>/user/<username>/answers` | `PartyAnswers` | A player's answers, shown in a modal. Another player's answers only cover closed rounds. Returns 404 unless that user joined or answered in the party. |
 | `/admin/`, `/__debug__/` | Django admin, debug toolbar | |
 
 ## 3. Event catalog
@@ -336,10 +336,12 @@ Things to keep in mind when changing templates or consumers:
 
 - **Renaming an id breaks a swap, and nothing reports it.** The ids in this table are the contract between the templates and the consumers.
 - **Group broadcasts are rendered once for every player.** `next_round` renders `_party_content.html` without any user in the context, so the past-answers table inside it comes out empty for everyone ([#18]). Per-player content has to be rendered by that player's `PartyConsumer`, like the `event_*` handlers do.
-- **The waiting page only has `#party_content`.** Round broadcasts target ids that exist only in `party.html`, so they have nothing to replace on `party_no_started.html`.
+- **The waiting page only has `#party_content`.** Round broadcasts target ids that exist only in `party.html`, so they have nothing to replace on `party_no_started.html`, and players who waited there don't see the game start until they reload ([#42]).
 - **The answers form** (`party_current_answers_form`) sends itself with `ws-send` on input (values longer than one character, 200 ms debounce) and when `#submit_stop` is clicked. The inline `#script` saves the focused input before each send (`htmx:wsBeforeSend`) and restores focus and the cursor after each message (`htmx:wsAfterMessage`), because the reply replaces the form the player is typing in ([#20]).
 
-The per-player answers modal doesn't use the websocket. Clicking a row in the scores table sends an `hx-get` to `party_answers`, which returns `party_modal_answers.html` and replaces `#modal` (`hx-swap="outerHTML transition:true"`).
+The per-player answers modal doesn't use the websocket. Clicking a row in the scores table sends an `hx-get` to `party_answers`, which returns `party_modal_answers.html` and replaces `#modal` (`hx-swap="outerHTML transition:true"`). For another player, it only shows closed rounds.
+
+Once a party is closed, `DetailParty` renders `_party_content.html` with `party_finished.html` (winners and a link home) in place of the answers form, and doesn't create a round.
 
 ## Known gaps
 
@@ -348,20 +350,19 @@ The issues that track where the implementation differs from the design:
 | Issue | Gap |
 |---|---|
 | [#1] | Umbrella for moving the lifecycle to the target state machine above |
-| [#9] | A running party blocks a whole worker |
+| [#9] | A running party blocks a whole worker, and a STOP that lands on a busy worker only takes effect when the round times out |
 | [#10] | More than one worker can own a party, and a resumed round restarts its timer |
-| [#12] | Opponents' answers can be seen during the round |
 | [#14] | `GET /party/<id>/` creates rounds |
 | [#15] | The waiting room counts connections, reads `channels_redis` internals, and starts below `min_players` |
 | [#16] | `PartyConsumer` doesn't check authentication, authorization or input |
 | [#18] | Round broadcasts wipe each player's past answers |
+| [#42] | Players on the waiting page don't see the game start until they reload |
 | [#24] | Dead and incorrect code paths (`party_stared`, unused handlers) |
 
 [#1]: https://github.com/DanielGnzlzVll/AACX/issues/1
 [#4]: https://github.com/DanielGnzlzVll/AACX/issues/4
 [#9]: https://github.com/DanielGnzlzVll/AACX/issues/9
 [#10]: https://github.com/DanielGnzlzVll/AACX/issues/10
-[#12]: https://github.com/DanielGnzlzVll/AACX/issues/12
 [#13]: https://github.com/DanielGnzlzVll/AACX/issues/13
 [#14]: https://github.com/DanielGnzlzVll/AACX/issues/14
 [#15]: https://github.com/DanielGnzlzVll/AACX/issues/15
@@ -371,3 +372,4 @@ The issues that track where the implementation differs from the design:
 [#20]: https://github.com/DanielGnzlzVll/AACX/issues/20
 [#21]: https://github.com/DanielGnzlzVll/AACX/issues/21
 [#24]: https://github.com/DanielGnzlzVll/AACX/issues/24
+[#42]: https://github.com/DanielGnzlzVll/AACX/issues/42
