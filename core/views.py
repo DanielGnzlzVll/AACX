@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.views import LogoutView
 from django.db import IntegrityError, transaction
 from django.http import Http404
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
@@ -250,9 +250,19 @@ class PartyAnswers(LoginRequiredMixin, HTMXPartialMixin, View):
         if not party_qs.exists():
             raise Http404()
 
-        context["party"] = party_qs.get()
-        user = User.objects.get(username=kwargs["username"])
-        context["rounds"] = context["party"].get_answers_for_user(user)
+        party = context["party"] = party_qs.get()
+        user = get_object_or_404(User, username=kwargs["username"])
+        is_participant = (
+            party.joined_users.filter(pk=user.pk).exists()
+            or models.UserRoundAnswer.objects.filter(
+                user=user, round__party=party
+            ).exists()
+        )
+        if not is_participant:
+            raise Http404()
+        context["rounds"] = party.get_answers_for_user(
+            user, closed_rounds_only=user != self.request.user
+        )
         context["open"] = "open"
         return context
 

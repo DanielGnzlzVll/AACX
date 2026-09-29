@@ -108,14 +108,18 @@ class Party(models.Model):
             return []
         return [username for username, points in scores.items() if points == best]
 
-    async def aget_answers_for_user(self, user):
+    async def aget_answers_for_user(self, user, closed_rounds_only=False):
+        answers = UserRoundAnswer.objects.filter(
+            user_id=user.id,
+            round__party_id=self.id,
+        )
+        if closed_rounds_only:
+            answers = answers.filter(round__closed_at__isnull=False)
         answers_dict = [
             round
-            async for round in UserRoundAnswer.objects.filter(
-                user_id=user.id,
-                round__party_id=self.id,
-            ).order_by("round")
-            .values("field", "value", "round__letter")
+            async for round in answers.order_by("round").values(
+                "field", "value", "round__letter"
+            )
         ]
 
         answerlist = []
