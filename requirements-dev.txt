@@ -23,8 +23,10 @@ automat==25.4.16
     #   twisted
 boolean-py==5.0
     # via license-expression
-cachecontrol==0.14.4
-    # via pip-audit
+cachecontrol[filecache]==0.14.4
+    # via
+    #   cachecontrol
+    #   pip-audit
 cbor2==6.1.4
     # via
     #   -c requirements.txt
@@ -65,7 +67,7 @@ daphne==4.2.3
     #   -r requirements.in
 defusedxml==0.7.1
     # via py-serializable
-django==5.2.17
+django==6.1.1
     # via
     #   -c requirements.txt
     #   -r requirements.in
@@ -125,8 +127,6 @@ packaging==26.3
     #   pip-audit
     #   pip-requirements-parser
     #   pytest
-pip==26.2.1
-    # via pip-api
 pip-api==0.0.35
     # via pip-audit
 pip-audit==2.10.1
@@ -199,7 +199,7 @@ tomli==2.4.1
     # via pip-audit
 tomli-w==1.2.0
     # via pip-audit
-twisted==26.4.0
+twisted[tls]==26.4.0
     # via
     #   -c requirements.txt
     #   daphne
