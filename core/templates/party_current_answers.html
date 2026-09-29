@@ -29,6 +29,7 @@
     });
   }
 </script>
+{% if form %}
 <form
   id="party_current_answers_form"
   action="post"
@@ -49,3 +50,6 @@
     {% if disabled %}disabled{% endif %}
   >STOP</button>
 </form>
+{% else %}
+<p id="party_current_answers_form" aria-busy="true">Esperando la siguiente ronda...</p>
+{% endif %}

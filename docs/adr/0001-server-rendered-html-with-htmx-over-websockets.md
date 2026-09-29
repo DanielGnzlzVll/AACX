@@ -25,8 +25,7 @@ The server renders all UI as HTML, both for HTTP responses and for websocket mes
 - A group broadcast is rendered once and sent to everyone, so it can only contain state that all players share. Anything specific to one player has to be rendered by that player's `PartyConsumer`. Mixing the two is what empties each player's past-answers panel at the start of every round ([#18]).
 - Replacing the form the player is typing in loses focus and the cursor position, so the page needs a focus-restoring script, and autosave can overwrite what the player is typing ([#20]).
 - Websocket messages are markup, not a versioned API. Only this app's own templates can use them.
-- The app follows hypermedia principles, since the server sends HTML with the next actions in it, but it isn't strictly RESTful: `GET /party/<id>/` has side effects ([#14]).
+- The app follows hypermedia principles, since the server sends HTML with the next actions in it. Page GETs are read-only; game state only changes through the websocket and the state machine.
 
-[#14]: https://github.com/DanielGnzlzVll/AACX/issues/14
 [#18]: https://github.com/DanielGnzlzVll/AACX/issues/18
 [#20]: https://github.com/DanielGnzlzVll/AACX/issues/20

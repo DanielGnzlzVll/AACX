@@ -152,7 +152,6 @@ class Party(models.Model):
         return answerlist
 
     get_answers_for_user = async_to_sync(aget_answers_for_user)
-    get_current_or_next_round = async_to_sync(aget_current_or_next_round)
     get_current_round = async_to_sync(aget_current_round)
     get_players_scores = async_to_sync(aget_players_scores)
     get_winners = async_to_sync(aget_winners)
