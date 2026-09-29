@@ -174,3 +174,31 @@ def test_round_number_and_closed_reason_migration_backfills_from_timestamps():
     finally:
         executor = MigrationExecutor(connection)
         executor.migrate(executor.loader.graph.leaf_nodes())
+
+
+@pytest.mark.django_db(transaction=True)
+def test_party_status_migration_backfills_from_the_timestamps():
+    old_apps = migrate([("core", "0022_partyround_number_closed_reason")])
+    Party = old_apps.get_model("core", "Party")
+    now = timezone.now()
+    waiting = Party.objects.create(name="waiting")
+    playing = Party.objects.create(name="playing", started_at=now)
+    finished = Party.objects.create(name="finished", started_at=now, closed_at=now)
+
+    try:
+        Party = migrate([("core", "0023_party_status_abandoned")]).get_model(
+            "core", "Party"
+        )
+
+        parties = {
+            party.pk: (party.status, party.closed_reason)
+            for party in Party.objects.all()
+        }
+        assert parties == {
+            waiting.pk: ("waiting", None),
+            playing.pk: ("playing", None),
+            finished.pk: ("finished", "finished"),
+        }
+    finally:
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())

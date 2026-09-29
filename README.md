@@ -144,6 +144,7 @@ Settings are read from environment variables. `docker compose` uses the `dev` st
 | `REDIS_URL` | `redis://cache:6379/0` | Channels layer. |
 | `REDIS_CACHE_URL` | `redis://cache:6379/1` | Django cache. Keep it on a different database than `REDIS_URL`, `cache.clear()` flushes the whole database. |
 | `LEASE_REDIS_URL` | `REDIS_CACHE_URL` | Party leases held by the Channels workers. |
+| `PARTY_ABANDON_AFTER` | `1800` | Seconds a waiting room can stay empty before it is abandoned and its name freed. |
 | `DJANGO_HTTPS` | `false` | Redirects to HTTPS, marks cookies secure and sends HSTS. |
 | `DJANGO_HSTS_SECONDS` | one year | Only with `DJANGO_HTTPS`. |
 | `DJANGO_BEHIND_TLS_PROXY` | `false` | Trust `X-Forwarded-Proto: https` from the proxy that terminates TLS. Only enable it if that proxy overwrites the header. |

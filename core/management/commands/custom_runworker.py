@@ -5,7 +5,7 @@ import random
 from channels.management.commands.runworker import Command as RunworkerCommand
 from channels.worker import Worker
 
-from core.consumers import resume_orphaned_parties
+from core.consumers import abandon_idle_waiting_rooms, resume_orphaned_parties
 from core.routing import channel_routing
 
 logger = logging.getLogger(__name__)
@@ -24,6 +24,10 @@ async def reconcile_parties(channel_layer):
             await resume_orphaned_parties(channel_layer)
         except Exception:
             logger.exception("failed to resume orphaned parties")
+        try:
+            await abandon_idle_waiting_rooms()
+        except Exception:
+            logger.exception("failed to abandon idle waiting rooms")
         await asyncio.sleep(RECONCILE_INTERVAL)
 
 

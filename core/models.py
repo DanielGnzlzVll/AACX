@@ -51,6 +51,12 @@ class PartyStatus(models.TextChoices):
     WAITING = "waiting", "Esperando jugadores"
     PLAYING = "playing", "En curso"
     FINISHED = "finished", "Terminada"
+    ABANDONED = "abandoned", "Abandonada"
+
+
+class PartyClosedReason(models.TextChoices):
+    FINISHED = "finished", "Terminada"
+    ABANDONED = "abandoned", "Abandonada"
 
 
 class PartyQuerySet(models.QuerySet):
@@ -61,8 +67,8 @@ class PartyQuerySet(models.QuerySet):
         )
         return (
             self.filter(
-                models.Q(started_at__isnull=True)
-                | models.Q(closed_at__isnull=True, pk__in=joined)
+                models.Q(status=PartyStatus.WAITING)
+                | models.Q(status=PartyStatus.PLAYING, pk__in=joined)
             )
             .annotate(
                 joined_players=models.Count("joined_users", distinct=True),
@@ -73,6 +79,22 @@ class PartyQuerySet(models.QuerySet):
             .order_by("-pk")
         )
 
+    async def aabandon_idle(self, idle_for):
+        # The conditions on the party row itself are rechecked when a joining
+        # player's touch of last_seen_at commits first, so that player is never
+        # left in an abandoned room.
+        now = timezone.now()
+        cutoff = now - idle_for
+        return await (
+            self.filter(
+                models.Q(last_seen_at__lt=cutoff)
+                | models.Q(last_seen_at__isnull=True, created_at__lt=cutoff),
+                status=PartyStatus.WAITING,
+            )
+            .exclude(connections__last_seen_at__gte=cutoff)
+            .aupdate(closed_at=now, closed_reason=PartyClosedReason.ABANDONED)
+        )
+
 
 class Party(models.Model):
     name = models.CharField("nombre", max_length=50)
@@ -80,6 +102,29 @@ class Party(models.Model):
     waiting_started_at = models.DateTimeField(blank=True, null=True)
     started_at = models.DateTimeField(blank=True, null=True)
     closed_at = models.DateTimeField(blank=True, null=True)
+    closed_reason = models.CharField(
+        max_length=10, choices=PartyClosedReason.choices, blank=True, null=True
+    )
+    status = models.GeneratedField(
+        expression=models.Case(
+            models.When(
+                closed_reason=PartyClosedReason.ABANDONED,
+                then=models.Value(PartyStatus.ABANDONED),
+            ),
+            models.When(
+                closed_at__isnull=False, then=models.Value(PartyStatus.FINISHED)
+            ),
+            models.When(
+                started_at__isnull=False, then=models.Value(PartyStatus.PLAYING)
+            ),
+            default=models.Value(PartyStatus.WAITING),
+        ),
+        output_field=models.CharField(max_length=10),
+        choices=PartyStatus.choices,
+        db_persist=True,
+    )
+    # When a player last joined or left the waiting room.
+    last_seen_at = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(
@@ -135,15 +180,9 @@ class Party(models.Model):
     def is_active(self):
         return self.closed_at is None
 
-    @property
-    def status(self):
-        if self.closed_at:
-            return PartyStatus.FINISHED
-        if self.started_at:
-            return PartyStatus.PLAYING
-        return PartyStatus.WAITING
-
     async def aget_access(self, user):
+        if self.status == PartyStatus.ABANDONED:
+            return PartyAccess.CLOSED
         if await self.joined_users.filter(pk=user.pk).aexists():
             return PartyAccess.PARTICIPANT
         if self.closed_at:
@@ -393,7 +432,7 @@ class PartyRound(models.Model):
         ).count()
         if closed_rounds >= self.party.max_rounds:
             Party.objects.filter(id=self.party_id, closed_at__isnull=True).update(
-                closed_at=self.closed_at
+                closed_at=self.closed_at, closed_reason=PartyClosedReason.FINISHED
             )
         return answers_to_save
 

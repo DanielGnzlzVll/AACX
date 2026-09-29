@@ -6,7 +6,7 @@
             <a id="party-{{ party.id }}" href="{% url 'detail_party' party.id %}" hx-get="{% url 'detail_party' party.id %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true" class="party-card" title="{{ party.name }}">
                 <span class="party-card-header">
                     <strong class="party-name">{{ party.name }}</strong>
-                    <span class="party-status party-status-{{ party.status }}">{{ party.status.label }}</span>
+                    <span class="party-status party-status-{{ party.status }}">{{ party.get_status_display }}</span>
                 </span>
                 <span class="party-meta">
                     {% if party.status == "waiting" %}

@@ -34,10 +34,14 @@ def card(content, party):
             {"started_at": timezone.now(), "closed_at": timezone.now()},
             PartyStatus.FINISHED,
         ),
+        (
+            {"closed_at": timezone.now(), "closed_reason": "abandoned"},
+            PartyStatus.ABANDONED,
+        ),
     ],
 )
 def test_party_status(party_factory, fields, expected):
-    assert party_factory(**fields).status is expected
+    assert party_factory(**fields).status == expected
 
 
 def test_available_parties_are_listed_once(party_factory, alice, bob):
