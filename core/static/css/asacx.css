@@ -48,6 +48,22 @@ body {
   font-weight: bold;
 }
 
+.logout-form {
+  display: inline;
+  margin: 0;
+}
+
+.logout-button {
+  display: inline;
+  width: auto;
+  margin: 0 0 0 1em;
+  padding: 0;
+  border: none;
+  background: none;
+  color: rgb(120, 120, 120);
+  font-weight: bold;
+}
+
 .avatar {
   border-radius: 50%;
   object-fit: cover;

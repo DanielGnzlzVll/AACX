@@ -40,6 +40,12 @@
             <li>
                 <img class="avatar" src="https://i.pravatar.cc/150?u={{ user }}">
                 <small>{{ user }}</small>
+                {% if user.is_authenticated %}
+                    <form class="logout-form" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-button">Salir</button>
+                    </form>
+                {% endif %}
             </li>
         </nav>
     {% endblock %}

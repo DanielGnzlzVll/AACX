@@ -6,8 +6,11 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.db import IntegrityError, transaction
 from django.http import Http404
+from django.shortcuts import redirect
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 
@@ -26,27 +29,84 @@ class HTMXPartialMixin(ContextMixin, TemplateResponseMixin):
         return context
 
 
+NICKNAME_CLAIM_COOKIE = "aacx_nickname_claim"
+NICKNAME_CLAIM_SALT = "core.views.Login.nickname_claim"
+NICKNAME_CLAIM_MAX_AGE = 60 * 60 * 24 * 365
+LOGIN_REJECTED_MESSAGE = "No es posible iniciar sesión con ese nombre de usuario."
+
+
 class Login(
     HTMXPartialMixin,
     View,
 ):
-    def get_template_names(self):
-        if self.request.method == "POST":
-            return ["home.html"]
-        return ["login.html"]
+    template_name = "login.html"
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
+        context["form"] = forms.LoginForm()
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        username = request.POST["nickname"]
-        user, _ = User.objects.get_or_create(username=username)
-        login(request, user)
-        # TODO: try a redirect
+        form = forms.LoginForm(request.POST)
+        if form.is_valid():
+            user = self.get_nickname_user(form.cleaned_data["nickname"])
+            if user is not None:
+                login(request, user)
+                response = redirect(self.get_success_url())
+                response.set_signed_cookie(
+                    NICKNAME_CLAIM_COOKIE,
+                    str(user.pk),
+                    salt=NICKNAME_CLAIM_SALT,
+                    max_age=NICKNAME_CLAIM_MAX_AGE,
+                    httponly=True,
+                    samesite="Lax",
+                )
+                return response
+            form.add_error(None, LOGIN_REJECTED_MESSAGE)
+
         context = self.get_context_data(**kwargs)
-        context["parties"] = models.Party.objects.all()
+        context["form"] = form
         return self.render_to_response(context)
+
+    def get_nickname_user(self, nickname):
+        """Return the user for this nickname, or None if this browser may not use it.
+
+        A nickname belongs to the browser that first claimed it, proven by a
+        signed cookie. Staff, superusers and accounts with a password must use
+        /admin/login/ instead.
+        """
+        user = User.objects.filter(username__iexact=nickname).order_by("pk").first()
+        if user is None:
+            user = User(username=nickname)
+            user.set_unusable_password()
+            try:
+                with transaction.atomic():
+                    user.save()
+            except IntegrityError:
+                return None
+            return user
+
+        if user.is_staff or user.is_superuser or user.has_usable_password():
+            return None
+        claimed_by = self.request.get_signed_cookie(
+            NICKNAME_CLAIM_COOKIE,
+            default=None,
+            salt=NICKNAME_CLAIM_SALT,
+            max_age=NICKNAME_CLAIM_MAX_AGE,
+        )
+        if claimed_by != str(user.pk):
+            return None
+        return user
+
+    def get_success_url(self):
+        next_url = self.request.GET.get("next")
+        if next_url and url_has_allowed_host_and_scheme(
+            next_url,
+            allowed_hosts={self.request.get_host()},
+            require_https=self.request.is_secure(),
+        ):
+            return next_url
+        return "home"
 
 
 class Home(

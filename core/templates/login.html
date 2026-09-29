@@ -9,9 +9,11 @@
 {% block content%}
 <form method="POST">
     {% csrf_token %}
-    <label for="nick">Nombre de usuario:</label><br>
-    <input type="text" name="nickname"><br>
-    <input type="submit" value="Enter">
+    {{ form.non_field_errors }}
+    {{ form.nickname.label_tag }}
+    {{ form.nickname }}
+    {{ form.nickname.errors }}
+    <input type="submit" value="Entrar">
 </form>
 {% endblock %}
 
