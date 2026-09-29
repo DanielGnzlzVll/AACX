@@ -23,6 +23,7 @@ from core import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("home/", views.Home.as_view(), name="home"),
+    path("home/parties/", views.PartyList.as_view(), name="party_list"),
     path("login/", views.Login.as_view(), name="login"),
     path("logout/", views.Logout.as_view(next_page="login"), name="logout"),
     path("party/create/", views.CreateParty.as_view(), name="create_party"),

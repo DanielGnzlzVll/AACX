@@ -7,14 +7,16 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView, redirect_to_login
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
+from django_htmx.http import HttpResponseClientRedirect
 
 from core import forms, models
 
@@ -185,6 +187,20 @@ class Home(
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
+
+
+class PartyList(LoginRequiredMixin, TemplateResponseMixin, View):
+    template_name = "_party_list.html"
+
+    def handle_no_permission(self):
+        if self.request.htmx:
+            login_url = redirect_to_login(reverse("home")).url
+            return HttpResponseClientRedirect(login_url)
+        return super().handle_no_permission()
+
+    def get(self, request, *args, **kwargs):
+        parties = models.Party.objects.get_available_parties(request.user)
+        return self.render_to_response({"parties": parties})
 
 
 class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):

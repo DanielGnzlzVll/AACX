@@ -46,12 +46,30 @@ class PartyAccess(enum.Enum):
         return self in (PartyAccess.WAITING, PartyAccess.PARTICIPANT)
 
 
+class PartyStatus(models.TextChoices):
+    WAITING = "waiting", "Esperando jugadores"
+    PLAYING = "playing", "En curso"
+    FINISHED = "finished", "Terminada"
+
+
 class PartyQuerySet(models.QuerySet):
     def get_available_parties(self, user):
-        return self.filter(
-            started_at__isnull=True
-        ).order_by("-pk") | self.filter(
-            closed_at__isnull=True, joined_users__pk=user.id
+        joined = self.model.objects.filter(joined_users__pk=user.id).values("pk")
+        alive = models.Q(
+            connections__last_seen_at__gte=timezone.now() - PartyConnection.TTL
+        )
+        return (
+            self.filter(
+                models.Q(started_at__isnull=True)
+                | models.Q(closed_at__isnull=True, pk__in=joined)
+            )
+            .annotate(
+                joined_players=models.Count("joined_users", distinct=True),
+                connected_players=models.Count(
+                    "connections__user", filter=alive, distinct=True
+                ),
+            )
+            .order_by("-pk")
         )
 
 
@@ -115,6 +133,14 @@ class Party(models.Model):
     @property
     def is_active(self):
         return self.closed_at is None
+
+    @property
+    def status(self):
+        if self.closed_at:
+            return PartyStatus.FINISHED
+        if self.started_at:
+            return PartyStatus.PLAYING
+        return PartyStatus.WAITING
 
     async def aget_access(self, user):
         if await self.joined_users.filter(pk=user.pk).aexists():

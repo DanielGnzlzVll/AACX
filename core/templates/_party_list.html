@@ -1,0 +1,31 @@
+<div id="party_list" hx-get="{% url 'party_list' %}" hx-trigger="every 5s" hx-swap="outerHTML">
+{% if parties %}
+<ul class="party-list">
+    {% for party in parties %}
+        <li>
+            <a id="party-{{ party.id }}" href="{% url 'detail_party' party.id %}" hx-get="{% url 'detail_party' party.id %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true" class="party-card" title="{{ party.name }}">
+                <span class="party-card-header">
+                    <strong class="party-name">{{ party.name }}</strong>
+                    <span class="party-status party-status-{{ party.status }}">{{ party.status.label }}</span>
+                </span>
+                <span class="party-meta">
+                    {% if party.status == "waiting" %}
+                        <span>{{ party.connected_players }} de {{ party.min_players }} jugadores</span>
+                    {% else %}
+                        <span>{{ party.joined_players }} jugador{{ party.joined_players|pluralize:"es" }}</span>
+                    {% endif %}
+                    <span>{{ party.max_rounds }} ronda{{ party.max_rounds|pluralize }}</span>
+                    <span>{{ party.max_round_duration }} s por ronda</span>
+                </span>
+                <span class="party-action">{% if party.status == "waiting" %}Unirse{% else %}Continuar{% endif %} <span aria-hidden="true">&rarr;</span></span>
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+{% else %}
+<article class="empty-state">
+    <p>No hay partidas disponibles.</p>
+    <a href="{% url 'create_party' %}" hx-get="{% url 'create_party' %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true" role="button">Crear nueva partida</a>
+</article>
+{% endif %}
+</div>
