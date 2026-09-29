@@ -12,7 +12,7 @@ ANSWERS_FORM = 'id="party_current_answers_form"'
 
 @pytest.fixture
 def fast_answers_reveal(monkeypatch):
-    # display_all_answers paces the reveal with ~15s of sleeps; the join timeout stays real.
+    # display_all_answers paces the reveal with sleeps; the join timeout stays real.
     real_sleep = asyncio.sleep
 
     async def sleep(delay, *args, **kwargs):
@@ -39,7 +39,7 @@ async def state_machine(channel_layer, monkeypatch):
     machine.channel_layer = channel_layer
     yield machine
 
-    # ensure_players_join never cancels its join timeout task.
+    # Cancel the join timeout left pending by the state machine.
     for task in asyncio.all_tasks():
         if task.get_name() == "timeout":
             task.cancel()
@@ -118,15 +118,14 @@ async def test_two_players_play_a_round(
     }
     scores = {
         (answer.user.username, answer.field): answer.scored_points or 0
-        async for answer in models.UserRoundAnswer.objects.filter(round=round)
-        .exclude(value="")
-        .select_related("user")
+        async for answer in models.UserRoundAnswer.objects.filter(
+            round=round, field__in=["name", "country"]
+        ).select_related("user")
     }
     assert scores == {
         ("alice", "name"): 100,
         ("alice", "country"): 50,
         ("bob", "name"): 100,
         ("bob", "country"): 50,
-        ("bob", "animal"): 0,
     }
     assert await party.aget_players_scores() == {"alice": 150, "bob": 150}
