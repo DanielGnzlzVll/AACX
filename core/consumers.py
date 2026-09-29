@@ -132,7 +132,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         except (TypeError, ValueError, KeyError):
             logger.warning(f"ignoring malformed message {self.party_id=}")
             return
-        if trigger == "party_current_answers_form":
+        if trigger in ("party_current_answers_form", "submit_stop"):
             await self.handle_form_submit(data)
         else:
             logger.warning(f"ignoring unknown message {self.party_id=} {trigger=}")
@@ -163,12 +163,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
             )
             return
         template_string = render_to_string(
-            "party_current_answers.html",
-            {
-                "party": self.party,
-                "current_round": current_round,
-                "form": form,
-            },
+            "party_current_answers_errors.html", {"form": form}
         )
         await self.html({"message": template_string})
 
@@ -213,9 +208,8 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
     async def save_form(self, form, current_round):
         data = {
-            field: value
-            for field, value in form.cleaned_data.items()
-            if field in dict(models.UserRoundAnswer.FIELD_CHOICES)
+            field: form.cleaned_data.get(field, "")
+            for field, _ in models.UserRoundAnswer.FIELD_CHOICES
         }
 
         await current_round.save_user_answers(self.scope["user"], data.items())

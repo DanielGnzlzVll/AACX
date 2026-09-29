@@ -11,12 +11,16 @@ from core import consumers, models
 pytestmark = pytest.mark.django_db(transaction=True)
 
 ANSWERS_FORM = 'id="party_current_answers_form"'
+NAME_STATUS = 'id="answer_error_name"'
 
 
-def answers_message(**answers):
-    return json.dumps(
-        {"HEADERS": {"HX-Trigger": "party_current_answers_form"}, **answers}
-    )
+def answers_message(trigger="party_current_answers_form", **answers):
+    return json.dumps({"HEADERS": {"HX-Trigger": trigger}, **answers})
+
+
+async def saved_answers(user):
+    answers = models.UserRoundAnswer.objects.filter(user=user)
+    return {answer.field: answer.value async for answer in answers}
 
 
 @pytest.fixture
@@ -119,7 +123,7 @@ async def test_malformed_messages_are_ignored(
 
     await assert_still_open(communicator)
     await communicator.send_to(text_data=answers_message(name="Ana"))
-    assert ANSWERS_FORM in await communicator.receive_from()
+    assert NAME_STATUS in await communicator.receive_from()
 
 
 async def test_answers_before_first_round_are_ignored(
@@ -145,7 +149,7 @@ async def test_user_connected_while_waiting_plays_after_start(
 
     await communicator.send_to(text_data=answers_message(name="Ana"))
 
-    assert ANSWERS_FORM in await communicator.receive_from()
+    assert NAME_STATUS in await communicator.receive_from()
     assert await models.UserRoundAnswer.objects.filter(user=bob).aexists()
 
 
@@ -239,3 +243,67 @@ async def test_heartbeat_requests_the_start_until_the_party_starts(
     channel_layer.channels.pop(consumers.STATE_MACHINE_CHANNEL_NAME, None)
     await asyncio.sleep(0.2)
     assert consumers.STATE_MACHINE_CHANNEL_NAME not in channel_layer.channels
+
+
+async def test_autosave_reply_does_not_replace_inputs(
+    ws_communicator, started_party, alice
+):
+    communicator, _, _ = await connect(ws_communicator, alice, started_party.id)
+
+    await communicator.send_to(text_data=answers_message(name="Ana", city="Bogota"))
+
+    reply = await communicator.receive_from()
+    assert NAME_STATUS in reply
+    assert 'id="answer_error_city"' in reply
+    assert "word-error" in reply
+    for replaced in ("<input", "<form", "<script", ANSWERS_FORM):
+        assert replaced not in reply
+
+
+@pytest.mark.parametrize("value", ["", "A"])
+async def test_shortened_answer_replaces_saved_answer(
+    ws_communicator, started_party, alice, value
+):
+    communicator, _, _ = await connect(ws_communicator, alice, started_party.id)
+    await communicator.send_to(text_data=answers_message(name="Ana"))
+    await communicator.receive_from()
+
+    await communicator.send_to(text_data=answers_message(name=value))
+    await communicator.receive_from()
+
+    assert (await saved_answers(alice))["name"] == value
+
+
+async def test_too_long_answer_clears_saved_answer(
+    ws_communicator, started_party, alice
+):
+    communicator, _, _ = await connect(ws_communicator, alice, started_party.id)
+    await communicator.send_to(text_data=answers_message(name="Ana"))
+    await communicator.receive_from()
+
+    await communicator.send_to(text_data=answers_message(name="A" * 51))
+
+    assert "word-error" in await communicator.receive_from()
+    assert (await saved_answers(alice))["name"] == ""
+
+
+async def test_stop_button_saves_answers_and_stops_round(
+    ws_communicator, channel_layer, started_party, alice
+):
+    communicator, _, _ = await connect(ws_communicator, alice, started_party.id)
+    await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+
+    await communicator.send_to(
+        text_data=answers_message("submit_stop", name="Ana", submit_stop="on")
+    )
+
+    stopped = await asyncio.wait_for(
+        channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME), timeout=2
+    )
+    round = await started_party.aget_current_round()
+    assert stopped == {
+        "type": "event_party_round_stopped",
+        "party_id": started_party.id,
+        "round_id": round.id,
+    }
+    assert (await saved_answers(alice))["name"] == "Ana"

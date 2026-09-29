@@ -55,6 +55,10 @@ def is_answers_form(message):
     return ANSWERS_FORM in message and "ws-send" in message
 
 
+def is_answers_status(message):
+    return 'id="answer_error_name"' in message and ANSWERS_FORM not in message
+
+
 def is_disabled_answers_form(message):
     return ANSWERS_FORM in message and "ws-send" not in message
 
@@ -117,7 +121,7 @@ async def test_two_players_play_a_round(
         )
     )
     for ws in (alice_ws, bob_ws):
-        await receive_until(ws, is_answers_form)
+        await receive_until(ws, is_answers_status)
 
     for ws in (alice_ws, bob_ws):
         await receive_until(ws, is_disabled_answers_form)
