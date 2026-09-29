@@ -78,7 +78,7 @@ flowchart LR
 | `/logout/` | `Logout` | A `LogoutView` restricted to POST (`http_method_names = ["post", "options"]`). Redirects to `/login/`. |
 | `/home/` | `Home` | Parties the user can join or rejoin. This is the entry page. Nothing is routed at `/`, so it returns 404. |
 | `/party/create/` | `CreateParty` | Live-validated form. Creates a new party when `submit=true`. It never modifies an existing one. |
-| `/party/<id>/` | `DetailParty` | Waiting page, game page, or final results once the party is closed. The GET is read-only: it shows the latest round filled with the player's saved answers, disabled once it is closed, and a waiting state until the state machine opens the first one. |
+| `/party/<id>/` | `DetailParty` | Waiting page, game page, or final results once the party is closed. A user who didn't join a started party gets the read-only `party_started.html` ("Esta partida ya empezó", the scores and a link home) instead. The GET is read-only: it shows the latest round filled with the player's saved answers, disabled once it is closed, and a waiting state until the state machine opens the first one. |
 | `/party/<id>/user/<username>/answers` | `PartyAnswers` | A player's answers, shown in a modal. Another player's answers only cover closed rounds. Returns 404 unless that user joined or answered in the party. |
 | `/admin/`, `/__debug__/` | Django admin, debug toolbar | |
 
@@ -303,7 +303,7 @@ erDiagram
 - **A party has started** once `started_at` is set. It is set once, by the worker that holds the waiting-room claim.
 - **`joined_users`** gets every user who connects to the party's websocket before it starts, so everyone who waited can play. After the start, only those users can connect. The HTTP views don't change it.
 - **Waiting-room presence** is one `PartyConnection` row per websocket connected while the party waits. The consumer refreshes `last_seen_at` every `HEARTBEAT_INTERVAL` (20 s) and deletes the row on disconnect. Rows older than `TTL` (60 s) belong to dead connections: they aren't counted, and the next connection to that party deletes them. Players are counted as distinct users, so several tabs count once.
-- **Available parties** (`PartyQuerySet.get_available_parties`) are parties that haven't started, plus unclosed parties the user joined. `DetailParty` shows a party if the user joined it or it isn't closed.
+- **Available parties** (`PartyQuerySet.get_available_parties`) are parties that haven't started, plus unclosed parties the user joined. `DetailParty` and `PartyConsumer.can_join` share one policy, `Party.aget_access`: participants and anyone opening a party that hasn't started can play. A non-participant of a started party gets the read-only page and the websocket refuses them with 4403. A non-participant of a closed party gets a 404 and a 4403, even if the party never started.
 - **Open party names are unique**, case-insensitively. The partial `UniqueConstraint` `unique_open_party_name` on `Lower(name)` where `closed_at IS NULL` enforces it, so a closed party's name can be reused. `CreateParty` always inserts a new party and records `created_by`. `PartyForm.clean_name` rejects a taken name with "Ya existe una partida abierta con ese nombre.", and the view shows the same error if the insert loses a race for the name. Migration `0016_party_created_by_unique_open_name` renamed open duplicates to `name (id)` before adding the constraint.
 - **Party settings are required and bounded.** `min_players` (2..20), `max_round_duration` (30..600 seconds) and `max_rounds` (1..26) are non-null `PositiveSmallIntegerField`s, so the game loop can rely on them in `range()` and the round timeout. `PartyForm` rejects blank or out-of-range values with Spanish errors. Migration `0017_party_settings_not_null` backfilled NULLs with the defaults and clamped out-of-range rows into the bounds.
 
@@ -332,7 +332,7 @@ The same URL therefore works both as a full page load and as an HTMX fragment. N
 
 `create_party.html` posts the form on every input (500 ms debounce) for live validation. The view re-renders the form with `HX-Reswap: outerHTML transition:false`. When `submit=true` and the form is valid, it saves the party and renders `home.html` with `HX-Reswap: outerHTML transition:true`.
 
-The party page shows `party_no_started.html` before `started_at` is set and `party.html` after. Both open the websocket with `hx-ext="ws" ws-connect="/party/<id>/"`.
+The party page shows `party_no_started.html` before `started_at` is set and `party.html` after. Both open the websocket with `hx-ext="ws" ws-connect="/party/<id>/"`. A user who didn't join a started party gets `party_started.html` instead, which has no websocket and no answers form.
 
 ### Out-of-band swaps over the websocket
 
