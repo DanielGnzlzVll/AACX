@@ -329,7 +329,7 @@ The ws extension handles each server message as an HTML fragment. Every top-leve
 | Target id | Defined in | Replaced by | Sent by |
 |---|---|---|---|
 | `party_content` | `party_no_started.html` | Inline HTML in `ensure_players_join` ("Esperando Mas Jugadores...") | `PartyStateMachine`, group `html` |
-| `party_past_answers`, `party_current_answers`, `party_reports` | `_party_content.html` (included by `party.html`) | `_party_content.html` | `PartyStateMachine.next_round`, group `html` |
+| `party_content` | `party_no_started.html`, `_party_content.html` (included by `party.html`) | `_party_content.html` | `PartyStateMachine.next_round`, group `html` |
 | `party_current_answers`, `party_reports` | `_party_content.html` | `party_finished_update.html` (final results in place of the form) | `PartyStateMachine.finish_party`, group `html` |
 | `party_current_answers_form`, `script` | `party_current_answers.html` (the id is also the waiting placeholder when no round is open) | `party_current_answers.html` | `PartyConsumer`: validation reply to its own socket, and `event_party_round_stopped` (disabled form) |
 | `party_answers_table` | `party_answers.html` | `party_answers.html` | `PartyConsumer.event_update_past_answers` |
@@ -339,7 +339,7 @@ Things to keep in mind when changing templates or consumers:
 
 - **Renaming an id breaks a swap, and nothing reports it.** The ids in this table are the contract between the templates and the consumers.
 - **Group broadcasts are rendered once for every player.** `next_round` renders `_party_content.html` without any user in the context, so the past-answers table inside it comes out empty for everyone ([#18]). Per-player content has to be rendered by that player's `PartyConsumer`, like the `event_*` handlers do.
-- **The waiting page only has `#party_content`.** Round broadcasts target ids that exist only in `party.html`, so they have nothing to replace on `party_no_started.html`, and players who waited there don't see the game start until they reload ([#42]).
+- **The waiting page and the game page share `#party_content`.** `_party_content.html` wraps the three game panels in it, so the first round broadcast replaces the waiting message. Its `display: contents` keeps the panels as grid items of `.party_game`.
 - **The answers form** (`party_current_answers_form`) sends itself with `ws-send` on input (values longer than one character, 200 ms debounce) and when `#submit_stop` is clicked. The inline `#script` saves the focused input before each send (`htmx:wsBeforeSend`) and restores focus and the cursor after each message (`htmx:wsAfterMessage`), because the reply replaces the form the player is typing in ([#20]).
 
 The per-player answers modal doesn't use the websocket. Clicking a row in the scores table sends an `hx-get` to `party_answers`, which returns `party_modal_answers.html` and replaces `#modal` (`hx-swap="outerHTML transition:true"`). For another player, it only shows closed rounds.
@@ -358,7 +358,6 @@ The issues that track where the implementation differs from the design:
 | [#15] | The waiting room counts connections, reads `channels_redis` internals, and starts below `min_players` |
 | [#16] | `PartyConsumer` doesn't check authentication, authorization or input |
 | [#18] | Round broadcasts wipe each player's past answers |
-| [#42] | Players on the waiting page don't see the game start until they reload |
 | [#24] | Dead and incorrect code paths (`party_stared`, unused handlers) |
 
 [#1]: https://github.com/DanielGnzlzVll/AACX/issues/1
@@ -373,4 +372,3 @@ The issues that track where the implementation differs from the design:
 [#20]: https://github.com/DanielGnzlzVll/AACX/issues/20
 [#21]: https://github.com/DanielGnzlzVll/AACX/issues/21
 [#24]: https://github.com/DanielGnzlzVll/AACX/issues/24
-[#42]: https://github.com/DanielGnzlzVll/AACX/issues/42

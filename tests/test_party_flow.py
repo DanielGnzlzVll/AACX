@@ -1,9 +1,12 @@
 import asyncio
 import json
 import types
+from html.parser import HTMLParser
 
 import pytest
 from asgiref.sync import sync_to_async
+from django.test import Client
+from django.urls import reverse
 
 from core import consumers, models
 
@@ -64,6 +67,30 @@ def is_answers_form(message):
 
 def is_disabled_answers_form(message):
     return ANSWERS_FORM in message and "ws-send" not in message
+
+
+class ElementIds(HTMLParser):
+    VOID_ELEMENTS = {"br", "hr", "img", "input", "link", "meta"}
+
+    def __init__(self, html):
+        super().__init__()
+        self.depth = 0
+        self.all = set()
+        self.top_level = []
+        self.feed(html)
+
+    def handle_starttag(self, tag, attrs):
+        id = dict(attrs).get("id")
+        if id:
+            self.all.add(id)
+        if self.depth == 0:
+            self.top_level.append(id)
+        if tag not in self.VOID_ELEMENTS:
+            self.depth += 1
+
+    def handle_endtag(self, tag):
+        if tag not in self.VOID_ELEMENTS:
+            self.depth -= 1
 
 
 @pytest.mark.django_db(transaction=True)
@@ -127,3 +154,41 @@ async def test_two_players_play_a_round(
         ("bob", "country"): 50,
     }
     assert await party.aget_players_scores() == {"alice": 150, "bob": 150}
+
+
+@pytest.mark.django_db(transaction=True)
+async def test_waiting_page_receives_every_broadcast(
+    ws_connect,
+    channel_layer,
+    state_machine,
+    fast_answers_reveal,
+    party_factory,
+    alice,
+    bob,
+):
+    party = await sync_to_async(party_factory)(
+        min_players=2, max_rounds=1, max_round_duration=1
+    )
+    client = Client()
+    await sync_to_async(client.force_login)(alice)
+    response = await sync_to_async(client.get)(
+        reverse("detail_party", kwargs={"party_id": party.id})
+    )
+    assert "party_no_started.html" in [t.name for t in response.templates]
+    page_ids = ElementIds(response.content.decode()).all
+
+    path = f"/party/{party.id}/"
+    alice_ws = await ws_connect(alice, path)
+    await ws_connect(bob, path)
+    start_event = await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+    party_task = asyncio.create_task(state_machine.play_party(start_event["party_id"]))
+
+    # The htmx ws extension swaps each top-level element into the element with its id.
+    while True:
+        message = await alice_ws.receive_from(timeout=5)
+        ids = ElementIds(message)
+        assert set(ids.top_level) <= page_ids, message
+        page_ids |= ids.all
+        if "party_finished" in ids.all:
+            break
+    await asyncio.wait_for(party_task, timeout=10)
