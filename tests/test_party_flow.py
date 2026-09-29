@@ -31,13 +31,6 @@ def fast_answers_reveal(monkeypatch):
     monkeypatch.setattr(consumers, "asyncio", fast_asyncio)
 
 
-@pytest.fixture
-async def state_machine(channel_layer):
-    machine = consumers.PartyStateMachine()
-    machine.channel_layer = channel_layer
-    return machine
-
-
 def answers_message(**answers):
     return json.dumps(
         {"HEADERS": {"HX-Trigger": "party_current_answers_form"}, **answers}

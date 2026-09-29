@@ -113,7 +113,9 @@ docker run -d --name aacx-test-redis -p 6379:6379 redis:7
 POSTGRES_HOST=localhost POSTGRES_PORT=5432 REDIS_HOST=localhost REDIS_PORT=6379 pytest
 ```
 
-Tests use `asacx/settings_test.py`, which swaps Redis for an in-memory channel layer and cache. Party leases still need a real Redis.
+Tests use `asacx/settings_test.py`, which swaps Redis for an in-memory channel layer and cache. Party leases still need a real Redis. The test channel layer (`core.testing.MsgpackInMemoryChannelLayer`) round-trips every message through msgpack like `channels_redis`, so a message carrying a model instance or another non-serializable value fails the test that sends it.
+
+All tests live in `tests/`, one pytest module per area (`test_login.py`, `test_stop.py`, `test_party_end.py`, ...). Write plain test functions, not `TestCase` classes, and put shared fixtures in `tests/conftest.py`: `party_factory`, `alice`/`bob`, `logged_in_client`, `channel_layer`, `receive_or_none`, `state_machine` and `ws_connect` cover most cases. Async tests that touch the database need `@pytest.mark.django_db(transaction=True)`, because async ORM calls run on another thread, outside the test transaction.
 
 ## Production
 

@@ -33,22 +33,6 @@ def clear_leases():
 
 
 @pytest.fixture
-def state_machine(channel_layer):
-    machine = consumers.PartyStateMachine()
-    machine.channel_layer = channel_layer
-    return machine
-
-
-@pytest.fixture
-def instant_reveal(monkeypatch):
-    monkeypatch.setattr(consumers.PartyStateMachine, "display_all_answers", noop)
-
-
-async def noop(*args, **kwargs):
-    pass
-
-
-@pytest.fixture
 async def start_worker(channel_layer):
     workers = []
 

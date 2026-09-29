@@ -1,3 +1,4 @@
+import asyncio
 import itertools
 
 import pytest
@@ -11,7 +12,7 @@ from django.contrib.auth.models import User
 from django.db import connections
 from django.test import Client
 
-from core import models, routing
+from core import consumers, models, routing
 
 
 @pytest.fixture
@@ -57,6 +58,32 @@ async def channel_layer():
     layer = get_channel_layer()
     yield layer
     await layer.flush()
+
+
+@pytest.fixture
+def receive_or_none(channel_layer):
+    async def receive(channel, timeout=0.2):
+        try:
+            return await asyncio.wait_for(channel_layer.receive(channel), timeout)
+        except TimeoutError:
+            return None
+
+    return receive
+
+
+@pytest.fixture
+def state_machine(channel_layer):
+    machine = consumers.PartyStateMachine()
+    machine.channel_layer = channel_layer
+    return machine
+
+
+@pytest.fixture
+def instant_reveal(monkeypatch):
+    async def noop(*args, **kwargs):
+        pass
+
+    monkeypatch.setattr(consumers.PartyStateMachine, "display_all_answers", noop)
 
 
 @pytest.fixture
