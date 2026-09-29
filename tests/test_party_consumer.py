@@ -1,3 +1,5 @@
+import asyncio
+import datetime
 import json
 
 import pytest
@@ -131,7 +133,7 @@ async def test_answers_before_first_round_are_ignored(
     await assert_still_open(communicator)
 
 
-async def test_non_participant_connected_before_start_cannot_play(
+async def test_user_connected_while_waiting_plays_after_start(
     ws_communicator, channel_layer, party_factory, alice, bob
 ):
     party = await sync_to_async(party_factory)(joined_users=[alice])
@@ -141,13 +143,68 @@ async def test_non_participant_connected_before_start_cannot_play(
     await party.asave()
     await models.PartyRound.objects.acreate(party=party, letter="A")
 
-    await communicator.send_to(
-        text_data=answers_message(name="Ana", submit_stop="on")
-    )
+    await communicator.send_to(text_data=answers_message(name="Ana"))
 
-    await assert_still_open(communicator)
-    assert not await models.UserRoundAnswer.objects.filter(user=bob).aexists()
-    assert consumers.STATE_MACHINE_CHANNEL_NAME not in channel_layer.channels
+    assert ANSWERS_FORM in await communicator.receive_from()
+    assert await models.UserRoundAnswer.objects.filter(user=bob).aexists()
+
+
+async def test_connecting_to_waiting_party_records_participation_and_presence(
+    ws_communicator, channel_layer, party_factory, alice
+):
+    party = await sync_to_async(party_factory)()
+
+    for _ in range(2):
+        await connect(ws_communicator, alice, party.id)
+        await channel_layer.receive(f"party_players_{party.id}")
+
+    assert [user async for user in party.joined_users.all()] == [alice]
+    assert await models.PartyConnection.objects.filter(
+        party=party, user=alice
+    ).acount() == 2
+    assert await party.acount_connected_players() == 1
+
+
+async def test_connecting_to_started_party_does_not_track_presence(
+    ws_communicator, channel_layer, started_party, alice
+):
+    await connect(ws_communicator, alice, started_party.id)
+    await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+
+    assert not await models.PartyConnection.objects.aexists()
+    assert f"party_players_{started_party.id}" not in channel_layer.channels
+
+
+async def test_disconnect_leaves_group_and_presence(
+    ws_communicator, channel_layer, party_factory, alice
+):
+    party = await sync_to_async(party_factory)()
+    communicator, _, _ = await connect(ws_communicator, alice, party.id)
+    await channel_layer.receive(f"party_players_{party.id}")
+
+    await communicator.disconnect()
+
+    assert not channel_layer.groups.get(f"party_{party.id}")
+    assert not await models.PartyConnection.objects.aexists()
+    notification = await channel_layer.receive(f"party_players_{party.id}")
+    assert notification["user_id"] == alice.id
+
+
+async def test_presence_is_refreshed_while_connected(
+    ws_communicator, channel_layer, party_factory, alice, monkeypatch
+):
+    monkeypatch.setattr(
+        models.PartyConnection, "HEARTBEAT_INTERVAL", datetime.timedelta(0)
+    )
+    party = await sync_to_async(party_factory)()
+    await connect(ws_communicator, alice, party.id)
+    await channel_layer.receive(f"party_players_{party.id}")
+    long_ago = timezone.now() - 2 * models.PartyConnection.TTL
+    await models.PartyConnection.objects.aupdate(last_seen_at=long_ago)
+
+    async with asyncio.timeout(2):
+        while not await party.acount_connected_players():
+            await asyncio.sleep(0.05)
 
 
 async def test_answer_longer_than_model_field_is_rejected(
@@ -161,3 +218,24 @@ async def test_answer_longer_than_model_field_is_rejected(
     await assert_still_open(communicator)
     answers = models.UserRoundAnswer.objects.filter(user=alice).exclude(value="")
     assert {a.field: a.value async for a in answers} == {"city": "Arica"}
+
+
+async def test_heartbeat_requests_the_start_until_the_party_starts(
+    ws_communicator, channel_layer, party_factory, alice, monkeypatch
+):
+    monkeypatch.setattr(
+        models.PartyConnection, "HEARTBEAT_INTERVAL", datetime.timedelta(seconds=0.05)
+    )
+    party = await sync_to_async(party_factory)()
+    await connect(ws_communicator, alice, party.id)
+    await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+
+    async with asyncio.timeout(2):
+        started = await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+    assert started["party_id"] == party.id
+
+    await models.Party.objects.filter(id=party.id).aupdate(started_at=timezone.now())
+    await asyncio.sleep(0.2)
+    channel_layer.channels.pop(consumers.STATE_MACHINE_CHANNEL_NAME, None)
+    await asyncio.sleep(0.2)
+    assert consumers.STATE_MACHINE_CHANNEL_NAME not in channel_layer.channels

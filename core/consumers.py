@@ -60,26 +60,64 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         self.party_group_name = self.get_party_group_name(party_id=self.party_id)
         await self.channel_layer.group_add(self.party_group_name, self.channel_name)
 
-        await self.channel_layer.send(
-            self.get_party_player_connected_channel_name(party_id=self.party_id),
-            {
-                "date": datetime.datetime.now().isoformat(),
-                "party_id": self.party_id,
-                "username": user.username,
-                "user_id": user.id,
-            },
-        )
+        if self.party.started_at is None:
+            await self.join_waiting_room(user)
 
         if not self.party.closed_at:
             logger.info(f"party no finalized yet {self.party_id=} trying to start")
-            await self.channel_layer.send(
-                STATE_MACHINE_CHANNEL_NAME,
-                {
-                    "type": "event_party_started",
-                    "party_name": self.party.name,
-                    "party_id": self.party.id,
-                },
-            )
+            await self.request_party_start()
+
+    async def request_party_start(self):
+        await self.channel_layer.send(
+            STATE_MACHINE_CHANNEL_NAME,
+            {
+                "type": "event_party_started",
+                "party_name": self.party.name,
+                "party_id": self.party.id,
+            },
+        )
+
+    async def join_waiting_room(self, user):
+        await self.party.joined_users.aadd(user)
+        await models.PartyConnection.objects.filter(party=self.party).stale().adelete()
+        await self.touch_presence()
+        self.presence_task = asyncio.create_task(self.keep_presence_alive())
+        await self.notify_presence_changed()
+
+    async def leave_waiting_room(self):
+        self.presence_task.cancel()
+        await models.PartyConnection.objects.filter(
+            channel_name=self.channel_name
+        ).adelete()
+        await self.notify_presence_changed()
+
+    async def touch_presence(self):
+        await models.PartyConnection.objects.aupdate_or_create(
+            channel_name=self.channel_name,
+            defaults={
+                "party": self.party,
+                "user": self.scope["user"],
+                "last_seen_at": timezone.now(),
+            },
+        )
+
+    async def keep_presence_alive(self):
+        # Re-requesting the start gives a waiting room whose waiter died, or
+        # exited just as this connection arrived, a new one.
+        interval = models.PartyConnection.HEARTBEAT_INTERVAL.total_seconds()
+        while True:
+            await asyncio.sleep(interval)
+            await self.touch_presence()
+            if await models.Party.objects.filter(
+                id=self.party_id, started_at=None
+            ).aexists():
+                await self.request_party_start()
+
+    async def notify_presence_changed(self):
+        await self.channel_layer.send(
+            self.get_party_player_connected_channel_name(party_id=self.party_id),
+            {"user_id": self.scope["user"].id},
+        )
 
     async def can_join(self, user):
         return self.party.started_at is None or await self.is_participant(user)
@@ -162,6 +200,12 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
             "player disconnected from party: "
             f"{self.party_id} {self.scope['user'].username=}"
         )
+        if hasattr(self, "party_group_name"):
+            await self.channel_layer.group_discard(
+                self.party_group_name, self.channel_name
+            )
+        if hasattr(self, "presence_task"):
+            await self.leave_waiting_room()
 
     async def party_is_available(self):
         current_round = await self.party.aget_current_round()
@@ -186,7 +230,8 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
 class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
-    MAX_WAITING_TIME = 120
+    WAITING_POLL_INTERVAL = 10
+    WAITING_CLAIM_TTL = 60
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -253,23 +298,14 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             )
 
     async def wait_players_to_join(self, party_id):
-        # The claim expires so a crashed worker can't strand the party, but it
-        # outlives the join wait so a live waiter never loses it.
-        claimed_at = timezone.now()
-        claim_expired = claimed_at - datetime.timedelta(
-            seconds=2 * self.MAX_WAITING_TIME
-        )
-        claimed = await models.Party.objects.filter(
-            Q(waiting_started_at__isnull=True)
-            | Q(waiting_started_at__lt=claim_expired),
-            id=party_id,
-            started_at=None,
-        ).aupdate(waiting_started_at=claimed_at)
-        if not claimed:
+        claimed_at = await self.claim_waiting_room(party_id)
+        if not claimed_at:
             return None
 
         party = await models.Party.objects.aget(id=party_id)
-        await self.ensure_players_join(party)
+        claimed_at = await self.ensure_players_join(party, claimed_at)
+        if not claimed_at:
+            return None
         logger.info("all players joined")
         started = await models.Party.objects.filter(
             id=party_id, started_at=None, waiting_started_at=claimed_at
@@ -279,47 +315,61 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         await party.arefresh_from_db(fields=["started_at"])
         return party
 
-    async def ensure_players_join(self, party):
-        timeout_task_name = "timeout"
-        timeout_task = asyncio.create_task(
-            asyncio.sleep(self.MAX_WAITING_TIME),
-            name=timeout_task_name,
+    async def claim_waiting_room(self, party_id, claimed_at=None):
+        # The claim is renewed while the party waits and expires otherwise, so a
+        # crashed worker can't strand the party.
+        now = timezone.now()
+        if claimed_at:
+            claim = Q(waiting_started_at=claimed_at)
+        else:
+            claim = Q(waiting_started_at__isnull=True) | Q(
+                waiting_started_at__lt=now
+                - datetime.timedelta(seconds=self.WAITING_CLAIM_TTL)
+            )
+        claimed = await models.Party.objects.filter(
+            claim, id=party_id, started_at=None
+        ).aupdate(waiting_started_at=now)
+        return now if claimed else None
+
+    async def ensure_players_join(self, party, claimed_at):
+        # Returns the renewed claim once min_players distinct users are connected,
+        # or None when the claim is lost or the room empties. The next connection
+        # claims the party again.
+        channel = self.get_party_player_connected_channel_name(party=party)
+        shown_players, notified = None, True
+        while True:
+            players = await party.acount_connected_players()
+            if not players:
+                logger.info(f"waiting room of {party.id=} is empty")
+                await models.Party.objects.filter(
+                    id=party.id, waiting_started_at=claimed_at
+                ).aupdate(waiting_started_at=None)
+                return None
+            if notified or players != shown_players:
+                await self.show_waiting_players(party, players)
+                shown_players = players
+            if players >= party.min_players:
+                return claimed_at
+
+            try:
+                async with asyncio.timeout(self.WAITING_POLL_INTERVAL):
+                    await self.channel_layer.receive(channel)
+                notified = True
+            except TimeoutError:
+                notified = False
+            claimed_at = await self.claim_waiting_room(party.id, claimed_at)
+            if not claimed_at:
+                return None
+
+    async def show_waiting_players(self, party, players):
+        msg = f"""<div id="party_content">
+            Esperando Mas Jugadores...
+            Actualmente hay {players} jugadores
+        </div>
+        """
+        await self.channel_layer.group_send(
+            self.get_party_group_name(party=party), {"type": "html", "message": msg}
         )
-
-        logger.info("---- waiting players to join")
-        for _ in range(party.min_players):
-            logger.info("---- waiting new player to join")
-
-            receive_task = asyncio.create_task(
-                self.channel_layer.receive(
-                    self.get_party_player_connected_channel_name(party=party)
-                ),
-            )
-            done, _ = await asyncio.wait(
-                (timeout_task, receive_task),
-                return_when=asyncio.FIRST_COMPLETED,
-            )
-            task_done = done.pop()
-            if task_done.get_name() == timeout_task_name:
-                logger.info("---- timeout waiting new player to join")
-                break
-            player_data = task_done.result()
-
-            await party.joined_users.aadd(player_data["user_id"])
-
-            current_players = await self.get_connected_players(
-                self.get_party_group_name(party=party)
-            )
-            msg = f"""<div id="party_content">
-                Esperando Mas Jugadores...
-                Actualmente hay {len(current_players)} jugadores
-            </div>
-            """
-            await self.channel_layer.group_send(
-                self.get_party_group_name(party=party), {"type": "html", "message": msg}
-            )
-
-            logger.info(f"player joined {player_data=}")
 
     async def update_scores(self, party, current_round):
         all_users_answers = await current_round.close_round_and_calculate_scores()
@@ -364,14 +414,6 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             self.get_party_group_name(party=party),
             {"type": "html", "message": template_string},
         )
-
-    async def get_connected_players(self, group):
-        assert self.channel_layer.valid_group_name(group), "Group name not valid"
-        key = self.channel_layer._group_key(group)
-        connection = self.channel_layer.connection(
-            self.channel_layer.consistent_hash(group)
-        )
-        return await connection.zrange(key, 0, -1)
 
     async def event_party_join(self, event):
         party_id = event["party_id"]

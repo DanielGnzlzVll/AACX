@@ -27,7 +27,7 @@ Celery or a separate game-loop service were not adopted, because either would ad
 - A party takes a whole worker for its entire duration, and a busy worker keeps queuing incoming messages behind it. Concurrent parties are capped by the number of workers, and a STOP that lands on a busy worker waits for that whole party, so its round ends on timeout instead ([#9]).
 - Lifecycle state lives in the coroutine's memory apart from a few timestamps. A party's end is only recorded because scoring sets `closed_at` after the last round ([#5]). After a restart the open round's timer starts again from zero, and nothing guarantees that only one worker owns the party ([#10]).
 - Everything sent through the channel layer has to be msgpack-serializable, so events carry ids, not model instances ([#4]).
-- Waiting-room presence is read from `channels_redis`'s private group keys, and it counts connections instead of players ([#15]).
+- The channel layer has no public API for group membership, so waiting-room presence has to be tracked separately.
 
 These problems are why [0004](0004-persisted-event-driven-party-state-machine.md) proposes replacing this design.
 
@@ -35,4 +35,3 @@ These problems are why [0004](0004-persisted-event-driven-party-state-machine.md
 [#5]: https://github.com/DanielGnzlzVll/AACX/issues/5
 [#9]: https://github.com/DanielGnzlzVll/AACX/issues/9
 [#10]: https://github.com/DanielGnzlzVll/AACX/issues/10
-[#15]: https://github.com/DanielGnzlzVll/AACX/issues/15

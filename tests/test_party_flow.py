@@ -15,11 +15,13 @@ ANSWERS_FORM = 'id="party_current_answers_form"'
 
 @pytest.fixture
 def fast_answers_reveal(monkeypatch):
-    # display_all_answers paces the reveal with sleeps; the join timeout stays real.
+    # display_all_answers paces the reveal with sleeps; the presence heartbeat
+    # stays real.
     real_sleep = asyncio.sleep
+    heartbeat = models.PartyConnection.HEARTBEAT_INTERVAL.total_seconds()
 
     async def sleep(delay, *args, **kwargs):
-        if delay < consumers.PartyStateMachine.MAX_WAITING_TIME:
+        if delay < heartbeat:
             delay = 0
         return await real_sleep(delay, *args, **kwargs)
 
@@ -30,22 +32,10 @@ def fast_answers_reveal(monkeypatch):
 
 
 @pytest.fixture
-async def state_machine(channel_layer, monkeypatch):
-    # The real implementation reads channels_redis internals.
-    async def get_connected_players(self, group):
-        return list(channel_layer.groups.get(group, {}))
-
-    monkeypatch.setattr(
-        consumers.PartyStateMachine, "get_connected_players", get_connected_players
-    )
+async def state_machine(channel_layer):
     machine = consumers.PartyStateMachine()
     machine.channel_layer = channel_layer
-    yield machine
-
-    # Cancel the join timeout left pending by the state machine.
-    for task in asyncio.all_tasks():
-        if task.get_name() == "timeout":
-            task.cancel()
+    return machine
 
 
 def answers_message(**answers):
