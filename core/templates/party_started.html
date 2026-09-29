@@ -1,0 +1,25 @@
+{% extends base_template %} {% block content%}
+<article id="party_started">
+  <h3>Esta partida ya empezó</h3>
+  <p>Solo pueden jugar quienes se unieron antes de que empezara.</p>
+  {% if players_scores %}
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Jugador</th>
+        <th scope="col">Puntos</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user_name, points in players_scores.items %}
+      <tr>
+        <td>{{ user_name }}</td>
+        <td>{{ points|default_if_none:"0" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  <a href="{% url 'home' %}" role="button">Volver al inicio</a>
+</article>
+{% endblock %}

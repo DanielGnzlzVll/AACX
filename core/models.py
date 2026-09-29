@@ -1,5 +1,6 @@
 import collections
 import datetime
+import enum
 import random
 import string
 import unicodedata
@@ -32,6 +33,17 @@ def normalize_answer(value):
 
 def answer_starts_with(value, letter):
     return normalize_answer(value).startswith(normalize_answer(letter))
+
+
+class PartyAccess(enum.Enum):
+    WAITING = "waiting"
+    PARTICIPANT = "participant"
+    STARTED = "started"
+    CLOSED = "closed"
+
+    @property
+    def can_play(self):
+        return self in (PartyAccess.WAITING, PartyAccess.PARTICIPANT)
 
 
 class PartyQuerySet(models.QuerySet):
@@ -103,6 +115,15 @@ class Party(models.Model):
     @property
     def is_active(self):
         return self.closed_at is None
+
+    async def aget_access(self, user):
+        if await self.joined_users.filter(pk=user.pk).aexists():
+            return PartyAccess.PARTICIPANT
+        if self.closed_at:
+            return PartyAccess.CLOSED
+        if self.started_at:
+            return PartyAccess.STARTED
+        return PartyAccess.WAITING
 
     async def aget_current_or_next_round(self):
         current = await self.aget_current_round()
@@ -185,6 +206,7 @@ class Party(models.Model):
 
         return answerlist
 
+    get_access = async_to_sync(aget_access)
     get_answers_for_user = async_to_sync(aget_answers_for_user)
     get_current_round = async_to_sync(aget_current_round)
     get_players_scores = async_to_sync(aget_players_scores)
