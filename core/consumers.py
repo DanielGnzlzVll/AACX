@@ -115,10 +115,12 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
     async def leave_waiting_room(self):
         self.presence_task.cancel()
+        # Touched first, so a sweep never sees the room without this connection
+        # and with an old last_seen_at.
+        await self.touch_waiting_room()
         await models.PartyConnection.objects.filter(
             channel_name=self.channel_name
         ).adelete()
-        await self.touch_waiting_room()
         await self.notify_presence_changed()
 
     async def touch_waiting_room(self):

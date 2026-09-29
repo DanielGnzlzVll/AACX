@@ -187,6 +187,29 @@ async def test_joining_and_leaving_the_waiting_room_marks_the_party_as_seen(
     assert await models.Party.objects.aabandon_idle(IDLE_FOR) == 0
 
 
+async def test_player_leaving_a_long_wait_never_looks_like_an_empty_room(
+    idle_party, alice, ws_connect, monkeypatch
+):
+    party = await idle_party()
+    communicator = await ws_connect(alice, f"/party/{party.id}/")
+    await models.Party.objects.filter(pk=party.pk).aupdate(
+        last_seen_at=ago(2 * IDLE_FOR)
+    )
+    adelete = models.PartyConnectionQuerySet.adelete
+    swept = []
+
+    async def sweep_after_delete(self):
+        result = await adelete(self)
+        swept.append(await models.Party.objects.aabandon_idle(IDLE_FOR))
+        return result
+
+    monkeypatch.setattr(models.PartyConnectionQuerySet, "adelete", sweep_after_delete)
+    await communicator.disconnect()
+
+    assert swept == [0]
+    assert await status(party) == models.PartyStatus.WAITING
+
+
 async def test_every_worker_abandons_idle_waiting_rooms(
     idle_party, channel_layer, settings, monkeypatch
 ):
