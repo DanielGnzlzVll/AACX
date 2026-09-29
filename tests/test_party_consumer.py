@@ -218,3 +218,24 @@ async def test_answer_longer_than_model_field_is_rejected(
     await assert_still_open(communicator)
     answers = models.UserRoundAnswer.objects.filter(user=alice).exclude(value="")
     assert {a.field: a.value async for a in answers} == {"city": "Arica"}
+
+
+async def test_heartbeat_requests_the_start_until_the_party_starts(
+    ws_communicator, channel_layer, party_factory, alice, monkeypatch
+):
+    monkeypatch.setattr(
+        models.PartyConnection, "HEARTBEAT_INTERVAL", datetime.timedelta(seconds=0.05)
+    )
+    party = await sync_to_async(party_factory)()
+    await connect(ws_communicator, alice, party.id)
+    await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+
+    async with asyncio.timeout(2):
+        started = await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+    assert started["party_id"] == party.id
+
+    await models.Party.objects.filter(id=party.id).aupdate(started_at=timezone.now())
+    await asyncio.sleep(0.2)
+    channel_layer.channels.pop(consumers.STATE_MACHINE_CHANNEL_NAME, None)
+    await asyncio.sleep(0.2)
+    assert consumers.STATE_MACHINE_CHANNEL_NAME not in channel_layer.channels

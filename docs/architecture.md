@@ -89,7 +89,7 @@ All messages go through the Redis channel layer and are serialized with msgpack,
 - **Channels** are point-to-point queues. `party-state-machine` is routed to worker consumers. The per-party channels are read directly with `channel_layer.receive(name)` from inside the running `event_party_started` coroutine, so their messages have no `type`.
 - **Groups** fan out to every `PartyConsumer` connected to a party. The `type` selects the consumer method.
 
-`channels_redis` defaults apply: messages expire after 60 s, channel capacity is 100, and group membership expires after 24 h. `PartyConsumer.disconnect` doesn't call `group_discard`, so a closed socket stays in its group until the membership expires.
+`channels_redis` defaults apply: messages expire after 60 s, channel capacity is 100, and group membership expires after 24 h. `PartyConsumer.disconnect` calls `group_discard`, so only sockets of a server that died without disconnecting stay in a group until the membership expires.
 
 ### Channel `party-state-machine`
 
@@ -97,7 +97,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | `type` | Payload | Producer | Handler behavior |
 |---|---|---|---|
-| `event_party_started` | `party_id`, `party_name`, optional `force_start` | `PartyConsumer.connect` on every connection to a party that isn't closed. `CoreConfig.ready()` on the master, with `force_start: True`. | Runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). Only the worker that claims the waiting room runs it (see step 1 of [Party lifecycle](#4-party-lifecycle)). The rest log "already claimed" and return, unless `force_start` is set. |
+| `event_party_started` | `party_id`, `party_name`, optional `force_start` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. `CoreConfig.ready()` on the master, with `force_start: True`. | Runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). Only the worker that claims the waiting room runs it (see step 1 of [Party lifecycle](#4-party-lifecycle)). The rest log "already claimed" and return, unless `force_start` is set. |
 | `event_party_round_stopped` | `party_id`, `round_id` | `PartyConsumer.handle_form_submit` when a valid form has `submit_stop` | Closes the round with a conditional `UPDATE ... SET closed_at = now() WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`). If the round was already closed, the STOP is logged and ignored, so duplicate STOPs are harmless. Otherwise it sends `event_party_round_stopped` to group `party_{id}` and `{round_id}` to `party_new_round_{id}`. |
 | `event_party_join` | `party_id` | none | Unused handler ([#24]). |
 
@@ -190,7 +190,7 @@ sequenceDiagram
 
 The lifecycle has no explicit state. It is inferred from `Party.started_at`, `Party.closed_at` and each `PartyRound.closed_at`, and driven by one long coroutine, `PartyStateMachine.event_party_started`:
 
-1. The waiting room. A worker claims the party with a conditional `UPDATE` of `waiting_started_at`, and `ensure_players_join` renews that claim at least every `WAITING_POLL_INTERVAL` (10 s). A claim older than `WAITING_CLAIM_TTL` (60 s) belongs to a dead worker and can be taken over. The party starts once `min_players` distinct users are connected at the same time. There is no deadline: the party never starts with fewer players, however long it waits. When the last player leaves, the worker releases the claim and stops waiting, and the party stays open to join. The next connection claims it again. `started_at` is set with a conditional `UPDATE` that only succeeds for the current claim.
+1. The waiting room. A worker claims the party with a conditional `UPDATE` of `waiting_started_at`, and `ensure_players_join` renews that claim at least every `WAITING_POLL_INTERVAL` (10 s). A claim older than `WAITING_CLAIM_TTL` (60 s) belongs to a dead worker and can be taken over. The party starts once `min_players` distinct users are connected at the same time. There is no deadline: the party never starts with fewer players, however long it waits. When the last player leaves, the worker releases the claim and stops waiting, and the party stays open to join. The next connection claims it again. Each connected player's heartbeat also re-sends `event_party_started`, so a waiting room whose worker died gets a new one once the claim expires. `started_at` is set with a conditional `UPDATE` that only succeeds for the current claim.
 2. If the party is already closed, the handler returns.
 3. While `Party.closed_at` is NULL:
    - `next_round` returns the open round, or creates one with an unused letter, and broadcasts it.

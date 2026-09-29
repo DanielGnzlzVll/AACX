@@ -12,7 +12,7 @@ Proposed. Tracked in [#1]. Rounds already close through a conditional update, ST
 - Events carried Django model instances, which the Redis layer can't serialize ([#4]).
 - The end of a party was never persisted ([#5]).
 - Resuming after a restart replayed the whole game, and nothing gives a party a single owner ([#10]).
-- Waiting-room presence relies on `channels_redis` private internals ([#15]).
+- Waiting-room presence relied on `channels_redis` private internals and counted connections instead of players ([#15]).
 
 ## Decision
 

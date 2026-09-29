@@ -65,14 +65,17 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
         if not self.party.closed_at:
             logger.info(f"party no finalized yet {self.party_id=} trying to start")
-            await self.channel_layer.send(
-                STATE_MACHINE_CHANNEL_NAME,
-                {
-                    "type": "event_party_started",
-                    "party_name": self.party.name,
-                    "party_id": self.party.id,
-                },
-            )
+            await self.request_party_start()
+
+    async def request_party_start(self):
+        await self.channel_layer.send(
+            STATE_MACHINE_CHANNEL_NAME,
+            {
+                "type": "event_party_started",
+                "party_name": self.party.name,
+                "party_id": self.party.id,
+            },
+        )
 
     async def join_waiting_room(self, user):
         await self.party.joined_users.aadd(user)
@@ -99,10 +102,16 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         )
 
     async def keep_presence_alive(self):
+        # Re-requesting the start gives a waiting room whose waiter died, or
+        # exited just as this connection arrived, a new one.
         interval = models.PartyConnection.HEARTBEAT_INTERVAL.total_seconds()
         while True:
             await asyncio.sleep(interval)
             await self.touch_presence()
+            if await models.Party.objects.filter(
+                id=self.party_id, started_at=None
+            ).aexists():
+                await self.request_party_start()
 
     async def notify_presence_changed(self):
         await self.channel_layer.send(
