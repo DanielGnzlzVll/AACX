@@ -3,7 +3,7 @@ from django.test import Client
 from django.urls import reverse
 from django.utils import timezone
 
-from core.models import Party
+from core.models import Party, PartyRound, UserRoundAnswer
 
 
 @pytest.mark.parametrize(
@@ -136,3 +136,73 @@ def test_party_answers(
     )
 
     assert response.status_code == expected_status
+
+
+@pytest.fixture
+def party_with_rounds(party_factory, alice, bob):
+    party = party_factory(started_at=timezone.now(), joined_users=[alice, bob])
+    closed_round = PartyRound.objects.create(
+        party=party, letter="A", closed_at=timezone.now()
+    )
+    open_round = PartyRound.objects.create(party=party, letter="B")
+    for user in (alice, bob):
+        UserRoundAnswer.objects.create(
+            round=closed_round, user=user, field="name", value=f"A-{user.username}"
+        )
+        UserRoundAnswer.objects.create(
+            round=open_round, user=user, field="name", value=f"B-{user.username}"
+        )
+    return party
+
+
+def get_party_answers(client, party, username):
+    return client.get(
+        reverse("party_answers", kwargs={"party_id": party.id, "username": username})
+    )
+
+
+def test_party_answers_shows_own_open_round(logged_in_client, party_with_rounds):
+    response = get_party_answers(logged_in_client, party_with_rounds, "alice")
+
+    assert response.status_code == 200
+    assert response.context["rounds"] == [
+        {"letter": "A", "name": "A-alice"},
+        {"letter": "B", "name": "B-alice"},
+    ]
+
+
+def test_party_answers_hides_other_players_open_round(
+    logged_in_client, party_with_rounds
+):
+    response = get_party_answers(logged_in_client, party_with_rounds, "bob")
+
+    assert response.status_code == 200
+    assert response.context["rounds"] == [{"letter": "A", "name": "A-bob"}]
+    assert b"B-bob" not in response.content
+
+
+def test_party_answers_for_player_who_left_the_party(
+    logged_in_client, party_with_rounds, bob
+):
+    party_with_rounds.joined_users.remove(bob)
+
+    response = get_party_answers(logged_in_client, party_with_rounds, "bob")
+
+    assert response.status_code == 200
+    assert response.context["rounds"] == [{"letter": "A", "name": "A-bob"}]
+
+
+def test_party_answers_unknown_user(logged_in_client, party_with_rounds):
+    response = get_party_answers(logged_in_client, party_with_rounds, "nobody")
+
+    assert response.status_code == 404
+
+
+def test_party_answers_non_participant(
+    logged_in_client, party_with_rounds, user_factory
+):
+    user_factory("carol")
+
+    response = get_party_answers(logged_in_client, party_with_rounds, "carol")
+
+    assert response.status_code == 404
