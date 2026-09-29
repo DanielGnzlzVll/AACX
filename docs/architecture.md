@@ -10,6 +10,7 @@ Design decisions are recorded as ADRs in [`docs/adr/`](adr/README.md).
 - [Party lifecycle](#4-party-lifecycle)
 - [Data model](#5-data-model)
 - [Frontend model](#6-frontend-model)
+- [Continuous integration](#7-continuous-integration)
 - [Known gaps](#known-gaps)
 
 ## 1. Runtime topology
@@ -29,7 +30,7 @@ Design decisions are recorded as ADRs in [`docs/adr/`](adr/README.md).
 
 **`CHANNELS_WORKER_MASTER`**: read into `settings.IS_CHANNELS_WORKER_MASTER`. When it is true, the `PartyWorker` of `custom_runworker` also runs the party reconciler next to its channel listeners. Every `RECONCILE_INTERVAL` (5 s), `resume_orphaned_parties` sends `event_party_started` for each party with `started_at` set, `closed_at` null and no live lease, so a party interrupted by a crash or a restart gets a runner again (see [Party lifecycle](#4-party-lifecycle)). It runs periodically, not once at startup, because a dead worker's lease only expires `PartyLease.TTL` seconds later. Only `channel-master` sets the flag. `CoreConfig.ready()` doesn't touch the database, so management commands such as `migrate` run no party queries.
 
-**Worker concurrency**: a Channels worker runs one `PartyStateMachine` instance per channel and handles its messages one at a time. `event_party_started` doesn't return until the party is over, so a running party takes a whole worker. A busy worker also keeps receiving from `party-state-machine` and queues those messages in memory. A STOP, or another party's `event_party_started`, can therefore land on a worker that is running a party and wait until that party ends, even when other workers are idle. By then its round has timed out, so the STOP is ignored as stale ([#9]).
+**Worker concurrency**: a Channels worker runs one `PartyStateMachine` instance per channel and dispatches its messages one at a time, so no handler may block. `event_party_started` starts `run_party` as an `asyncio.Task`, keeps it in `PartyStateMachine.party_tasks` until it finishes, and returns right away. Another `event_party_started` for a party that already has a task on that worker is ignored. A worker therefore runs any number of parties at once, and a STOP is handled as soon as it arrives, whichever worker receives it. `run_party` logs any exception from the party and releases its lease, so a crashing party only ends its own task.
 
 ## 2. Component diagram
 
@@ -50,7 +51,7 @@ flowchart LR
     end
 
     subgraph workers["channel-master + channel-worker x3"]
-        sm["PartyStateMachine<br/>channel: party-state-machine"]
+        sm["PartyStateMachine<br/>channel: party-state-machine<br/>one task per party"]
         reconciler["Party reconciler<br/>master only"]
     end
 
@@ -73,6 +74,22 @@ flowchart LR
 
 `asacx/asgi.py` routes by protocol. `http` goes to the Django app. `websocket` goes through `AllowedHostsOriginValidator` and `AuthMiddlewareStack` to `core.routing.websocket_urlpatterns` (`party/<int:party_id>/` → `PartyConsumer`). `channel` goes through `ChannelNameRouter` to `core.routing.channel_routing` (`party-state-machine` → `PartyStateMachine`).
 
+### Websocket authorization
+
+`AllowedHostsOriginValidator` rejects a handshake whose `Origin` isn't in `ALLOWED_HOSTS`. `PartyConsumer.connect` then checks the connection before `accept()`, in this order, and closes it with an application close code:
+
+| Code | Constant | Reason |
+|---|---|---|
+| `4401` | `CLOSE_UNAUTHENTICATED` | The session has no authenticated user. |
+| `4404` | `CLOSE_PARTY_NOT_FOUND` | No party has the id in the URL. |
+| `4403` | `CLOSE_FORBIDDEN` | The user isn't allowed to join the party (`can_join`). |
+
+Closing before `accept()` rejects the handshake, so the ASGI server answers with HTTP 403 and the browser only sees a failed connection. The codes tell the cases apart in tests, where `WebsocketCommunicator.connect()` returns them.
+
+**Participant rule** (`can_join`): the user must be allowed to play by `Party.aget_access`, the policy `DetailParty` also uses. A user in `joined_users` is a `PARTICIPANT`. Anyone else can play only while the party hasn't started or closed (`WAITING`), and connecting then adds them to `joined_users`. Everyone else gets `STARTED` or `CLOSED` and is refused with 4403, so once the party starts only the users who connected while it waited can connect.
+
+After `accept()`, `receive` logs and ignores a message that isn't JSON, has no `HEADERS["HX-Trigger"]`, or has an unknown trigger, and keeps the socket open. `handle_form_submit` checks again that the user is in `joined_users` and drops answers unless the party's current round is open, so answers sent while the party waits or after the round closes are never saved.
+
 ### HTTP routes
 
 | Route | View | Notes |
@@ -89,18 +106,18 @@ flowchart LR
 
 All messages go through the Redis channel layer and are serialized with msgpack, so every payload value has to be a primitive ([#4]). There are two kinds of address:
 
-- **Channels** are point-to-point queues. `party-state-machine` is routed to worker consumers. The per-party channels are read directly with `channel_layer.receive(name)` from inside the running `event_party_started` coroutine, so their messages have no `type`.
+- **Channels** are point-to-point queues. `party-state-machine` is routed to worker consumers. The per-party channels are read directly with `channel_layer.receive(name)` from inside a party's task, so their messages have no `type`.
 - **Groups** fan out to every `PartyConsumer` connected to a party. The `type` selects the consumer method.
 
 `channels_redis` defaults apply: messages expire after 60 s, channel capacity is 100, and group membership expires after 24 h. `PartyConsumer.disconnect` calls `group_discard`, so only sockets of a server that died without disconnecting stay in a group until the membership expires.
 
 ### Channel `party-state-machine`
 
-Consumed by `PartyStateMachine` in whichever worker receives the message first. Busy workers receive too (see [Worker concurrency](#1-runtime-topology)).
+Consumed by `PartyStateMachine` in whichever worker receives the message first. No handler waits on a running party, so a worker that is running parties still handles new messages (see [Worker concurrency](#1-runtime-topology)).
 
 | `type` | Payload | Producer | Handler behavior |
 |---|---|---|---|
-| `event_party_started` | `party_id`, `party_name` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. The party reconciler on the master, for started parties without a live lease. | Runs the whole party in its own task: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). Only the worker that takes the party's lease runs it, the rest log "run by another worker" and return. A party that hasn't started also needs the waiting-room claim (step 1). A started party is resumed from the database. |
+| `event_party_started` | `party_id`, `party_name` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. The party reconciler on the master, for started parties without a live lease. | Starts a task that runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). It does nothing if this worker already has a task for the party. Only the worker that takes the party's lease runs it, the rest log "run by another worker" and return. A party that hasn't started also needs the waiting-room claim (step 1). A started party is resumed from the database. |
 | `event_party_round_stopped` | `party_id`, `round_id` | `PartyConsumer.handle_form_submit` when a valid form has `submit_stop` | Closes the round with a conditional `UPDATE ... SET closed_at = now() WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`). If the round was already closed, the STOP is logged and ignored, so duplicate STOPs are harmless. Otherwise it sends `event_party_round_stopped` to group `party_{id}` and `{round_id}` to `party_new_round_{id}`. |
 | `event_party_join` | `party_id` | none | Unused handler ([#24]). |
 
@@ -116,7 +133,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | Payload | Producer | Consumer |
 |---|---|---|
-| `round_id` | `PartyStateMachine.event_party_round_stopped`, after it closed the round | `PartyStateMachine.wait_for_round_end`, inside the round loop of `event_party_started`. It waits up to `max_round_duration` seconds. A message for the current round ends the wait early, and messages for other rounds are dropped as stale. On timeout it closes the round conditionally and, if that closed it, broadcasts `event_party_round_stopped`. |
+| `round_id` | `PartyStateMachine.event_party_round_stopped`, after it closed the round | `PartyStateMachine.wait_for_round_end`, inside the round loop of `play_party`. It waits up to `max_round_duration` seconds. A message for the current round ends the wait early, and messages for other rounds are dropped as stale. On timeout it closes the round conditionally and, if that closed it, broadcasts `event_party_round_stopped`. |
 
 ### Group `party_{id}`
 
@@ -132,7 +149,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 ### Websocket messages
 
 - **Browser → server**: the answers form uses `ws-send`, so each message is the form's fields as JSON plus a `HEADERS` object added by the htmx ws extension. `PartyConsumer.receive` only accepts messages where `HEADERS["HX-Trigger"]` is `party_current_answers_form` (autosave) or `submit_stop` (the STOP button). It validates them with `CurrentAnswersForm` and upserts every category, storing an empty value for a field that failed field validation (too long). Then it sends `event_party_round_stopped` if `submit_stop` is set, or replies with `party_current_answers_errors.html`, which holds only the per-field `#answer_error_<field>` elements.
-- **Server → browser**: HTML fragments, swapped by element id (see [Frontend model](#6-frontend-model)). `connect` also sends the plain text `waiting for players to join`, which the ws extension ignores because it contains no element.
+- **Server → browser**: HTML fragments, swapped by element id (see [Frontend model](#6-frontend-model)).
 
 ### Round sequence
 
@@ -146,11 +163,14 @@ sequenceDiagram
     participant DB as Postgres
 
     B->>C: ws connect /party/{id}/
+    C->>DB: load the party, check can_join
+    C->>B: accept, or close with 4401, 4404 or 4403
     C->>R: group_add party_{id}
     C->>DB: joined_users.add(user), insert PartyConnection
     C->>R: send party_players_{id} {user_id}
     C->>R: send party-state-machine {event_party_started}
     R->>SM: event_party_started
+    SM->>SM: run_party task takes the PartyLease
     SM->>DB: claim the waiting room (waiting_started_at)
     loop until min_players distinct users are connected
         SM->>DB: count distinct users with a live PartyConnection
@@ -192,10 +212,10 @@ sequenceDiagram
 
 ### Implemented
 
-The lifecycle has no explicit state. It is inferred from `Party.started_at`, `Party.closed_at` and each `PartyRound.closed_at`, and driven by one long coroutine, `PartyStateMachine.event_party_started`:
+The lifecycle has no explicit state. It is inferred from `Party.started_at`, `Party.closed_at` and each `PartyRound.closed_at`, and driven by one `asyncio.Task` per party. `PartyStateMachine.event_party_started` starts `run_party`, which takes the party's lease and runs `play_party`:
 
 1. The waiting room. A worker claims the party with a conditional `UPDATE` of `waiting_started_at`, and `ensure_players_join` renews that claim at least every `WAITING_POLL_INTERVAL` (10 s). A claim older than `WAITING_CLAIM_TTL` (60 s) belongs to a dead worker and can be taken over. The party starts once `min_players` distinct users are connected at the same time. There is no deadline: the party never starts with fewer players, however long it waits. When the last player leaves, the worker releases the claim and stops waiting, and the party stays open to join. The next connection claims it again. Each connected player's heartbeat also re-sends `event_party_started`, so a waiting room whose worker died gets a new one once the claim expires. `started_at` is set with a conditional `UPDATE` that only succeeds for the current claim.
-2. If the party is already closed, the handler returns. If it has already started, it is resumed: a latest round that is closed may have lost its runner before scoring, so it is scored again. Scoring is idempotent, and it closes the party after the last round.
+2. If the party is already closed, `play_party` returns. If it has already started, it is resumed: a latest round that is closed may have lost its runner before scoring, so it is scored again. Scoring is idempotent, and it closes the party after the last round.
 3. While `Party.closed_at` is NULL:
    - `next_round` returns the open round, or creates one with an unused letter, and broadcasts it.
    - `wait_for_round_end` waits for a STOP on `party_new_round_{id}` or until the round's `started_at` plus `max_round_duration`, and makes sure the round is closed. A resumed round only gets the time it has left.
@@ -224,7 +244,7 @@ stateDiagram-v2
 
 ### Target
 
-The target is proposed in [#1] and recorded in [ADR 0004](adr/0004-persisted-event-driven-party-state-machine.md). State is persisted in `Party.status`, transitions are conditional DB updates, events carry ids only, and each party runs as its own `asyncio.Task` owned by one worker through a Redis lease.
+The target is proposed in [#1] and recorded in [ADR 0004](adr/0004-persisted-event-driven-party-state-machine.md). State is persisted in `Party.status`, transitions are conditional DB updates, events carry ids only, and each party runs as its own `asyncio.Task` owned by one worker through a Redis lease. The per-party tasks, the lease and the reconciler are implemented (see above). `Party.status`, `ABANDONED` and the round's `deadline_at` and `closed_reason` are not.
 
 ```mermaid
 stateDiagram-v2
@@ -363,6 +383,18 @@ The per-player answers modal doesn't use the websocket. Clicking a row in the sc
 
 Once a party is closed, `DetailParty` renders `_party_content.html` with `party_finished.html` (winners and a link home) in place of the answers form, and doesn't create a round.
 
+## 7. Continuous integration
+
+`.github/workflows/ci.yml` runs on every pull request and on pushes to `master`. A new push to a pull request cancels the run in progress. Its three jobs run in parallel:
+
+| Job | Checks |
+|---|---|
+| `lint` | `ruff check` with the version pinned in `requirements-dev.txt`. Findings show up as annotations on the pull request. |
+| `test` | Installs `requirements-dev.txt` on Python 3.11, with `postgres:16` and `redis:7` service containers and `DJANGO_SETTINGS_MODULE=asacx.settings_test`. `manage.py makemigrations --check --dry-run` fails if a model change has no migration, then `pytest` runs. |
+| `build` | Builds the `Dockerfile` with Buildx, without pushing, cached in the GitHub Actions cache. |
+
+`.github/dependabot.yml` opens weekly update pull requests for the pip requirements, the `Dockerfile` base image and the actions used by the workflow. The pull request template asks whether the change needs an update to this document or an ADR.
+
 ## Known gaps
 
 The issues that track where the implementation differs from the design:
@@ -370,12 +402,8 @@ The issues that track where the implementation differs from the design:
 | Issue | Gap |
 |---|---|
 | [#1] | Umbrella for moving the lifecycle to the target state machine above |
-| [#9] | A running party blocks a whole worker, and a STOP that lands on a busy worker only takes effect when the round times out |
-| [#16] | `PartyConsumer` doesn't check authentication, authorization or input |
 | [#24] | Dead and incorrect code paths (`party_stared`, unused handlers) |
 
 [#1]: https://github.com/DanielGnzlzVll/AACX/issues/1
 [#4]: https://github.com/DanielGnzlzVll/AACX/issues/4
-[#9]: https://github.com/DanielGnzlzVll/AACX/issues/9
-[#16]: https://github.com/DanielGnzlzVll/AACX/issues/16
 [#24]: https://github.com/DanielGnzlzVll/AACX/issues/24

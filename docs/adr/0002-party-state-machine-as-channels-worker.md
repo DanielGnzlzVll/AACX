@@ -24,7 +24,7 @@ Celery or a separate game-loop service were not adopted, because either would ad
 
 - There is no extra infrastructure: Redis and the Channels worker processes do everything.
 - Round timing and ordering are decided in one place, so clients can't get out of step.
-- A party takes a whole worker for its entire duration, and a busy worker keeps queuing incoming messages behind it. Concurrent parties are capped by the number of workers, and a STOP that lands on a busy worker waits for that whole party, so its round ends on timeout instead ([#9]).
+- A party takes a whole worker for its entire duration, and a busy worker keeps queuing incoming messages behind it. Concurrent parties are capped by the number of workers, and a STOP that lands on a busy worker waits for that whole party, so its round ends on timeout instead ([#9]). Running each party in its own `asyncio.Task` in the worker has removed both limits.
 - Lifecycle state lives in the coroutine's memory apart from a few timestamps. A party's end is only recorded because scoring sets `closed_at` after the last round ([#5]). A resumed party has to rebuild its position from `closed_at` and `started_at` timestamps.
 - Everything sent through the channel layer has to be msgpack-serializable, so events carry ids, not model instances ([#4]).
 - The channel layer has no public API for group membership, so waiting-room presence has to be tracked separately.
