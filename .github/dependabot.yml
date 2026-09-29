@@ -4,6 +4,19 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    groups:
+      django-channels:
+        patterns:
+          - "django"
+          - "channels"
+          - "channels-redis"
+          - "daphne"
+          - "django-debug-toolbar"
+          - "django-extensions"
+          - "django-htmx"
+      test-tools:
+        patterns:
+          - "pytest*"
   - package-ecosystem: docker
     directory: /
     schedule:

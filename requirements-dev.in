@@ -1,0 +1,10 @@
+-c requirements.txt
+-r requirements.in
+django-debug-toolbar
+django-extensions
+pip-audit
+pytest
+pytest-asyncio
+pytest-django
+ruff
+watchdog

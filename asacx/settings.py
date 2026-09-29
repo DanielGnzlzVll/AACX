@@ -155,7 +155,14 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [env("REDIS_URL", default="redis://cache:6379/0")],
+            # Receivers block in BZPOPMIN for brpop_timeout (5s), as long as
+            # redis-py's default socket timeout, which would kill them when idle.
+            "hosts": [
+                {
+                    "address": env("REDIS_URL", default="redis://cache:6379/0"),
+                    "socket_timeout": None,
+                }
+            ],
         },
     },
 }
@@ -221,9 +228,8 @@ LOGGING = {
 
 CACHES = {
     "default": {
-        "BACKEND": "redis_lock.django_cache.RedisCache",
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": env("REDIS_CACHE_URL", default="redis://cache:6379/1"),
-        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
     }
 }
 

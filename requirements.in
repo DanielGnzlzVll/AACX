@@ -1,0 +1,10 @@
+channels
+channels-redis
+daphne
+django~=5.2.0
+django-environ
+django-htmx
+psycopg2-binary
+python-redis-lock
+redis
+whitenoise
