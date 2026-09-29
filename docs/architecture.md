@@ -78,7 +78,7 @@ flowchart LR
 | `/logout/` | `Logout` | A `LogoutView` restricted to POST (`http_method_names = ["post", "options"]`). Redirects to `/login/`. |
 | `/home/` | `Home` | Parties the user can join or rejoin. This is the entry page. Nothing is routed at `/`, so it returns 404. |
 | `/party/create/` | `CreateParty` | Live-validated form. Creates a new party when `submit=true`. It never modifies an existing one. |
-| `/party/<id>/` | `DetailParty` | Waiting page, game page, or final results once the party is closed. For a party that isn't closed, the GET creates a round if none is open ([#14]). |
+| `/party/<id>/` | `DetailParty` | Waiting page, game page, or final results once the party is closed. The GET is read-only: it shows the latest round, disabled once it is closed, and a waiting state until the state machine opens the first one. |
 | `/party/<id>/user/<username>/answers` | `PartyAnswers` | A player's answers, shown in a modal. Another player's answers only cover closed rounds. Returns 404 unless that user joined or answered in the party. |
 | `/admin/`, `/__debug__/` | Django admin, debug toolbar | |
 
@@ -286,7 +286,7 @@ erDiagram
 
 - **Letters don't repeat.** `unique_together = ("party", "letter")`, so a party can have at most 26 rounds. `max_rounds` is capped at 26 for that reason. `aget_current_or_next_round` picks a random unused letter and raises `"All letters are used"` when none are left.
 - **One answer per player, round and category.** `unique_together = ("round", "user", "field")`. `PartyRound.save_user_answers` upserts with `bulk_create(update_conflicts=True)`, so each autosave overwrites the previous value.
-- **The current round** is the party's round with the latest `started_at`. It is open while `closed_at` is NULL. `aget_current_or_next_round` returns it if it is open and otherwise creates a new one, which is why callers that only need to read must not use it ([#14]).
+- **The current round** is the party's round with the latest `started_at`. It is open while `closed_at` is NULL. `aget_current_or_next_round` returns it if it is open and otherwise creates a new one, so only the state machine calls it. Callers that only need to read use `aget_current_round`.
 - **A round is closed exactly once.** Every close is a conditional `UPDATE ... WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`, or the one inside `close_round_and_calculate_scores`), and only the caller whose update wins broadcasts the round end.
 - **A party is closed** once it has `max_rounds` closed rounds. `close_round_and_calculate_scores` sets `Party.closed_at` in the same transaction as the scores, with a conditional `UPDATE ... WHERE closed_at IS NULL`. Migration `0014_close_finished_parties` backfilled parties that had already played all their rounds. `Party.is_active` means `closed_at` is NULL.
 - **A party has started** once `started_at` is set. It is set once, by the worker that won the row lock.
@@ -331,7 +331,7 @@ The ws extension handles each server message as an HTML fragment. Every top-leve
 | `party_content` | `party_no_started.html` | Inline HTML in `ensure_players_join` ("Esperando Mas Jugadores...") | `PartyStateMachine`, group `html` |
 | `party_past_answers`, `party_current_answers`, `party_reports` | `_party_content.html` (included by `party.html`) | `_party_content.html` | `PartyStateMachine.next_round`, group `html` |
 | `party_current_answers`, `party_reports` | `_party_content.html` | `party_finished_update.html` (final results in place of the form) | `PartyStateMachine.finish_party`, group `html` |
-| `party_current_answers_form`, `script` | `party_current_answers.html` | `party_current_answers.html` | `PartyConsumer`: validation reply to its own socket, and `event_party_round_stopped` (disabled form) |
+| `party_current_answers_form`, `script` | `party_current_answers.html` (the id is also the waiting placeholder when no round is open) | `party_current_answers.html` | `PartyConsumer`: validation reply to its own socket, and `event_party_round_stopped` (disabled form) |
 | `party_answers_table` | `party_answers.html` | `party_answers.html` | `PartyConsumer.event_update_past_answers` |
 | `modal` | `base.html` | `party_current_all_users_answers_modal.html` | `PartyStateMachine.display_all_answers`, group `html` |
 
@@ -355,7 +355,6 @@ The issues that track where the implementation differs from the design:
 | [#1] | Umbrella for moving the lifecycle to the target state machine above |
 | [#9] | A running party blocks a whole worker, and a STOP that lands on a busy worker only takes effect when the round times out |
 | [#10] | More than one worker can own a party, and a resumed round restarts its timer |
-| [#14] | `GET /party/<id>/` creates rounds |
 | [#15] | The waiting room counts connections, reads `channels_redis` internals, and starts below `min_players` |
 | [#16] | `PartyConsumer` doesn't check authentication, authorization or input |
 | [#18] | Round broadcasts wipe each player's past answers |
@@ -367,7 +366,6 @@ The issues that track where the implementation differs from the design:
 [#9]: https://github.com/DanielGnzlzVll/AACX/issues/9
 [#10]: https://github.com/DanielGnzlzVll/AACX/issues/10
 [#13]: https://github.com/DanielGnzlzVll/AACX/issues/13
-[#14]: https://github.com/DanielGnzlzVll/AACX/issues/14
 [#15]: https://github.com/DanielGnzlzVll/AACX/issues/15
 [#16]: https://github.com/DanielGnzlzVll/AACX/issues/16
 [#18]: https://github.com/DanielGnzlzVll/AACX/issues/18
