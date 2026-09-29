@@ -36,7 +36,7 @@ cryptography==50.0.1
     #   service-identity
 daphne==4.2.3
     # via -r requirements.in
-django==5.2.17
+django==6.1.1
     # via
     #   -r requirements.in
     #   channels
@@ -78,7 +78,7 @@ service-identity==26.1.0
     # via twisted
 sqlparse==0.6.0
     # via django
-twisted==26.4.0
+twisted[tls]==26.4.0
     # via daphne
 txaio==26.6.1
     # via autobahn
