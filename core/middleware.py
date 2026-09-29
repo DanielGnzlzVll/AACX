@@ -1,6 +1,3 @@
-import random
-import time
-
 
 def latency_simulator_middleware(get_response):
     # One-time configuration and initialization.

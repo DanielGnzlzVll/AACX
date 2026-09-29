@@ -10,7 +10,6 @@ from django.contrib.auth.views import LogoutView
 from django.db import IntegrityError, transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
-from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
