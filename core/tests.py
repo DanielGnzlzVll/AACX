@@ -10,6 +10,7 @@ from channels.testing import WebsocketCommunicator
 from django.apps import apps as django_apps
 from django.contrib.auth import SESSION_KEY, get_user_model
 from django.contrib.auth.models import User
+from django.db import connection
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -565,3 +566,32 @@ class CloseFinishedPartiesMigrationTests(TestCase):
         in_progress.refresh_from_db()
         self.assertEqual(finished.closed_at, last_closed_at)
         self.assertIsNone(in_progress.closed_at)
+
+
+class RenameDuplicateOpenPartiesMigrationTests(TestCase):
+    def test_renames_all_but_the_oldest_open_party_with_each_name(self):
+        migration = importlib.import_module(
+            "core.migrations.0016_party_created_by_unique_open_name"
+        )
+        with connection.schema_editor() as editor:
+            for constraint in models.Party._meta.constraints:
+                editor.remove_constraint(models.Party, constraint)
+        oldest = models.Party.objects.create(name="hijack")
+        duplicate = models.Party.objects.create(name="HIJACK")
+        closed = models.Party.objects.create(name="hijack", closed_at=timezone.now())
+        other = models.Party.objects.create(name="other")
+        long_name = "x" * 50
+        models.Party.objects.create(name=long_name)
+        long_duplicate = models.Party.objects.create(name=long_name)
+
+        migration.rename_duplicate_open_parties(django_apps, None)
+
+        names = dict(models.Party.objects.values_list("pk", "name"))
+        self.assertEqual(names[oldest.pk], "hijack")
+        self.assertEqual(names[duplicate.pk], f"HIJACK ({duplicate.pk})")
+        self.assertEqual(names[closed.pk], "hijack")
+        self.assertEqual(names[other.pk], "other")
+        suffix = f" ({long_duplicate.pk})"
+        self.assertEqual(
+            names[long_duplicate.pk], long_name[: 50 - len(suffix)] + suffix
+        )

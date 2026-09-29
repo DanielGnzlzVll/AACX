@@ -77,7 +77,7 @@ flowchart LR
 | `/login/` | `Login` | Nickname login ([ADR 0003](adr/0003-passwordless-nickname-login.md)). |
 | `/logout/` | `Logout` | A `LogoutView` restricted to POST (`http_method_names = ["post", "options"]`). Redirects to `/login/`. |
 | `/home/` | `Home` | Parties the user can join or rejoin. This is the entry page. Nothing is routed at `/`, so it returns 404. |
-| `/party/create/` | `CreateParty` | Live-validated form. Saves when `submit=true`. |
+| `/party/create/` | `CreateParty` | Live-validated form. Creates a new party when `submit=true`. It never modifies an existing one. |
 | `/party/<id>/` | `DetailParty` | Waiting page, game page, or final results once the party is closed. For a party that isn't closed, the GET creates a round if none is open ([#14]). |
 | `/party/<id>/user/<username>/answers` | `PartyAnswers` | A player's answers, shown in a modal. Another player's answers only cover closed rounds. Returns 404 unless that user joined or answered in the party. |
 | `/admin/`, `/__debug__/` | Django admin, debug toolbar | |
@@ -246,6 +246,7 @@ After a worker restart, a reconciler resumes every `IN_PROGRESS` party that has 
 erDiagram
     USER ||--o{ USER_ROUND_ANSWER : writes
     USER }o--o{ PARTY : "joined_users"
+    USER |o--o{ PARTY : "created_by"
     PARTY ||--o{ PARTY_ROUND : has
     PARTY_ROUND ||--o{ USER_ROUND_ANSWER : has
 
@@ -255,6 +256,7 @@ erDiagram
         datetime started_at "NULL until the waiting room ends"
         datetime closed_at "set when max_rounds rounds are closed"
         datetime created_at
+        int created_by FK "NULL for older parties or a deleted creator"
         int min_players "default 2, min 2"
         int max_round_duration "seconds, default 120, min 30"
         int max_rounds "default 5, 1..26, required"
@@ -290,6 +292,7 @@ erDiagram
 - **A party has started** once `started_at` is set. It is set once, by the worker that won the row lock.
 - **`joined_users`** is filled only by the state machine, while the waiting room is open. The HTTP views don't change it.
 - **Available parties** (`PartyQuerySet.get_available_parties`) are parties that haven't started, plus unclosed parties the user joined. `DetailParty` shows a party if the user joined it or it isn't closed.
+- **Open party names are unique**, case-insensitively. The partial `UniqueConstraint` `unique_open_party_name` on `Lower(name)` where `closed_at IS NULL` enforces it, so a closed party's name can be reused. `CreateParty` always inserts a new party and records `created_by`. `PartyForm.clean_name` rejects a taken name with "Ya existe una partida abierta con ese nombre.", and the view shows the same error if the insert loses a race for the name. Migration `0016_party_created_by_unique_open_name` renamed open duplicates to `name (id)` before adding the constraint.
 - **Party settings** have validators. `max_rounds` is required, but `min_players` and `max_round_duration` are `blank=True, null=True`, so a blank form value is saved as NULL ([#13]).
 
 ### Scoring

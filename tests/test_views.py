@@ -1,9 +1,17 @@
+from unittest import mock
+
 import pytest
 from django.test import Client
 from django.urls import reverse
 from django.utils import timezone
 
-from core.models import Party, PartyRound, UserRoundAnswer
+from core.forms import PartyForm
+from core.models import (
+    DUPLICATE_OPEN_PARTY_NAME_MESSAGE,
+    Party,
+    PartyRound,
+    UserRoundAnswer,
+)
 
 
 @pytest.mark.parametrize(
@@ -64,6 +72,91 @@ def test_create_party_creates_party(logged_in_client):
     party = Party.objects.get(name="new party")
     assert (party.min_players, party.max_round_duration, party.max_rounds) == (3, 60, 4)
     assert party in response.context["parties"]
+
+
+def test_create_party_stores_its_creator(logged_in_client, alice):
+    logged_in_client.post(
+        reverse("create_party"),
+        {"name": "new party", "max_rounds": 4, "submit": "true"},
+    )
+
+    assert Party.objects.get(name="new party").created_by == alice
+
+
+@pytest.mark.parametrize("name", ["hijack", "HiJack"])
+def test_create_party_with_an_open_party_name_is_rejected(
+    logged_in_client, party_factory, bob, name
+):
+    existing = party_factory(
+        name="hijack",
+        min_players=2,
+        max_round_duration=120,
+        max_rounds=5,
+        created_by=bob,
+    )
+
+    response = logged_in_client.post(
+        reverse("create_party"),
+        {
+            "name": name,
+            "min_players": 9,
+            "max_round_duration": 30,
+            "max_rounds": 1,
+            "submit": "true",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.context["form"].errors == {
+        "name": [DUPLICATE_OPEN_PARTY_NAME_MESSAGE]
+    }
+    assert response.headers["HX-Reswap"] == "outerHTML transition:false"
+    assert list(Party.objects.all()) == [existing]
+    existing.refresh_from_db()
+    assert (
+        existing.min_players,
+        existing.max_round_duration,
+        existing.max_rounds,
+        existing.created_by,
+    ) == (2, 120, 5, bob)
+
+
+def test_create_party_reuses_the_name_of_a_closed_party(
+    logged_in_client, party_factory, alice
+):
+    closed = party_factory(
+        name="hijack", max_rounds=5, started_at=timezone.now(), closed_at=timezone.now()
+    )
+
+    logged_in_client.post(
+        reverse("create_party"),
+        {"name": "hijack", "max_rounds": 1, "submit": "true"},
+    )
+
+    closed.refresh_from_db()
+    assert closed.max_rounds == 5
+    new_party = Party.objects.exclude(pk=closed.pk).get(name="hijack")
+    assert (new_party.max_rounds, new_party.created_by) == (1, alice)
+
+
+def test_create_party_losing_a_race_for_the_name_is_rejected(
+    logged_in_client, party_factory
+):
+    existing = party_factory(name="hijack")
+
+    with mock.patch.object(
+        PartyForm, "clean_name", lambda form: form.cleaned_data["name"]
+    ):
+        response = logged_in_client.post(
+            reverse("create_party"),
+            {"name": "hijack", "max_rounds": 1, "submit": "true"},
+        )
+
+    assert response.status_code == 200
+    assert response.context["form"].errors == {
+        "name": [DUPLICATE_OPEN_PARTY_NAME_MESSAGE]
+    }
+    assert list(Party.objects.all()) == [existing]
 
 
 @pytest.mark.parametrize(

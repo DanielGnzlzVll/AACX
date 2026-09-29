@@ -172,14 +172,22 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
                 context, headers={"HX-Reswap": "outerHTML transition:false"}
             )
 
-        self.form_saved = True
-        party, created = models.Party.objects.update_or_create(
-            name=form.cleaned_data["name"], defaults=form.cleaned_data
-        )
-        if created:
-            messages.add_message(
-                request, messages.SUCCESS, f"'{party.name}' created successfully."
+        party = form.save(commit=False)
+        party.created_by = request.user
+        try:
+            with transaction.atomic():
+                party.save()
+        except IntegrityError:
+            form.add_error("name", models.DUPLICATE_OPEN_PARTY_NAME_MESSAGE)
+            context["form"] = form
+            return self.render_to_response(
+                context, headers={"HX-Reswap": "outerHTML transition:false"}
             )
+
+        self.form_saved = True
+        messages.add_message(
+            request, messages.SUCCESS, f"'{party.name}' created successfully."
+        )
 
         context["parties"] = models.Party.objects.get_available_parties(
             self.request.user

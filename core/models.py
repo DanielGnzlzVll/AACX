@@ -8,8 +8,10 @@ from asgiref.sync import async_to_sync, sync_to_async
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, Lower
 from django.utils import timezone
+
+DUPLICATE_OPEN_PARTY_NAME_MESSAGE = "Ya existe una partida abierta con ese nombre."
 
 
 class PartyQuerySet(models.QuerySet):
@@ -29,6 +31,13 @@ class Party(models.Model):
     closed_at = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="created_parties",
+    )
 
     joined_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL, related_name="parties"
@@ -52,6 +61,16 @@ class Party(models.Model):
     )
 
     objects = PartyQuerySet.as_manager()
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                Lower("name"),
+                condition=models.Q(closed_at__isnull=True),
+                name="unique_open_party_name",
+                violation_error_message=DUPLICATE_OPEN_PARTY_NAME_MESSAGE,
+            ),
+        ]
 
     def __str__(self):
         return self.name

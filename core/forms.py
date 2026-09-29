@@ -45,6 +45,14 @@ class PartyForm(forms.ModelForm):
             "max_rounds",
         ]
 
+    def clean_name(self):
+        name = self.cleaned_data["name"]
+        if models.Party.objects.filter(
+            name__iexact=name, closed_at__isnull=True
+        ).exists():
+            raise forms.ValidationError(models.DUPLICATE_OPEN_PARTY_NAME_MESSAGE)
+        return name
+
 
 class CurrentAnswersForm(forms.Form):
     name = forms.CharField(
