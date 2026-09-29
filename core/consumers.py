@@ -214,6 +214,28 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
         await current_round.save_user_answers(self.scope["user"], data.items())
 
+    async def event_new_round(self, event):
+        current_round = await models.PartyRound.objects.aget(
+            id=event["round_id"], party_id=self.party_id
+        )
+        template_string = render_to_string(
+            "_party_content.html",
+            {
+                "party": self.party,
+                "players_scores": await self.party.aget_players_scores(),
+                "rounds": await self.party.aget_answers_for_user(self.scope["user"]),
+                "current_round": current_round,
+                "form": forms.CurrentAnswersForm(
+                    current_round=current_round,
+                    autofocus_name=True,
+                    initial=await current_round.aget_initial_data_for_user(
+                        self.scope["user"]
+                    ),
+                ),
+            },
+        )
+        await self.html({"message": template_string})
+
     async def event_update_past_answers(self, event):
         rounds = await self.party.aget_answers_for_user(self.scope["user"])
         template_string = render_to_string(
@@ -376,21 +398,9 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
 
     async def next_round(self, party):
         next_or_current_round = await party.aget_current_or_next_round()
-        template_string = render_to_string(
-            "_party_content.html",
-            {
-                "party": party,
-                "players_scores": await party.aget_players_scores(),
-                "current_round": next_or_current_round,
-                "base_template": "base_partial.html",
-                "form": forms.CurrentAnswersForm(
-                    current_round=next_or_current_round, autofocus_name=True
-                ),
-            },
-        )
         await self.channel_layer.group_send(
             self.get_party_group_name(party=party),
-            {"type": "html", "message": template_string},
+            {"type": "event_new_round", "round_id": next_or_current_round.id},
         )
         return next_or_current_round
 

@@ -22,7 +22,7 @@ The server renders all UI as HTML, both for HTTP responses and for websocket mes
 
 - There is one rendering layer and no client state: the page always shows the last HTML the server sent.
 - Element ids are the contract between templates and consumers. Renaming an id breaks a swap without any error, so the swap targets are listed in [`architecture.md`](../architecture.md#6-frontend-model).
-- A group broadcast is rendered once and sent to everyone, so it can only contain state that all players share. Anything specific to one player has to be rendered by that player's `PartyConsumer`. Mixing the two is what empties each player's past-answers panel at the start of every round ([#18]).
+- A group broadcast is rendered once and sent to everyone, so it can only contain state that all players share. Anything specific to one player has to be rendered by that player's `PartyConsumer`. Mixing the two emptied each player's past-answers panel at the start of every round ([#18]).
 - A swap must never replace an input the player may be typing in: it loses focus and the cursor, and drops whatever was typed while the message was in flight. Replies to autosave only swap small per-field status elements ([#20]).
 - Websocket messages are markup, not a versioned API. Only this app's own templates can use them.
 - The app follows hypermedia principles, since the server sends HTML with the next actions in it. Page GETs are read-only; game state only changes through the websocket and the state machine.

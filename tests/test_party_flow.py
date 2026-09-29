@@ -186,3 +186,80 @@ async def test_waiting_page_receives_every_broadcast(
         if "party_finished" in ids.all:
             break
     await asyncio.wait_for(party_task, timeout=10)
+
+
+def is_party_content(message):
+    return 'id="party_content"' in message
+
+
+@pytest.mark.django_db(transaction=True)
+async def test_past_answers_survive_the_next_round(
+    ws_connect,
+    channel_layer,
+    state_machine,
+    fast_answers_reveal,
+    party_factory,
+    alice,
+    bob,
+):
+    party = await sync_to_async(party_factory)(
+        min_players=2, max_rounds=2, max_round_duration=1
+    )
+    path = f"/party/{party.id}/"
+    alice_ws = await ws_connect(alice, path)
+    bob_ws = await ws_connect(bob, path)
+    start_event = await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+    party_task = asyncio.create_task(state_machine.play_party(start_event["party_id"]))
+
+    for ws in (alice_ws, bob_ws):
+        await receive_until(ws, is_answers_form)
+    letter = (await models.PartyRound.objects.aget(party=party)).letter
+    answers = {alice_ws: f"{letter}alicia", bob_ws: f"{letter}roberto"}
+    for ws, name in answers.items():
+        await ws.send_to(text_data=answers_message(name=name))
+        await receive_until(ws, is_answers_status)
+
+    for ws in (alice_ws, bob_ws):
+        await receive_until(ws, is_disabled_answers_form)
+    alice_round_2 = await receive_until(alice_ws, is_party_content)
+    bob_round_2 = await receive_until(bob_ws, is_party_content)
+    await asyncio.wait_for(party_task, timeout=10)
+
+    assert answers[alice_ws] in alice_round_2
+    assert answers[bob_ws] not in alice_round_2
+    assert answers[bob_ws] in bob_round_2
+    assert answers[alice_ws] not in bob_round_2
+
+
+@pytest.mark.django_db(transaction=True)
+async def test_group_broadcasts_carry_no_per_player_answers(
+    monkeypatch,
+    ws_connect,
+    channel_layer,
+    state_machine,
+    fast_answers_reveal,
+    party_factory,
+    alice,
+    bob,
+):
+    party = await sync_to_async(party_factory)(
+        min_players=2, max_rounds=2, max_round_duration=1
+    )
+    broadcast_html = []
+    group_send = channel_layer.group_send
+
+    async def spy(group, message):
+        if message["type"] == "html":
+            broadcast_html.append(message["message"])
+        await group_send(group, message)
+
+    monkeypatch.setattr(channel_layer, "group_send", spy)
+    path = f"/party/{party.id}/"
+    await ws_connect(alice, path)
+    await ws_connect(bob, path)
+    start_event = await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
+    await asyncio.wait_for(state_machine.play_party(start_event["party_id"]), 15)
+
+    assert broadcast_html
+    for message in broadcast_html:
+        assert "party_answers_table" not in ElementIds(message).all, message
