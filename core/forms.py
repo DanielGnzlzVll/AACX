@@ -123,9 +123,7 @@ class CurrentAnswersForm(forms.Form):
             if (
                 value
                 and type(value) is str
-                and not cleaned_data[field]
-                .lower()
-                .startswith(self.current_round.letter.lower())
+                and not models.answer_starts_with(value, self.current_round.letter)
             ):
                 self.add_error(
                     field, f"'{value}' no empieza por '{self.current_round.letter}'"

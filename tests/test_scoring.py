@@ -1,7 +1,26 @@
 import pytest
 from asgiref.sync import async_to_sync
 
-from core.models import PartyRound, UserRoundAnswer
+from core.models import PartyRound, UserRoundAnswer, normalize_answer
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("Perro", "perro"),
+        ("  Perro  ", "perro"),
+        ("Oso   Polar", "oso polar"),
+        ("Oso\tPolar", "oso polar"),
+        ("Ávila", "avila"),
+        ("ÉÍÓÚÜ", "eiouu"),
+        ("Straße", "strasse"),
+        ("Ñandú", "ñandu"),
+        ("ñu", "ñu"),
+        ("", ""),
+    ],
+)
+def test_normalize_answer(value, expected):
+    assert normalize_answer(value) == expected
 
 
 @pytest.mark.parametrize(
@@ -34,6 +53,27 @@ from core.models import PartyRound, UserRoundAnswer
             {"alice": 0, "bob": 0, "carol": 100},
             id="empty-answers-do-not-share-points",
         ),
+        pytest.param({"alice": "Ávila"}, {"alice": 100}, id="accented-initial"),
+        pytest.param(
+            {"alice": "Ana", "bob": "ana", "carol": "ANA "},
+            {"alice": 33, "bob": 33, "carol": 33},
+            id="case-and-whitespace-variants-share",
+        ),
+        pytest.param(
+            {"alice": "Ávila", "bob": "avila"},
+            {"alice": 50, "bob": 50},
+            id="accent-variants-share",
+        ),
+        pytest.param(
+            {"alice": "Ana  María", "bob": "ana maria"},
+            {"alice": 50, "bob": 50},
+            id="inner-whitespace-variants-share",
+        ),
+        pytest.param(
+            {"alice": "Pedro", "bob": "Pedro", "carol": "Ana"},
+            {"alice": 0, "bob": 0, "carol": 100},
+            id="invalid-answers-do-not-share-points",
+        ),
     ],
 )
 def test_close_round_and_calculate_scores(
@@ -50,7 +90,40 @@ def test_close_round_and_calculate_scores(
     round.refresh_from_db()
     assert round.closed_at is not None
     scored = {
-        answer.user.username: answer.scored_points or 0
+        answer.user.username: answer.scored_points
+        for answer in UserRoundAnswer.objects.filter(round=round)
+    }
+    assert scored == expected_points
+
+
+@pytest.mark.parametrize(
+    "answers, expected_points",
+    [
+        pytest.param(
+            {"alice": "Nandu", "bob": "nandú"},
+            {"alice": 50, "bob": 50},
+            id="n-accent-variants-share",
+        ),
+        pytest.param(
+            {"alice": "Ñandú", "bob": "Nandu"},
+            {"alice": 0, "bob": 100},
+            id="enye-is-not-n",
+        ),
+    ],
+)
+def test_close_round_and_calculate_scores_keeps_enye_distinct(
+    answers, expected_points, party_factory, user_factory
+):
+    round = PartyRound.objects.create(party=party_factory(), letter="N")
+    for username, value in answers.items():
+        UserRoundAnswer.objects.create(
+            round=round, user=user_factory(username), field="animal", value=value
+        )
+
+    async_to_sync(round.close_round_and_calculate_scores)()
+
+    scored = {
+        answer.user.username: answer.scored_points
         for answer in UserRoundAnswer.objects.filter(round=round)
     }
     assert scored == expected_points
