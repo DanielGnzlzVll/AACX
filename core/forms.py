@@ -54,70 +54,27 @@ class PartyForm(forms.ModelForm):
         return name
 
 
+def answer_field(label):
+    max_length = models.UserRoundAnswer._meta.get_field("value").max_length
+    return forms.CharField(
+        label=label,
+        required=False,
+        max_length=max_length,
+        error_messages={
+            "max_length": f"La respuesta debe tener máximo {max_length} caracteres.",
+        },
+        widget=forms.TextInput(attrs={"class": "input-answer"}),
+    )
+
+
 class CurrentAnswersForm(forms.Form):
-    name = forms.CharField(
-        label="Nombre",
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                "class": "input-answer",
-            }
-        ),
-    )
-    last_name = forms.CharField(
-        label="Apellido",
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                "class": "input-answer",
-            }
-        ),
-    )
-    country = forms.CharField(
-        label="País",
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                "class": "input-answer",
-            }
-        ),
-    )
-    city = forms.CharField(
-        label="Ciudad",
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                "class": "input-answer",
-            }
-        ),
-    )
-    animal = forms.CharField(
-        label="Animal",
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                "class": "input-answer",
-            }
-        ),
-    )
-    thing = forms.CharField(
-        label="Cosa",
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                "class": "input-answer",
-            }
-        ),
-    )
-    color = forms.CharField(
-        label="Color",
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                "class": "input-answer",
-            }
-        ),
-    )
+    name = answer_field("Nombre")
+    last_name = answer_field("Apellido")
+    country = answer_field("País")
+    city = answer_field("Ciudad")
+    animal = answer_field("Animal")
+    thing = answer_field("Cosa")
+    color = answer_field("Color")
 
     # It is already in the template as button
     submit_stop = forms.BooleanField(
