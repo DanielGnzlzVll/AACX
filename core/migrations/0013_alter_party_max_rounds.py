@@ -5,15 +5,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0012_party_max_round_duration_party_max_rounds_and_more'),
+        ("core", "0012_party_max_round_duration_party_max_rounds_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='party',
-            name='max_rounds',
-            field=models.IntegerField(default=5, help_text='The maximum number of rounds.', validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(26)]),
+            model_name="party",
+            name="max_rounds",
+            field=models.IntegerField(
+                default=5,
+                help_text="The maximum number of rounds.",
+                validators=[
+                    django.core.validators.MinValueValidator(1),
+                    django.core.validators.MaxValueValidator(26),
+                ],
+            ),
         ),
     ]

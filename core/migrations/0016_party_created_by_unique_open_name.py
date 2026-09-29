@@ -18,7 +18,6 @@ def rename_duplicate_open_parties(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("core", "0015_party_waiting_started_at"),

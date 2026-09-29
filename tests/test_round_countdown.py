@@ -89,9 +89,7 @@ def test_party_page_has_no_countdown_before_the_first_round(
 
 
 def test_finished_party_has_no_countdown(logged_in_client, started_party):
-    PartyRound.objects.create(
-        party=started_party, letter="A", closed_at=timezone.now()
-    )
+    PartyRound.objects.create(party=started_party, letter="A", closed_at=timezone.now())
     started_party.closed_at = timezone.now()
     started_party.save()
 

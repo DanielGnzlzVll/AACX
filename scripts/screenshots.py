@@ -35,7 +35,15 @@ ANSWERS = {
     "B": ["Beatriz", "Bermúdez", "Brasil", "Bogotá", "Búho", "Balón", "Blanco"],
     "C": ["Carlos", "Castro", "Colombia", "Cali", "Conejo", "Cama", "Café"],
     "D": ["Daniel", "Díaz", "Dinamarca", "Dublín", "Delfín", "Dado", "Dorado"],
-    "E": ["Elena", "Espinosa", "Ecuador", "Edimburgo", "Elefante", "Escoba", "Esmeralda"],
+    "E": [
+        "Elena",
+        "Espinosa",
+        "Ecuador",
+        "Edimburgo",
+        "Elefante",
+        "Escoba",
+        "Esmeralda",
+    ],
     "F": ["Fernando", "Flores", "Francia", "Florencia", "Foca", "Farol", "Fucsia"],
     "G": ["Gabriela", "Gómez", "Grecia", "Granada", "Gato", "Guitarra", "Gris"],
     "H": ["Hugo", "Herrera", "Honduras", "Helsinki", "Hormiga", "Hacha", "Hueso"],
@@ -161,7 +169,11 @@ def run(base_url):
 
         create_party(beto, "Clase de español", min_players=4, rounds=3)
         create_party(
-            ana, "Noche de juegos", min_players=2, rounds=2, submit_shot="03-create-party"
+            ana,
+            "Noche de juegos",
+            min_players=2,
+            rounds=2,
+            submit_shot="03-create-party",
         )
         shoot(ana, "04-party-created")
 

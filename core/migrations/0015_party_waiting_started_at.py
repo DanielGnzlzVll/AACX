@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0014_close_finished_parties'),
+        ("core", "0014_close_finished_parties"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='party',
-            name='waiting_started_at',
+            model_name="party",
+            name="waiting_started_at",
             field=models.DateTimeField(blank=True, null=True),
         ),
     ]

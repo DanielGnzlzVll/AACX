@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0010_alter_userroundanswer_field'),
+        ("core", "0010_alter_userroundanswer_field"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userroundanswer',
-            name='scored_points',
+            model_name="userroundanswer",
+            name="scored_points",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

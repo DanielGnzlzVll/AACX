@@ -267,7 +267,6 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
 
 class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
-
     WAITING_POLL_INTERVAL = 10
     WAITING_CLAIM_TTL = 60
 
@@ -469,7 +468,8 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 {
                     "value": answer.value,
                     "scored_points": answer.scored_points,
-                    "rejected": answer.verdict == models.UserRoundAnswer.Verdict.INVALID,
+                    "rejected": answer.verdict
+                    == models.UserRoundAnswer.Verdict.INVALID,
                     "username": answer.user.username,
                 }
             )

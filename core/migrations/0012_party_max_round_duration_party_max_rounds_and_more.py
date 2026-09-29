@@ -5,25 +5,45 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0011_userroundanswer_scored_points'),
+        ("core", "0011_userroundanswer_scored_points"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='party',
-            name='max_round_duration',
-            field=models.IntegerField(blank=True, default=120, help_text='The maximum duration of a round in seconds.', null=True, validators=[django.core.validators.MinValueValidator(30)]),
+            model_name="party",
+            name="max_round_duration",
+            field=models.IntegerField(
+                blank=True,
+                default=120,
+                help_text="The maximum duration of a round in seconds.",
+                null=True,
+                validators=[django.core.validators.MinValueValidator(30)],
+            ),
         ),
         migrations.AddField(
-            model_name='party',
-            name='max_rounds',
-            field=models.IntegerField(blank=True, default=5, help_text='The maximum number of rounds.', null=True, validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(26)]),
+            model_name="party",
+            name="max_rounds",
+            field=models.IntegerField(
+                blank=True,
+                default=5,
+                help_text="The maximum number of rounds.",
+                null=True,
+                validators=[
+                    django.core.validators.MinValueValidator(1),
+                    django.core.validators.MaxValueValidator(26),
+                ],
+            ),
         ),
         migrations.AddField(
-            model_name='party',
-            name='min_players',
-            field=models.IntegerField(blank=True, default=2, help_text='The minimum number of players required to start the game.', null=True, validators=[django.core.validators.MinValueValidator(2)]),
+            model_name="party",
+            name="min_players",
+            field=models.IntegerField(
+                blank=True,
+                default=2,
+                help_text="The minimum number of players required to start the game.",
+                null=True,
+                validators=[django.core.validators.MinValueValidator(2)],
+            ),
         ),
     ]

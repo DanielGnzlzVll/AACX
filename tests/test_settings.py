@@ -100,7 +100,10 @@ def test_debug_has_dev_defaults():
 )
 def test_debug_toolbar_only_with_debug(debug, installed):
     result = run_django(
-        {"DJANGO_DEBUG": debug, "DJANGO_SECRET_KEY": PRODUCTION_ENV["DJANGO_SECRET_KEY"]},
+        {
+            "DJANGO_DEBUG": debug,
+            "DJANGO_SECRET_KEY": PRODUCTION_ENV["DJANGO_SECRET_KEY"],
+        },
         "from django.conf import settings as s",
         "from django.urls import resolve, Resolver404",
         "try:",

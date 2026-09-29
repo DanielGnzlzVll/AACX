@@ -64,9 +64,7 @@ async def worker(start_worker):
 @pytest.fixture
 def ready_party(party_factory, alice, bob):
     async def create():
-        party = await sync_to_async(party_factory)(
-            min_players=2, max_round_duration=60
-        )
+        party = await sync_to_async(party_factory)(min_players=2, max_round_duration=60)
         for user in (alice, bob):
             await models.PartyConnection.objects.acreate(
                 party=party,
@@ -96,9 +94,7 @@ async def stop(worker, round):
 
 
 async def open_round(party):
-    return await models.PartyRound.objects.filter(
-        party=party, closed_at=None
-    ).afirst()
+    return await models.PartyRound.objects.filter(party=party, closed_at=None).afirst()
 
 
 async def is_closed(round):

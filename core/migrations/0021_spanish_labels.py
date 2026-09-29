@@ -4,25 +4,46 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0020_partyround_deadline_at'),
+        ("core", "0020_partyround_deadline_at"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='answerverdict',
-            name='field',
-            field=models.CharField(choices=[('name', 'Nombre'), ('last_name', 'Apellido'), ('country', 'País'), ('city', 'Ciudad'), ('animal', 'Animal'), ('thing', 'Cosa'), ('color', 'Color')], max_length=50),
+            model_name="answerverdict",
+            name="field",
+            field=models.CharField(
+                choices=[
+                    ("name", "Nombre"),
+                    ("last_name", "Apellido"),
+                    ("country", "País"),
+                    ("city", "Ciudad"),
+                    ("animal", "Animal"),
+                    ("thing", "Cosa"),
+                    ("color", "Color"),
+                ],
+                max_length=50,
+            ),
         ),
         migrations.AlterField(
-            model_name='party',
-            name='name',
-            field=models.CharField(max_length=50, verbose_name='nombre'),
+            model_name="party",
+            name="name",
+            field=models.CharField(max_length=50, verbose_name="nombre"),
         ),
         migrations.AlterField(
-            model_name='userroundanswer',
-            name='field',
-            field=models.CharField(choices=[('name', 'Nombre'), ('last_name', 'Apellido'), ('country', 'País'), ('city', 'Ciudad'), ('animal', 'Animal'), ('thing', 'Cosa'), ('color', 'Color')], max_length=50),
+            model_name="userroundanswer",
+            name="field",
+            field=models.CharField(
+                choices=[
+                    ("name", "Nombre"),
+                    ("last_name", "Apellido"),
+                    ("country", "País"),
+                    ("city", "Ciudad"),
+                    ("animal", "Animal"),
+                    ("thing", "Cosa"),
+                    ("color", "Color"),
+                ],
+                max_length=50,
+            ),
         ),
     ]

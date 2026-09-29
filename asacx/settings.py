@@ -27,7 +27,9 @@ SECRET_KEY = env(
     default="django-insecure-local-development-only" if DEBUG else "",
 )
 if not SECRET_KEY:
-    raise ImproperlyConfigured("DJANGO_SECRET_KEY is required when DJANGO_DEBUG is off.")
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY is required when DJANGO_DEBUG is off."
+    )
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 

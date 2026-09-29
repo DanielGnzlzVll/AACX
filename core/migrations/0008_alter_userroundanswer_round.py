@@ -5,15 +5,16 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0007_party_joined_users'),
+        ("core", "0007_party_joined_users"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userroundanswer',
-            name='round',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.partyround'),
+            model_name="userroundanswer",
+            name="round",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="core.partyround"
+            ),
         ),
     ]

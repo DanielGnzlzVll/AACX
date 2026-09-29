@@ -78,9 +78,7 @@ async def test_non_participant_is_rejected_from_finished_party(
 async def test_participant_can_reconnect_to_started_party(
     ws_communicator, started_party, alice
 ):
-    communicator, connected, _ = await connect(
-        ws_communicator, alice, started_party.id
-    )
+    communicator, connected, _ = await connect(ws_communicator, alice, started_party.id)
 
     assert connected
     await assert_still_open(communicator)
@@ -162,9 +160,10 @@ async def test_connecting_to_waiting_party_records_participation_and_presence(
         await channel_layer.receive(f"party_players_{party.id}")
 
     assert [user async for user in party.joined_users.all()] == [alice]
-    assert await models.PartyConnection.objects.filter(
-        party=party, user=alice
-    ).acount() == 2
+    assert (
+        await models.PartyConnection.objects.filter(party=party, user=alice).acount()
+        == 2
+    )
     assert await party.acount_connected_players() == 1
 
 

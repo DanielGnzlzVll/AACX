@@ -22,6 +22,7 @@ jobs:
           python-version: "3.13"
       - run: pip install "$(grep '^ruff==' requirements-dev.txt)"
       - run: ruff check --output-format=github .
+      - run: ruff format --check .
 
   audit:
     runs-on: ubuntu-latest
