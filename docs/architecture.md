@@ -86,7 +86,7 @@ flowchart LR
 
 Closing before `accept()` rejects the handshake, so the ASGI server answers with HTTP 403 and the browser only sees a failed connection. The codes tell the cases apart in tests, where `WebsocketCommunicator.connect()` returns them.
 
-**Participant rule** (`can_join`): any logged-in user can connect to a party that hasn't started (`started_at` is NULL), and connecting adds them to `joined_users`. Once the party has started, including after it closes, only users already in `joined_users` can connect.
+**Participant rule** (`can_join`): the user must be allowed to play by `Party.aget_access`, the policy `DetailParty` also uses. A user in `joined_users` is a `PARTICIPANT`. Anyone else can play only while the party hasn't started or closed (`WAITING`), and connecting then adds them to `joined_users`. Everyone else gets `STARTED` or `CLOSED` and is refused with 4403, so once the party starts only the users who connected while it waited can connect.
 
 After `accept()`, `receive` logs and ignores a message that isn't JSON, has no `HEADERS["HX-Trigger"]`, or has an unknown trigger, and keeps the socket open. `handle_form_submit` checks again that the user is in `joined_users` and drops answers unless the party's current round is open, so answers sent while the party waits or after the round closes are never saved.
 
