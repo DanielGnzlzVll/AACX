@@ -181,7 +181,7 @@ async def test_waiting_page_receives_every_broadcast(
     alice_ws = await ws_connect(alice, path)
     await ws_connect(bob, path)
     start_event = await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
-    party_task = asyncio.create_task(state_machine.event_party_started(start_event))
+    party_task = asyncio.create_task(state_machine.play_party(start_event["party_id"]))
 
     # The htmx ws extension swaps each top-level element into the element with its id.
     while True:
