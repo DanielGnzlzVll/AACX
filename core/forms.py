@@ -44,6 +44,15 @@ class PartyForm(forms.ModelForm):
             "max_round_duration",
             "max_rounds",
         ]
+        error_messages = {
+            field: {
+                "required": "Este campo es obligatorio.",
+                "invalid": "Escribe un número entero.",
+                "min_value": "El valor debe ser mayor o igual a %(limit_value)s.",
+                "max_value": "El valor debe ser menor o igual a %(limit_value)s.",
+            }
+            for field in ["min_players", "max_round_duration", "max_rounds"]
+        }
 
     def clean_name(self):
         name = self.cleaned_data["name"]
