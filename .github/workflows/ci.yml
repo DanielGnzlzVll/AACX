@@ -52,6 +52,8 @@ jobs:
       DJANGO_SETTINGS_MODULE: asacx.settings_test
       POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

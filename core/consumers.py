@@ -11,9 +11,28 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 
 from core import forms, models
+from core.leases import LeaseLost, PartyLease
 
 logger = logging.getLogger(__name__)
 STATE_MACHINE_CHANNEL_NAME = "party-state-machine"
+
+
+async def resume_orphaned_parties(channel_layer):
+    parties = models.Party.objects.filter(
+        started_at__isnull=False, closed_at__isnull=True
+    ).values_list("id", "name")
+    async for party_id, party_name in parties:
+        if await PartyLease.is_held(party_id):
+            continue
+        logger.info(f"resuming orphaned party {party_id=}")
+        await channel_layer.send(
+            STATE_MACHINE_CHANNEL_NAME,
+            {
+                "type": "event_party_started",
+                "party_name": party_name,
+                "party_id": party_id,
+            },
+        )
 
 
 class PartyConsumerMixin:
@@ -260,30 +279,38 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         if party_id in self.party_tasks:
             logger.info(f"party {party_id} already running on this worker")
             return
-        task = asyncio.create_task(
-            self.run_party(party_id, force_start=event.get("force_start", False)),
-            name=f"party-{party_id}",
-        )
+        task = asyncio.create_task(self.run_party(party_id), name=f"party-{party_id}")
         self.party_tasks[party_id] = task
         task.add_done_callback(lambda _: self.party_tasks.pop(party_id, None))
 
-    async def run_party(self, party_id, force_start=False):
+    async def run_party(self, party_id):
+        lease = PartyLease(party_id)
+        if not await lease.acquire():
+            logger.info(f"party {party_id} is run by another worker")
+            return
         try:
-            await self.play_party(party_id, force_start)
+            await lease.run_while_held(self.play_party(party_id))
+        except LeaseLost:
+            logger.warning(f"party {party_id} stopped, its lease was lost")
         except Exception:
             logger.exception(f"party {party_id} crashed")
+        finally:
+            await lease.release()
 
-    async def play_party(self, party_id, force_start=False):
-        party = await self.wait_players_to_join(party_id)
-        if not party and not force_start:
-            logger.info("Party already claimed so skipping")
-            return
-        elif not party and force_start:
-            party = await models.Party.objects.aget(id=party_id)
+    async def play_party(self, party_id):
+        party = await models.Party.objects.aget(id=party_id)
         if party.closed_at:
             logger.info(f"party {party_id} already finished so skipping")
             return
-        logger.info(f"starting {party_id=}")
+        if party.started_at:
+            logger.info(f"resuming {party_id=}")
+            await self.score_interrupted_round(party)
+        else:
+            party = await self.wait_players_to_join(party_id)
+            if not party:
+                logger.info("Party already claimed so skipping")
+                return
+            logger.info(f"starting {party_id=}")
 
         while not party.closed_at:
             current_round = await self.next_round(party)
@@ -294,9 +321,24 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         await self.finish_party(party)
         logger.info(f"party {party_id} finished")
 
+    async def score_interrupted_round(self, party):
+        # A round closed by a STOP or a timeout may have lost its runner before it
+        # was scored. Scoring is idempotent, and it closes the party after the
+        # last round.
+        current_round = await party.aget_current_round()
+        if current_round and current_round.closed_at:
+            await self.update_scores(party, current_round)
+            await party.arefresh_from_db(fields=["closed_at"])
+
     async def wait_for_round_end(self, party, current_round):
+        if current_round.closed_at:
+            return
+        deadline = current_round.started_at + datetime.timedelta(
+            seconds=party.max_round_duration
+        )
+        remaining = max((deadline - timezone.now()).total_seconds(), 0)
         try:
-            async with asyncio.timeout(party.max_round_duration):
+            async with asyncio.timeout(remaining):
                 while True:
                     message = await self.channel_layer.receive(
                         f"party_new_round_{party.id}"

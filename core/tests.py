@@ -553,7 +553,7 @@ class PartyStateMachineTests(TestCase):
     async def run_party(self):
         state_machine = consumers.PartyStateMachine()
         state_machine.channel_layer = get_channel_layer()
-        await state_machine.play_party(self.party.id, force_start=True)
+        await state_machine.play_party(self.party.id)
 
     async def test_plays_exactly_max_rounds_and_closes_the_party(self):
         await self.run_party()

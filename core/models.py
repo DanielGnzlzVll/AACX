@@ -105,22 +105,26 @@ class Party(models.Model):
         return self.closed_at is None
 
     async def aget_current_or_next_round(self):
-        current = await self.aget_current_round()
-        if current and current.closed_at is None:
+        return await sync_to_async(self._get_current_or_next_round)()
+
+    @transaction.atomic
+    def _get_current_or_next_round(self):
+        # The party row lock serializes this with scoring, so a stale runner can't
+        # open an extra round next to the owner's, or after the last one.
+        party = Party.objects.select_for_update().get(pk=self.pk)
+        current = (
+            PartyRound.objects.filter(party_id=self.id).order_by("-started_at").first()
+        )
+        if party.closed_at or (current and current.closed_at is None):
             return current
-        letter = random.choice(string.ascii_uppercase)
-        parties_letters = {
-            letter
-            async for letter in PartyRound.objects.filter(party_id=self.id).values_list(
-                "letter", flat=True
-            )
-        }
-        left_letters = set(list(string.ascii_uppercase))
-        left_letters = left_letters.difference(parties_letters)
+        parties_letters = set(
+            PartyRound.objects.filter(party_id=self.id).values_list("letter", flat=True)
+        )
+        left_letters = set(string.ascii_uppercase).difference(parties_letters)
         if not left_letters:
             raise Exception("All letters are used")
-        letter = random.choice(list(left_letters))
-        return await PartyRound.objects.acreate(
+        letter = random.choice(sorted(left_letters))
+        return PartyRound.objects.create(
             party=self,
             letter=letter,
             started_at=timezone.now(),
@@ -269,6 +273,7 @@ class PartyRound(models.Model):
 
     @transaction.atomic
     def _close_round_and_calculate_scores(self):
+        Party.objects.select_for_update().get(pk=self.party_id)
         PartyRound.objects.filter(pk=self.pk, closed_at__isnull=True).update(
             closed_at=timezone.now()
         )

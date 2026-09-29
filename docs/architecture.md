@@ -18,16 +18,16 @@ Design decisions are recorded as ADRs in [`docs/adr/`](adr/README.md).
 
 | Service | Runs | Role |
 |---|---|---|
-| `migrate` | `manage.py migrate --noinput`, once | Applies migrations before anything else starts, so `CoreConfig.ready()` never runs against an unmigrated database. |
+| `migrate` | `manage.py migrate --noinput`, once | Applies migrations before anything else starts, so no server or worker runs against an unmigrated database. |
 | `server` | `manage.py runserver 0.0.0.0:8000` | Because `daphne` is in `INSTALLED_APPS`, `runserver` is Daphne's ASGI server. It serves HTTP views and the `PartyConsumer` websocket on port 8000. |
-| `channel-master` | `watchmedo auto-restart ... manage.py custom_runworker *` with `CHANNELS_WORKER_MASTER=1` | Channels worker for the `party-state-machine` channel. On startup it also re-sends `event_party_started` for interrupted parties (see below). |
-| `channel-worker` ×3 | Same as `channel-master`, with `CHANNELS_WORKER_MASTER=0` | Additional `party-state-machine` workers. They don't run startup recovery. |
-| `cache` | `redis:7`, healthcheck `redis-cli ping` | Redis database 0 is the Channels layer (`channels_redis.core.RedisChannelLayer`). Database 1 is Django's cache (`redis_lock.django_cache.RedisCache`), which holds the per-IP nickname creation counters of `/login/` ([ADR 0003](adr/0003-passwordless-nickname-login.md)). |
+| `channel-master` | `watchmedo auto-restart ... manage.py custom_runworker *` with `CHANNELS_WORKER_MASTER=1` | Channels worker for the `party-state-machine` channel. It also runs the party reconciler, which resumes interrupted parties (see below). |
+| `channel-worker` ×3 | Same as `channel-master`, with `CHANNELS_WORKER_MASTER=0` | Additional `party-state-machine` workers. They don't run the reconciler. |
+| `cache` | `redis:7`, healthcheck `redis-cli ping` | Redis database 0 is the Channels layer (`channels_redis.core.RedisChannelLayer`). Database 1 is Django's cache (`redis_lock.django_cache.RedisCache`), which holds the per-IP nickname creation counters of `/login/` ([ADR 0003](adr/0003-passwordless-nickname-login.md)). Database 1 also holds the party leases (`LEASE_REDIS_URL`). |
 | `db` | `postgres:16` with the `pgdata` volume, healthcheck `pg_isready` over TCP | Django's database. Some queries depend on Postgres (`.distinct("pk")` in the party views). |
 
 **`custom_runworker *`**: `runworker` needs explicit channel names. `core/management/commands/custom_runworker.py` expands `*` to every key of `core.routing.channel_routing`, which is just `party-state-machine`.
 
-**`CHANNELS_WORKER_MASTER`**: read into `settings.IS_CHANNELS_WORKER_MASTER`. When it is true, `CoreConfig.ready()` (`core/apps.py`) runs once per process start. It finds parties with `started_at` set and `closed_at` null, and sends `event_party_started` with `force_start: True` for each one, so a party interrupted by a restart gets a runner again. Only `channel-master` sets the flag, so the other workers don't repeat it. `ready()` runs for every Django process in that container, including management commands, and it touches the database ([#10]).
+**`CHANNELS_WORKER_MASTER`**: read into `settings.IS_CHANNELS_WORKER_MASTER`. When it is true, the `PartyWorker` of `custom_runworker` also runs the party reconciler next to its channel listeners. Every `RECONCILE_INTERVAL` (5 s), `resume_orphaned_parties` sends `event_party_started` for each party with `started_at` set, `closed_at` null and no live lease, so a party interrupted by a crash or a restart gets a runner again (see [Party lifecycle](#4-party-lifecycle)). It runs periodically, not once at startup, because a dead worker's lease only expires `PartyLease.TTL` seconds later. Only `channel-master` sets the flag. `CoreConfig.ready()` doesn't touch the database, so management commands such as `migrate` run no party queries.
 
 **Worker concurrency**: a Channels worker runs one `PartyStateMachine` instance per channel and handles its messages one at a time. `event_party_started` doesn't return until the party is over, so a running party takes a whole worker. A busy worker also keeps receiving from `party-state-machine` and queues those messages in memory. A STOP, or another party's `event_party_started`, can therefore land on a worker that is running a party and wait until that party ends, even when other workers are idle. By then its round has timed out, so the STOP is ignored as stale ([#9]).
 
@@ -46,11 +46,12 @@ flowchart LR
 
     subgraph redis["cache (Redis)"]
         layer[("Channels layer<br/>channels + groups")]
+        leases[("Party leases")]
     end
 
     subgraph workers["channel-master + channel-worker x3"]
         sm["PartyStateMachine<br/>channel: party-state-machine"]
-        ready["CoreConfig.ready()<br/>master only"]
+        reconciler["Party reconciler<br/>master only"]
     end
 
     db[("db (Postgres)<br/>Party, PartyRound,<br/>UserRoundAnswer, auth")]
@@ -64,8 +65,10 @@ flowchart LR
     layer -->|"party-state-machine, party_players_{id},<br/>party_new_round_{id}"| sm
     sm -->|"group_send party_{id}<br/>send party_new_round_{id}"| layer
     sm -->|"ORM: lock party, create and close rounds, score"| db
-    ready -->|"event_party_started with force_start"| layer
-    ready -->|"find interrupted parties"| db
+    sm -->|"acquire, renew, release"| leases
+    reconciler -->|"check"| leases
+    reconciler -->|"event_party_started for orphaned parties"| layer
+    reconciler -->|"find interrupted parties"| db
 ```
 
 `asacx/asgi.py` routes by protocol. `http` goes to the Django app. `websocket` goes through `AllowedHostsOriginValidator` and `AuthMiddlewareStack` to `core.routing.websocket_urlpatterns` (`party/<int:party_id>/` → `PartyConsumer`). `channel` goes through `ChannelNameRouter` to `core.routing.channel_routing` (`party-state-machine` → `PartyStateMachine`).
@@ -97,7 +100,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | `type` | Payload | Producer | Handler behavior |
 |---|---|---|---|
-| `event_party_started` | `party_id`, `party_name`, optional `force_start` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. `CoreConfig.ready()` on the master, with `force_start: True`. | Runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). Only the worker that claims the waiting room runs it (see step 1 of [Party lifecycle](#4-party-lifecycle)). The rest log "already claimed" and return, unless `force_start` is set. |
+| `event_party_started` | `party_id`, `party_name` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. The party reconciler on the master, for started parties without a live lease. | Runs the whole party in its own task: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). Only the worker that takes the party's lease runs it, the rest log "run by another worker" and return. A party that hasn't started also needs the waiting-room claim (step 1). A started party is resumed from the database. |
 | `event_party_round_stopped` | `party_id`, `round_id` | `PartyConsumer.handle_form_submit` when a valid form has `submit_stop` | Closes the round with a conditional `UPDATE ... SET closed_at = now() WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`). If the round was already closed, the STOP is logged and ignored, so duplicate STOPs are harmless. Otherwise it sends `event_party_round_stopped` to group `party_{id}` and `{round_id}` to `party_new_round_{id}`. |
 | `event_party_join` | `party_id` | none | Unused handler ([#24]). |
 
@@ -192,14 +195,14 @@ sequenceDiagram
 The lifecycle has no explicit state. It is inferred from `Party.started_at`, `Party.closed_at` and each `PartyRound.closed_at`, and driven by one long coroutine, `PartyStateMachine.event_party_started`:
 
 1. The waiting room. A worker claims the party with a conditional `UPDATE` of `waiting_started_at`, and `ensure_players_join` renews that claim at least every `WAITING_POLL_INTERVAL` (10 s). A claim older than `WAITING_CLAIM_TTL` (60 s) belongs to a dead worker and can be taken over. The party starts once `min_players` distinct users are connected at the same time. There is no deadline: the party never starts with fewer players, however long it waits. When the last player leaves, the worker releases the claim and stops waiting, and the party stays open to join. The next connection claims it again. Each connected player's heartbeat also re-sends `event_party_started`, so a waiting room whose worker died gets a new one once the claim expires. `started_at` is set with a conditional `UPDATE` that only succeeds for the current claim.
-2. If the party is already closed, the handler returns.
+2. If the party is already closed, the handler returns. If it has already started, it is resumed: a latest round that is closed may have lost its runner before scoring, so it is scored again. Scoring is idempotent, and it closes the party after the last round.
 3. While `Party.closed_at` is NULL:
    - `next_round` returns the open round, or creates one with an unused letter, and broadcasts it.
-   - `wait_for_round_end` waits for a STOP on `party_new_round_{id}` or for `max_round_duration`, and makes sure the round is closed.
+   - `wait_for_round_end` waits for a STOP on `party_new_round_{id}` or until the round's `started_at` plus `max_round_duration`, and makes sure the round is closed. A resumed round only gets the time it has left.
    - `update_scores` scores the round. The same transaction sets `Party.closed_at` once the party has `max_rounds` closed rounds.
 4. `finish_party` broadcasts `party_finished_update.html`: the winners, the final scores and a link home.
 
-The stop condition counts closed rounds in the database, so a party resumed with `force_start` after a restart only plays the rounds it has left. The open round's timer starts again from zero, and nothing stops two workers from running the same party ([#10]).
+Each party has a single owner: the worker that holds its `PartyLease` (`core/leases.py`), a `python-redis-lock` lock on `lock:party-lease:{id}` that expires after `TTL` (15 s). `run_party` takes it without blocking and runs the party through `PartyLease.run_while_held`, which renews the lease every `RENEW_INTERVAL` (5 s) from an asyncio task. If a renewal finds the lease gone, or Redis errors leave too little time before it would expire, the party task is cancelled before another worker can take over. The lease is released when the party ends or crashes, so duplicate `event_party_started` messages and restarts never start a second loop. As a second guard, `aget_current_or_next_round` and scoring lock the `Party` row, so a stale runner can't open a round next to the owner's or after the last one. When a worker dies, its lease expires and the reconciler sends `event_party_started` again. The worker that takes the lease resumes from the database: the open round keeps its letter and its deadline, and the stop condition counts closed rounds, so the party plays exactly `max_rounds` rounds.
 
 ```mermaid
 stateDiagram-v2
@@ -211,8 +214,8 @@ stateDiagram-v2
     Scoring --> RoundOpen: rounds left
     Scoring --> Finished: max_rounds closed rounds, closed_at set
     Finished --> [*]: final results broadcast
-    RoundOpen --> Resumed: worker restart
-    Resumed --> RoundOpen: force_start, fresh timer
+    RoundOpen --> Resumed: owner dies, lease expires
+    Resumed --> RoundOpen: reconciler, lease taken, time left on the round
 
     note right of Created
         started_at and closed_at are NULL
@@ -368,13 +371,11 @@ The issues that track where the implementation differs from the design:
 |---|---|
 | [#1] | Umbrella for moving the lifecycle to the target state machine above |
 | [#9] | A running party blocks a whole worker, and a STOP that lands on a busy worker only takes effect when the round times out |
-| [#10] | More than one worker can own a party, and a resumed round restarts its timer |
 | [#16] | `PartyConsumer` doesn't check authentication, authorization or input |
 | [#24] | Dead and incorrect code paths (`party_stared`, unused handlers) |
 
 [#1]: https://github.com/DanielGnzlzVll/AACX/issues/1
 [#4]: https://github.com/DanielGnzlzVll/AACX/issues/4
 [#9]: https://github.com/DanielGnzlzVll/AACX/issues/9
-[#10]: https://github.com/DanielGnzlzVll/AACX/issues/10
 [#16]: https://github.com/DanielGnzlzVll/AACX/issues/16
 [#24]: https://github.com/DanielGnzlzVll/AACX/issues/24
