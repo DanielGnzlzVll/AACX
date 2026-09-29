@@ -221,9 +221,8 @@ LOGGING = {
 
 CACHES = {
     "default": {
-        "BACKEND": "redis_lock.django_cache.RedisCache",
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
         "LOCATION": env("REDIS_CACHE_URL", default="redis://cache:6379/1"),
-        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
     }
 }
 

@@ -23,11 +23,11 @@ Design decisions are recorded as ADRs in [`docs/adr/`](adr/README.md).
 | `server` | `manage.py runserver 0.0.0.0:8000` | Because `daphne` is in `INSTALLED_APPS`, `runserver` is Daphne's ASGI server. It serves HTTP views and the `PartyConsumer` websocket on port 8000. |
 | `channel-master` | `watchmedo auto-restart ... manage.py custom_runworker *` with `CHANNELS_WORKER_MASTER=1` | Channels worker for the `party-state-machine` channel. It also runs the party reconciler, which resumes interrupted parties (see below). |
 | `channel-worker` ×3 | Same as `channel-master`, with `CHANNELS_WORKER_MASTER=0` | Additional `party-state-machine` workers. They don't run the reconciler. |
-| `cache` | `redis:7`, healthcheck `redis-cli ping` | Redis database 0 (`REDIS_URL`) is the Channels layer (`channels_redis.core.RedisChannelLayer`). Database 1 (`REDIS_CACHE_URL`) is Django's cache (`redis_lock.django_cache.RedisCache`), which holds the per-IP nickname creation counters of `/login/` ([ADR 0003](adr/0003-passwordless-nickname-login.md)). Database 1 also holds the party leases (`LEASE_REDIS_URL`, which defaults to `REDIS_CACHE_URL`). |
+| `cache` | `redis:7`, healthcheck `redis-cli ping` | Redis database 0 (`REDIS_URL`) is the Channels layer (`channels_redis.core.RedisChannelLayer`). Database 1 (`REDIS_CACHE_URL`) is Django's cache (`django.core.cache.backends.redis.RedisCache`), which holds the per-IP nickname creation counters of `/login/` ([ADR 0003](adr/0003-passwordless-nickname-login.md)). Database 1 also holds the party leases (`LEASE_REDIS_URL`, which defaults to `REDIS_CACHE_URL`). |
 | `db` | `postgres:16` with the `pgdata` volume, healthcheck `pg_isready` over TCP | Django's database. Some queries depend on Postgres (`.distinct("pk")` in the party views). |
 | `ollama`, `ollama-pull` | `ollama/ollama` with the `ollama` volume, only with `--profile llm` | Optional local model for answer validation. `ollama-pull` downloads `OLLAMA_MODEL` once. The default validators don't use it ([ADR 0005](adr/0005-validate-answers-with-word-lists.md)). |
 
-**Production image**: the default `Dockerfile` stage installs only `requirements.txt`, runs `collectstatic` at build time and starts `daphne asacx.asgi:application`. Settings come from environment variables; the list is in the README. Without `DJANGO_DEBUG` the settings refuse to load unless `DJANGO_SECRET_KEY` is set, and `debug_toolbar`, `django_extensions` and `/__debug__/` are only loaded when `DEBUG` is on.
+**Production image**: the default `Dockerfile` stage installs only `requirements.txt`, without the test and debug tools of `requirements-dev.txt`, runs `collectstatic` at build time and starts `daphne asacx.asgi:application`. Settings come from environment variables; the list is in the README. Without `DJANGO_DEBUG` the settings refuse to load unless `DJANGO_SECRET_KEY` is set, and `debug_toolbar`, `django_extensions` and `/__debug__/` are only loaded when `DEBUG` is on.
 
 **`custom_runworker *`**: `runworker` needs explicit channel names. `core/management/commands/custom_runworker.py` expands `*` to every key of `core.routing.channel_routing`, which is just `party-state-machine`.
 
@@ -403,15 +403,16 @@ Once a party is closed, `DetailParty` renders `_party_content.html` with `party_
 
 ## 7. Continuous integration
 
-`.github/workflows/ci.yml` runs on every pull request and on pushes to `master`. A new push to a pull request cancels the run in progress. Its three jobs run in parallel:
+`.github/workflows/ci.yml` runs on every pull request and on pushes to `master`. A new push to a pull request cancels the run in progress. Its four jobs run in parallel:
 
 | Job | Checks |
 |---|---|
 | `lint` | `ruff check` with the version pinned in `requirements-dev.txt`. Findings show up as annotations on the pull request. |
-| `test` | Installs `requirements-dev.txt` on Python 3.11, with `postgres:16` and `redis:7` service containers and `DJANGO_SETTINGS_MODULE=asacx.settings_test`. `manage.py makemigrations --check --dry-run` fails if a model change has no migration, then `pytest` runs. |
+| `audit` | `pip-audit` over `requirements.txt` and `requirements-dev.txt`. Fails when a pinned package has a known vulnerability. |
+| `test` | Installs `requirements-dev.txt` on Python 3.13, with `postgres:16` and `redis:7` service containers and `DJANGO_SETTINGS_MODULE=asacx.settings_test`. `manage.py makemigrations --check --dry-run` fails if a model change has no migration, then `pytest` runs. |
 | `build` | Builds the `Dockerfile` with Buildx, without pushing, cached in the GitHub Actions cache. |
 
-`.github/dependabot.yml` opens weekly update pull requests for the pip requirements, the `Dockerfile` base image and the actions used by the workflow. The pull request template asks whether the change needs an update to this document or an ADR.
+`.github/dependabot.yml` opens weekly update pull requests for the pip requirements, the `Dockerfile` base image and the actions used by the workflow. Django, Channels, Daphne and the Django add-ons are grouped into one pull request, and so are the pytest packages, because their pins depend on each other. The pull request template asks whether the change needs an update to this document or an ADR.
 
 ## Known gaps
 

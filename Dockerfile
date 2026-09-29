@@ -4,7 +4,7 @@
 # If you need more help, visit the Dockerfile reference guide at
 # https://docs.docker.com/engine/reference/builder/
 
-ARG PYTHON_VERSION=3.11.3
+ARG PYTHON_VERSION=3.13.15
 FROM python:${PYTHON_VERSION}-slim AS base
 
 # Prevents Python from writing pyc files.
@@ -41,7 +41,6 @@ EXPOSE 8000
 FROM base AS dev
 
 RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=bind,source=requirements.txt,target=requirements.txt \
     --mount=type=bind,source=requirements-dev.txt,target=requirements-dev.txt \
     python -m pip install -r requirements-dev.txt
 

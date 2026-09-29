@@ -103,7 +103,7 @@ Run it inside Docker:
 docker compose run --rm server pytest
 ```
 
-Or locally with Python 3.11, pointing the tests at any Postgres and Redis instances:
+Or locally with Python 3.13, pointing the tests at any Postgres and Redis instances:
 
 ```bash
 pip install -r requirements-dev.txt
@@ -116,6 +116,17 @@ POSTGRES_HOST=localhost POSTGRES_PORT=5432 REDIS_HOST=localhost REDIS_PORT=6379 
 Tests use `asacx/settings_test.py`, which swaps Redis for an in-memory channel layer and cache. Party leases still need a real Redis. The test channel layer (`core.testing.MsgpackInMemoryChannelLayer`) round-trips every message through msgpack like `channels_redis`, so a message carrying a model instance or another non-serializable value fails the test that sends it.
 
 All tests live in `tests/`, one pytest module per area (`test_login.py`, `test_stop.py`, `test_party_end.py`, ...). Write plain test functions, not `TestCase` classes, and put shared fixtures in `tests/conftest.py`: `party_factory`, `alice`/`bob`, `logged_in_client`, `channel_layer`, `receive_or_none`, `state_machine` and `ws_connect` cover most cases. Async tests that touch the database need `@pytest.mark.django_db(transaction=True)`, because async ORM calls run on another thread, outside the test transaction.
+
+## Dependencies
+
+Direct dependencies are listed in `requirements.in` (runtime) and `requirements-dev.in` (tests, lint and debug tools). `requirements.txt` and `requirements-dev.txt` are the pinned locks generated from them; don't edit them by hand. After changing an `.in` file, regenerate both locks:
+
+```bash
+uv pip compile --python-version 3.13 requirements.in -o requirements.txt
+uv pip compile --python-version 3.13 requirements-dev.in -o requirements-dev.txt
+```
+
+Add `--upgrade-package <name>` to bump a single package, or `--upgrade` to bump everything. `requirements-dev.in` is constrained by `requirements.txt`, so both locks agree on shared packages.
 
 ## Production
 
