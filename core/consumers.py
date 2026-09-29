@@ -34,9 +34,25 @@ class PartyConsumerMixin:
 
 
 class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
+    CLOSE_UNAUTHENTICATED = 4401
+    CLOSE_FORBIDDEN = 4403
+    CLOSE_PARTY_NOT_FOUND = 4404
+
     async def connect(self):
         self.party_id = self.scope["url_route"]["kwargs"]["party_id"]
         user = self.scope["user"]
+        if not user.is_authenticated:
+            await self.close(code=self.CLOSE_UNAUTHENTICATED)
+            return
+        try:
+            self.party = await models.Party.objects.aget(id=self.party_id)
+        except models.Party.DoesNotExist:
+            await self.close(code=self.CLOSE_PARTY_NOT_FOUND)
+            return
+        if not await self.can_join(user):
+            await self.close(code=self.CLOSE_FORBIDDEN)
+            return
+
         await self.accept()
         logger.info(f"player connected to party: {self.party_id} {user.username=}")
 
@@ -46,15 +62,12 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         await self.channel_layer.send(
             self.get_party_player_connected_channel_name(party_id=self.party_id),
             {
-                "hola": "mundo",
                 "date": datetime.datetime.now().isoformat(),
                 "party_id": self.party_id,
                 "username": user.username,
                 "user_id": user.id,
             },
         )
-
-        self.party = await models.Party.objects.aget(id=self.party_id)
 
         if not self.party.closed_at:
             logger.info(f"party no finalized yet {self.party_id=} trying to start")
@@ -66,12 +79,23 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
                     "party_id": self.party.id,
                 },
             )
-            await self.send(text_data="waiting for players to join")
 
-    async def receive(self, text_data):
-        data = json.loads(text_data)
-        if data["HEADERS"]["HX-Trigger"] == "party_current_answers_form":
+    async def can_join(self, user):
+        if self.party.started_at is None:
+            return True
+        return await self.party.joined_users.filter(pk=user.pk).aexists()
+
+    async def receive(self, text_data=None, bytes_data=None):
+        try:
+            data = json.loads(text_data)
+            trigger = data["HEADERS"]["HX-Trigger"]
+        except (TypeError, ValueError, KeyError):
+            logger.warning(f"ignoring malformed message {self.party_id=}")
+            return
+        if trigger == "party_current_answers_form":
             await self.handle_form_submit(data)
+        else:
+            logger.warning(f"ignoring unknown message {self.party_id=} {trigger=}")
 
     async def handle_form_submit(self, form_data):
         if not await self.party_is_available():
@@ -136,9 +160,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
 
     async def party_is_available(self):
         current_round = await self.party.aget_current_round()
-        if current_round.closed_at is None:
-            return True
-        return False
+        return current_round is not None and current_round.closed_at is None
 
     async def save_form(self, form, current_round):
         data = {

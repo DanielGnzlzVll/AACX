@@ -254,6 +254,7 @@ class StopRoundTests(TestCase):
         self.party = models.Party.objects.create(
             name="party", started_at=timezone.now()
         )
+        self.party.joined_users.add(self.user)
         self.round = models.PartyRound.objects.create(
             party=self.party, letter="A", started_at=timezone.now()
         )
@@ -279,9 +280,6 @@ class StopRoundTests(TestCase):
         communicator.scope["user"] = self.user
         connected, _ = await communicator.connect()
         self.assertTrue(connected)
-        self.assertEqual(
-            await communicator.receive_from(), "waiting for players to join"
-        )
         started = await receive_or_none(
             self.layer, consumers.STATE_MACHINE_CHANNEL_NAME
         )

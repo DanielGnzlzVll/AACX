@@ -60,26 +60,36 @@ async def channel_layer():
 
 
 @pytest.fixture
-async def ws_connect(channel_layer):
+async def ws_communicator(channel_layer):
     application = AuthMiddlewareStack(URLRouter(routing.websocket_urlpatterns))
     communicators = []
 
-    async def connect(user, path):
-        client = Client()
-        await sync_to_async(client.force_login)(user)
-        session_id = client.cookies[settings.SESSION_COOKIE_NAME].value
-        communicator = WebsocketCommunicator(
-            application,
-            path,
-            headers=[(b"cookie", f"{settings.SESSION_COOKIE_NAME}={session_id}".encode())],
-        )
-        connected, _ = await communicator.connect()
-        assert connected
+    async def create(user, path):
+        headers = []
+        if user is not None:
+            client = Client()
+            await sync_to_async(client.force_login)(user)
+            session_id = client.cookies[settings.SESSION_COOKIE_NAME].value
+            headers.append(
+                (b"cookie", f"{settings.SESSION_COOKIE_NAME}={session_id}".encode())
+            )
+        communicator = WebsocketCommunicator(application, path, headers=headers)
         communicators.append(communicator)
         return communicator
 
-    yield connect
+    yield create
 
     for communicator in communicators:
         await communicator.disconnect()
     await sync_to_async(connections.close_all)()
+
+
+@pytest.fixture
+async def ws_connect(ws_communicator):
+    async def connect(user, path):
+        communicator = await ws_communicator(user, path)
+        connected, _ = await communicator.connect()
+        assert connected
+        return communicator
+
+    return connect
