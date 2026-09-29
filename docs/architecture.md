@@ -25,6 +25,7 @@ Design decisions are recorded as ADRs in [`docs/adr/`](adr/README.md).
 | `channel-worker` ×3 | Same as `channel-master`, with `CHANNELS_WORKER_MASTER=0` | Additional `party-state-machine` workers. They don't run the reconciler. |
 | `cache` | `redis:7`, healthcheck `redis-cli ping` | Redis database 0 (`REDIS_URL`) is the Channels layer (`channels_redis.core.RedisChannelLayer`). Database 1 (`REDIS_CACHE_URL`) is Django's cache (`redis_lock.django_cache.RedisCache`), which holds the per-IP nickname creation counters of `/login/` ([ADR 0003](adr/0003-passwordless-nickname-login.md)). Database 1 also holds the party leases (`LEASE_REDIS_URL`, which defaults to `REDIS_CACHE_URL`). |
 | `db` | `postgres:16` with the `pgdata` volume, healthcheck `pg_isready` over TCP | Django's database. Some queries depend on Postgres (`.distinct("pk")` in the party views). |
+| `ollama`, `ollama-pull` | `ollama/ollama` with the `ollama` volume, only with `--profile llm` | Optional local model for answer validation. `ollama-pull` downloads `OLLAMA_MODEL` once. The default validators don't use it ([ADR 0005](adr/0005-validate-answers-with-word-lists.md)). |
 
 **Production image**: the default `Dockerfile` stage installs only `requirements.txt`, runs `collectstatic` at build time and starts `daphne asacx.asgi:application`. Settings come from environment variables; the list is in the README. Without `DJANGO_DEBUG` the settings refuse to load unless `DJANGO_SECRET_KEY` is set, and `debug_toolbar`, `django_extensions` and `/__debug__/` are only loaded when `DEBUG` is on.
 
@@ -201,6 +202,7 @@ sequenceDiagram
         end
         R->>C: event_party_round_stopped
         C->>B: disabled form with the player's answers
+        SM->>DB: look up stored verdicts, then run the validators
         SM->>DB: score answers, set Party.closed_at after the last round
         SM->>R: group_send html (one answers modal per category)
         SM->>R: group_send event_update_past_answers
@@ -221,7 +223,7 @@ The lifecycle has no explicit state. It is inferred from `Party.started_at`, `Pa
 3. While `Party.closed_at` is NULL:
    - `next_round` returns the open round, or creates one with an unused letter, and broadcasts it.
    - `wait_for_round_end` waits for a STOP on `party_new_round_{id}` or until the round's `started_at` plus `max_round_duration`, and makes sure the round is closed. A resumed round only gets the time it has left.
-   - `update_scores` scores the round. The same transaction sets `Party.closed_at` once the party has `max_rounds` closed rounds.
+   - `update_scores` validates the round's answers, then scores it. The same transaction sets `Party.closed_at` once the party has `max_rounds` closed rounds.
 4. `finish_party` broadcasts `party_finished_update.html`: the winners, the final scores and a link home.
 
 Each party has a single owner: the worker that holds its `PartyLease` (`core/leases.py`), a `python-redis-lock` lock on `lock:party-lease:{id}` that expires after `TTL` (15 s). `run_party` takes it without blocking and runs the party through `PartyLease.run_while_held`, which renews the lease every `RENEW_INTERVAL` (5 s) from an asyncio task. If a renewal finds the lease gone, or Redis errors leave too little time before it would expire, the party task is cancelled before another worker can take over. The lease is released when the party ends or crashes, so duplicate `event_party_started` messages and restarts never start a second loop. As a second guard, `aget_current_or_next_round` and scoring lock the `Party` row, so a stale runner can't open a round next to the owner's or after the last one. When a worker dies, its lease expires and the reconciler sends `event_party_started` again. The worker that takes the lease resumes from the database: the open round keeps its letter and its deadline, and the stop condition counts closed rounds, so the party plays exactly `max_rounds` rounds.
@@ -278,6 +280,7 @@ erDiagram
     PARTY ||--o{ PARTY_CONNECTION : "waiting-room presence"
     USER ||--o{ PARTY_CONNECTION : has
     PARTY_ROUND ||--o{ USER_ROUND_ANSWER : has
+    USER_ROUND_ANSWER }o..o| ANSWER_VERDICT : "field and normalized value"
 
     PARTY {
         bigint id PK
@@ -312,7 +315,16 @@ erDiagram
         varchar field "name, last_name, country, city, animal, thing, color"
         varchar value "max 50 chars"
         int scored_points "NULL until scored, 0 if invalid or empty"
+        varchar verdict "valid, invalid, unverified; NULL if empty or wrong letter"
         datetime saved_at
+    }
+    ANSWER_VERDICT {
+        bigint id PK
+        varchar field "unique with value"
+        varchar value "normalized"
+        bool is_valid
+        varchar source "manual, or the validator that decided"
+        datetime created_at
     }
 ```
 
@@ -337,7 +349,8 @@ erDiagram
 `PartyRound.close_round_and_calculate_scores` closes the round and scores it in one transaction, and closes the party after its last round. Each category is scored separately:
 
 - An answer that is empty, or doesn't start with the round's letter, scores 0. The letter check ignores case and accents, but ñ is its own letter, so `Ñandú` doesn't count for N. Rounds scored before this rule kept `scored_points = NULL`, which is shown as 0.
-- A valid answer scores `100 // n`, where `n` is the number of answers in that category with the same normalized value. A unique answer scores 100, two identical answers score 50 each, three score 33 each. `normalize_answer` ignores case, accents except the tilde on ñ, and surrounding or repeated whitespace, so `Perro`, `perro` and `perro ` are the same answer. The stored `value` is kept as typed.
+- An answer that passes the letter check is then validated ([ADR 0005](adr/0005-validate-answers-with-word-lists.md)). `answer_validation.avalidate_round` looks up each unique `(field, normalized value)` in `AnswerVerdict`, then runs the `ANSWER_VALIDATORS` chain on the rest within `ANSWER_VALIDATION_TIMEOUT`. By default, `LexiconValidator` accepts words from the category's list in `core/lexicons/` and rejects the rest, and `DictionaryValidator` checks the spelling of things. A rejected answer scores 0, doesn't share points, and is struck through as "No válida" in the answer-reveal modal. An answer no validator decided, because of a timeout or an error, is accepted as `unverified`.
+- An accepted answer scores `100 // n`, where `n` is the number of accepted answers in that category with the same normalized value. A unique answer scores 100, two identical answers score 50 each, three score 33 each. `normalize_answer` ignores case, accents except the tilde on ñ, and surrounding or repeated whitespace, so `Perro`, `perro` and `perro ` are the same answer. The stored `value` is kept as typed.
 - A player's party score is the sum of their `scored_points` over every round, with 0 for a player who has none (`Party.aget_players_scores`). The winners are every player with the top score, or nobody if the top score is 0 (`Party.aget_winners`).
 
 `CurrentAnswersForm.clean` checks the initial letter while the player types, but it adds errors without removing the values, so invalid answers are stored anyway and score nothing when the round closes.

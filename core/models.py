@@ -290,11 +290,13 @@ class PartyRound(models.Model):
             unique_fields=["round", "user", "field"],
         )
 
-    async def close_round_and_calculate_scores(self):
-        return await sync_to_async(self._close_round_and_calculate_scores)()
+    async def close_round_and_calculate_scores(self, verdicts=None):
+        return await sync_to_async(self._close_round_and_calculate_scores)(
+            verdicts or {}
+        )
 
     @transaction.atomic
-    def _close_round_and_calculate_scores(self):
+    def _close_round_and_calculate_scores(self, verdicts):
         Party.objects.select_for_update().get(pk=self.party_id)
         PartyRound.objects.filter(pk=self.pk, closed_at__isnull=True).update(
             closed_at=timezone.now()
@@ -311,16 +313,22 @@ class PartyRound(models.Model):
             valid_answers = defaultdict(list)
             for answer in answers:
                 answer.scored_points = 0
+                answer.verdict = None
                 normalized = normalize_answer(answer.value)
                 if normalized.startswith(letter):
-                    valid_answers[normalized].append(answer)
+                    is_valid = verdicts.get((answer.field, normalized))
+                    answer.verdict = UserRoundAnswer.Verdict.from_bool(is_valid)
+                    if is_valid is not False:
+                        valid_answers[normalized].append(answer)
                 answers_to_save.append(answer)
 
             for same_answers in valid_answers.values():
                 for answer in same_answers:
                     answer.scored_points = 100 // len(same_answers)
 
-        UserRoundAnswer.objects.bulk_update(answers_to_save, ["scored_points"])
+        UserRoundAnswer.objects.bulk_update(
+            answers_to_save, ["scored_points", "verdict"]
+        )
 
         closed_rounds = PartyRound.objects.filter(
             party_id=self.party_id, closed_at__isnull=False
@@ -357,6 +365,17 @@ class UserRoundAnswer(models.Model):
         (COLOR_CHOICE, COLOR_CHOICE),
     )
 
+    class Verdict(models.TextChoices):
+        VALID = "valid", "válida"
+        INVALID = "invalid", "no válida"
+        UNVERIFIED = "unverified", "sin verificar"
+
+        @classmethod
+        def from_bool(cls, is_valid):
+            if is_valid is None:
+                return cls.UNVERIFIED
+            return cls.VALID if is_valid else cls.INVALID
+
     round = models.ForeignKey(PartyRound, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
@@ -364,6 +383,9 @@ class UserRoundAnswer(models.Model):
     value = models.CharField(max_length=50)
 
     scored_points = models.IntegerField(null=True, blank=True)
+    verdict = models.CharField(
+        max_length=10, choices=Verdict.choices, null=True, blank=True
+    )
 
     saved_at = models.DateTimeField(auto_now=True)
 
@@ -372,3 +394,30 @@ class UserRoundAnswer(models.Model):
 
     def __str__(self):
         return f"{self.round} - {self.user} - {self.field} - {self.value}"
+
+
+class AnswerVerdict(models.Model):
+    """Known verdicts, looked up before any validator runs.
+
+    Rows can be added or corrected by hand in the admin.
+    """
+
+    field = models.CharField(max_length=50, choices=UserRoundAnswer.FIELD_CHOICES)
+    value = models.CharField(max_length=50)
+    is_valid = models.BooleanField()
+    source = models.CharField(max_length=100, default="manual")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["field", "value"], name="unique_answer_verdict"
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.field} - {self.value} - {self.is_valid}"
+
+    def save(self, *args, **kwargs):
+        self.value = normalize_answer(self.value)
+        super().save(*args, **kwargs)

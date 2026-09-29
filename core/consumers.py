@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from core import forms, models
+from core import answer_validation, forms, models
 from core.leases import LeaseLost, PartyLease
 
 logger = logging.getLogger(__name__)
@@ -428,7 +428,10 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
         )
 
     async def update_scores(self, party, current_round):
-        all_users_answers = await current_round.close_round_and_calculate_scores()
+        verdicts = await answer_validation.avalidate_round(current_round)
+        all_users_answers = await current_round.close_round_and_calculate_scores(
+            verdicts
+        )
         await self.display_all_answers(all_users_answers, current_round, party)
         await self.channel_layer.group_send(
             self.get_party_group_name(party=party),
@@ -479,6 +482,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
                 {
                     "value": answer.value,
                     "scored_points": answer.scored_points,
+                    "rejected": answer.verdict == models.UserRoundAnswer.Verdict.INVALID,
                     "username": await sync_to_async(lambda: answer.user.username)(),
                 }
             )
