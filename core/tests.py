@@ -1,11 +1,13 @@
 import asyncio
+import importlib
 from unittest import mock
 
 import msgpack
-from asgiref.sync import async_to_sync
+from asgiref.sync import async_to_sync, sync_to_async
 from channels.layers import InMemoryChannelLayer, get_channel_layer
 from channels.routing import URLRouter
 from channels.testing import WebsocketCommunicator
+from django.apps import apps as django_apps
 from django.contrib.auth import SESSION_KEY, get_user_model
 from django.contrib.auth.models import User
 from django.test import Client, TestCase, override_settings
@@ -374,3 +376,196 @@ class StopRoundTests(TestCase):
         )
         answer = await models.UserRoundAnswer.objects.aget(round=self.round)
         self.assertEqual(answer.scored_points, 100)
+
+
+class PartyIsActiveTests(TestCase):
+    def test_open_party_is_active(self):
+        party = models.Party.objects.create(name="open")
+        self.assertTrue(party.is_active)
+
+    def test_closed_party_is_not_active(self):
+        party = models.Party.objects.create(name="closed", closed_at=timezone.now())
+        self.assertFalse(party.is_active)
+
+
+class CloseRoundTests(TestCase):
+    def setUp(self):
+        self.party = models.Party.objects.create(
+            name="p", max_rounds=2, started_at=timezone.now()
+        )
+
+    async def test_closing_a_round_before_the_last_keeps_the_party_open(self):
+        round = await models.PartyRound.objects.acreate(party=self.party, letter="A")
+        await round.close_round_and_calculate_scores()
+
+        await self.party.arefresh_from_db()
+        self.assertIsNotNone(round.closed_at)
+        self.assertIsNone(self.party.closed_at)
+
+    async def test_closing_the_last_round_closes_the_party(self):
+        first = await models.PartyRound.objects.acreate(party=self.party, letter="A")
+        await first.close_round_and_calculate_scores()
+        last = await models.PartyRound.objects.acreate(party=self.party, letter="B")
+        await last.close_round_and_calculate_scores()
+
+        await self.party.arefresh_from_db()
+        self.assertIsNotNone(self.party.closed_at)
+
+    async def test_closing_keeps_an_existing_closed_at(self):
+        closed_at = timezone.now() - timezone.timedelta(seconds=5)
+        round = await models.PartyRound.objects.acreate(
+            party=self.party, letter="A", closed_at=closed_at
+        )
+
+        await round.close_round_and_calculate_scores()
+
+        await round.arefresh_from_db()
+        self.assertEqual(round.closed_at, closed_at)
+
+
+class PartyWinnersTests(TestCase):
+    def test_winners_are_the_players_with_the_highest_score(self):
+        party = models.Party.objects.create(name="p")
+        round = models.PartyRound.objects.create(party=party, letter="A")
+        alice = User.objects.create(username="alice")
+        bob = User.objects.create(username="bob")
+        carol = User.objects.create(username="carol")
+        for user, points in ((alice, 100), (bob, 100), (carol, 50)):
+            models.UserRoundAnswer.objects.create(
+                round=round, user=user, field="name", value="A", scored_points=points
+            )
+        models.UserRoundAnswer.objects.create(
+            round=round, user=carol, field="city", value="x", scored_points=None
+        )
+
+        self.assertEqual(sorted(party.get_winners()), ["alice", "bob"])
+
+    def test_players_without_points_score_zero_and_nobody_wins(self):
+        party = models.Party.objects.create(name="p")
+        round = models.PartyRound.objects.create(party=party, letter="A")
+        alice = User.objects.create(username="alice")
+        models.UserRoundAnswer.objects.create(
+            round=round, user=alice, field="name", value="x", scored_points=None
+        )
+
+        self.assertEqual(party.get_players_scores(), {"alice": 0})
+        self.assertEqual(party.get_winners(), [])
+
+
+@override_settings(CHANNEL_LAYERS=MSGPACK_CHANNEL_LAYERS)
+@mock.patch.object(
+    consumers.PartyStateMachine, "display_all_answers", mock.AsyncMock()
+)
+class PartyStateMachineTests(TestCase):
+    def setUp(self):
+        self.party = models.Party.objects.create(
+            name="p",
+            max_rounds=3,
+            max_round_duration=0,
+            started_at=timezone.now(),
+        )
+
+    async def run_party(self):
+        state_machine = consumers.PartyStateMachine()
+        state_machine.channel_layer = get_channel_layer()
+        await state_machine.event_party_started(
+            {"party_id": self.party.id, "force_start": True}
+        )
+
+    async def test_plays_exactly_max_rounds_and_closes_the_party(self):
+        await self.run_party()
+
+        await self.party.arefresh_from_db()
+        self.assertEqual(
+            await models.PartyRound.objects.filter(party=self.party).acount(), 3
+        )
+        self.assertIsNotNone(self.party.closed_at)
+
+    async def test_broadcasts_the_final_results(self):
+        layer = get_channel_layer()
+        channel = await layer.new_channel()
+        await layer.group_add(f"party_{self.party.id}", channel)
+
+        await self.run_party()
+
+        messages = []
+        while message := await receive_or_none(layer, channel):
+            messages.append(message)
+        self.assertIn("Partida terminada", messages[-1]["message"])
+
+    async def test_resumes_without_exceeding_max_rounds(self):
+        round = await models.PartyRound.objects.acreate(party=self.party, letter="A")
+        await round.close_round_and_calculate_scores()
+
+        await self.run_party()
+
+        self.assertEqual(
+            await models.PartyRound.objects.filter(party=self.party).acount(), 3
+        )
+
+    async def test_restarting_does_not_touch_closed_parties(self):
+        await sync_to_async(
+            models.Party.objects.filter(id=self.party.id).update
+        )(closed_at=timezone.now())
+
+        await self.run_party()
+
+        self.assertFalse(
+            await models.PartyRound.objects.filter(party=self.party).aexists()
+        )
+
+
+@override_settings(STORAGES=SIMPLE_STORAGES)
+class DetailPartyTests(TestCase):
+    def test_finished_party_shows_final_results_without_creating_rounds(self):
+        user = User.objects.create(username="alice")
+        party = models.Party.objects.create(
+            name="p",
+            max_rounds=1,
+            started_at=timezone.now(),
+            closed_at=timezone.now(),
+        )
+        party.joined_users.add(user)
+        models.PartyRound.objects.create(
+            party=party, letter="A", closed_at=timezone.now()
+        )
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("detail_party", args=[party.id]))
+
+        self.assertContains(response, "Partida terminada")
+        self.assertNotContains(response, 'id="party_current_answers_form"')
+        self.assertEqual(models.PartyRound.objects.filter(party=party).count(), 1)
+
+
+class CloseFinishedPartiesMigrationTests(TestCase):
+    def test_closes_only_parties_that_played_all_their_rounds(self):
+        migration = importlib.import_module(
+            "core.migrations.0014_close_finished_parties"
+        )
+        last_closed_at = timezone.now()
+        finished = models.Party.objects.create(
+            name="finished", max_rounds=2, started_at=timezone.now()
+        )
+        models.PartyRound.objects.create(
+            party=finished,
+            letter="A",
+            closed_at=last_closed_at - timezone.timedelta(minutes=1),
+        )
+        models.PartyRound.objects.create(
+            party=finished, letter="B", closed_at=last_closed_at
+        )
+        in_progress = models.Party.objects.create(
+            name="in progress", max_rounds=2, started_at=timezone.now()
+        )
+        models.PartyRound.objects.create(
+            party=in_progress, letter="A", closed_at=timezone.now()
+        )
+        models.PartyRound.objects.create(party=in_progress, letter="B")
+
+        migration.close_finished_parties(django_apps, None)
+
+        finished.refresh_from_db()
+        in_progress.refresh_from_db()
+        self.assertEqual(finished.closed_at, last_closed_at)
+        self.assertIsNone(in_progress.closed_at)

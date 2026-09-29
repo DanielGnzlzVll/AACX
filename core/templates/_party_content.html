@@ -2,7 +2,11 @@
     {% include "party_answers.html" %}
 </div>
 <div class="party_current_answers" id="party_current_answers">
-    {% include "party_current_answers.html" %}
+    {% if party.closed_at %}
+        {% include "party_finished.html" %}
+    {% else %}
+        {% include "party_current_answers.html" %}
+    {% endif %}
 </div>
 <div class="party_reports" id="party_reports">
     {% include "party_reports.html" %}

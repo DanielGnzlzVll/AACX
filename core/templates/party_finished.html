@@ -1,0 +1,7 @@
+<article id="party_finished">
+  <h3>Partida terminada</h3>
+  {% if winners %}
+  <p>{% if winners|length > 1 %}Ganadores{% else %}Ganador{% endif %}: <strong>{{ winners|join:", " }}</strong></p>
+  {% endif %}
+  <a href="{% url 'home' %}" role="button">Volver al inicio</a>
+</article>

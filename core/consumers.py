@@ -170,16 +170,18 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             return
         elif not party and force_start:
             party = await models.Party.objects.aget(id=party_id)
+        if party.closed_at:
+            logger.info(f"party {party_id} already finished so skipping")
+            return
         logger.info(f"starting {party_id=}")
 
-        current_round = await self.next_round(party)
-
-        for _ in range(party.max_rounds):
+        while not party.closed_at:
+            current_round = await self.next_round(party)
             await self.wait_for_round_end(party, current_round)
             await self.update_scores(party, current_round)
-            current_round = await self.next_round(party)
+            await party.arefresh_from_db(fields=["closed_at"])
 
-        await self.update_scores(party, current_round)
+        await self.finish_party(party)
         logger.info(f"party {party_id} finished")
 
     async def wait_for_round_end(self, party, current_round):
@@ -284,6 +286,21 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
             {"type": "html", "message": template_string},
         )
         return next_or_current_round
+
+    async def finish_party(self, party):
+        template_string = render_to_string(
+            "party_finished_update.html",
+            {
+                "party": party,
+                "players_scores": await party.aget_players_scores(),
+                "winners": await party.aget_winners(),
+                "current_round": await party.aget_current_round(),
+            },
+        )
+        await self.channel_layer.group_send(
+            self.get_party_group_name(party=party),
+            {"type": "html", "message": template_string},
+        )
 
     async def get_connected_players(self, group):
         assert self.channel_layer.valid_group_name(group), "Group name not valid"

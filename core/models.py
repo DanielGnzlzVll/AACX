@@ -7,7 +7,8 @@ from itertools import groupby
 from asgiref.sync import async_to_sync, sync_to_async
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models
+from django.db import models, transaction
+from django.db.models.functions import Coalesce
 from django.utils import timezone
 
 
@@ -42,8 +43,6 @@ class Party(models.Model):
     )
     max_rounds = models.IntegerField(
         default=5,
-        blank=True,
-        null=True,
         validators=[
             MinValueValidator(1),
             MaxValueValidator(len(string.ascii_uppercase)),
@@ -58,7 +57,7 @@ class Party(models.Model):
 
     @property
     def is_active(self):
-        return self.closed_at is None or self.closed_at <= timezone.now()
+        return self.closed_at is None
 
     async def aget_current_or_next_round(self):
         current = await self.aget_current_round()
@@ -94,11 +93,20 @@ class Party(models.Model):
         points_grouped = (
             UserRoundAnswer.objects.filter(round__party_id=self.id)
             .values("user__username")
-            .annotate(scored_points=models.Sum("scored_points"))
+            .annotate(scored_points=Coalesce(models.Sum("scored_points"), 0))
             .order_by("-scored_points")
             .values_list("user__username", "scored_points")
         )
         return {username: points async for username, points in points_grouped}
+
+    async def aget_winners(self):
+        scores = await self.aget_players_scores()
+        if not scores:
+            return []
+        best = max(scores.values())
+        if not best:
+            return []
+        return [username for username, points in scores.items() if points == best]
 
     async def aget_answers_for_user(self, user):
         answers_dict = [
@@ -123,6 +131,7 @@ class Party(models.Model):
     get_current_or_next_round = async_to_sync(aget_current_or_next_round)
     get_current_round = async_to_sync(aget_current_round)
     get_players_scores = async_to_sync(aget_players_scores)
+    get_winners = async_to_sync(aget_winners)
 
 
 class PartyRoundQuerySet(models.QuerySet):
@@ -174,11 +183,18 @@ class PartyRound(models.Model):
         )
 
     async def close_round_and_calculate_scores(self):
-        await self.close()
+        return await sync_to_async(self._close_round_and_calculate_scores)()
+
+    @transaction.atomic
+    def _close_round_and_calculate_scores(self):
+        PartyRound.objects.filter(pk=self.pk, closed_at__isnull=True).update(
+            closed_at=timezone.now()
+        )
+        self.refresh_from_db(fields=["closed_at"])
 
         answers_to_save = []
         answers_by_field = collections.defaultdict(list)
-        async for answer in UserRoundAnswer.objects.filter(round=self):
+        for answer in UserRoundAnswer.objects.filter(round=self):
             answers_by_field[answer.field].append(answer)
 
         for field, answers in answers_by_field.items():
@@ -196,7 +212,15 @@ class PartyRound(models.Model):
                 answer.scored_points = 100 // all_users_for_field_answers[answer.value]
                 answers_to_save.append(answer)
 
-        await UserRoundAnswer.objects.abulk_update(answers_to_save, ["scored_points"])
+        UserRoundAnswer.objects.bulk_update(answers_to_save, ["scored_points"])
+
+        closed_rounds = PartyRound.objects.filter(
+            party_id=self.party_id, closed_at__isnull=False
+        ).count()
+        if closed_rounds >= self.party.max_rounds:
+            Party.objects.filter(id=self.party_id, closed_at__isnull=True).update(
+                closed_at=self.closed_at
+            )
         return answers_to_save
 
     async def aget_initial_data_for_user(self, user):
