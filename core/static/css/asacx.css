@@ -12,7 +12,16 @@ body {
 }
 * {
   box-sizing: border-box;
-  text-transform: capitalize;
+}
+
+.party-list {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+}
+
+.party-list li {
+  list-style: none;
 }
 
 .party {
@@ -25,10 +34,6 @@ body {
   text-overflow: ellipsis;
 }
 
-#content {
-  /* padding: var(--block-spacing-vertical); */
-}
-
 .is_active {
   background-color: #1a7a55;
 }
@@ -38,9 +43,9 @@ body {
 }
 
 .navbar {
-  padding-right: 2em;
+  flex-wrap: wrap;
+  padding: 0 2em 0 1em;
   background-color: #c9f0dd;
-  max-height: var(--navbar_height);
 }
 
 .navbar > ul > li > a {
@@ -102,7 +107,11 @@ body {
 }
 
 .closebtn {
-  margin-left: 15px;
+  width: auto;
+  margin: 0 0 0 15px;
+  padding: 0;
+  border: none;
+  background: none;
   color: white;
   font-weight: bold;
   float: right;
@@ -112,72 +121,71 @@ body {
   transition: 0.3s;
 }
 
-/* When moving the mouse over the close button */
 .closebtn:hover {
   color: black;
 }
 
 .party_game {
-  /* background-color: #8d8d8d; */
-  /* height: -webkit-fill-available; */
-  /* width: 90vw; */
-  /* max-height: -webkit-fill-available; */
   min-height: calc(
     100vh - var(--navbar_height) - 2 * var(--block-spacing-vertical)
   );
   display: grid;
   gap: 15px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 1fr auto;
   grid-template-areas:
-    "past_answers past_answers past_answers past_answers past_answers party_reports"
-    "past_answers past_answers past_answers past_answers past_answers party_reports"
-    "past_answers past_answers past_answers past_answers past_answers party_reports"
-    "past_answers past_answers past_answers past_answers past_answers party_reports"
-    "past_answers past_answers past_answers past_answers past_answers party_reports"
-    "past_answers past_answers past_answers past_answers past_answers party_reports"
-    "current_answers current_answers current_answers current_answers current_answers party_reports";
+    "past_answers party_reports"
+    "current_answers party_reports";
 }
 
 .party_content {
   display: contents;
 }
 
+.party_past_answers,
+.party_current_answers,
+.party_reports {
+  min-width: 0;
+  background-color: #dff9ec;
+  border-radius: 15px;
+  padding: 20px;
+}
+
 .party_past_answers {
   grid-area: past_answers;
-  background-color:  #dff9ec;
-  border-radius: 15px;
-  padding: 20px;
-
+  overflow-x: auto;
 }
+
 .party_current_answers {
   grid-area: current_answers;
-  background-color:   #dff9ec;
-  border-radius: 15px;
-  padding: 20px;
-
 }
+
 .party_reports {
   grid-area: party_reports;
-  background-color:   #dff9ec;
-  border-radius: 15px;
-  /* padding: 15px; */
   padding: 20px 10px 20px 15px;
-  /* display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* distribuye los divs verticalmente */
-/* } */
+}
 
-/* 
-hr {
-  margin: 0;
-  border: none;
-  border-top: 2px solid black; */
+.reports-heading {
+  --font-size: 1.25rem;
+}
+
+.reports-subheading {
+  --font-size: 1rem;
+}
+
+.reports-divider {
+  height: 3px;
+  border-width: 0;
+  background-color: gray;
+}
+
+.current-letter {
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 .reports-title {
   padding: 20px 5px 20px 5px;
-}
-.reports-username {
-  padding: 15px 10px 15px 0px;
 }
 
 .party_reports_row {
@@ -186,6 +194,17 @@ hr {
 
 .reports-username {
   padding: 15px 0px 15px 0px;
+}
+
+.reports-user-button {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font-weight: inherit;
+  text-align: left;
 }
 
 .reports-points {
@@ -199,7 +218,7 @@ hr {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* distribuye los divs verticalmente */
+  justify-content: space-between;
 }
 
 .party_current_answers form div {
@@ -214,6 +233,10 @@ hr {
 .party_current_answers form div div input[type="text"] {
   flex: 1;
   margin: 0px !important;
+}
+
+#submit_stop {
+  width: 100%;
 }
 
 .word_column {
@@ -244,10 +267,28 @@ hr {
   align-items: center;
 }
 
-
 td:first-child {
-  /* color: #0c4b33; */
   font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 1em;
+  }
+
+  .party_game {
+    min-height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas:
+      "current_answers"
+      "party_reports"
+      "past_answers";
+  }
+
+  .party_current_answers form div {
+    flex-direction: column;
+  }
 }
 
 
@@ -314,4 +355,3 @@ td:first-child {
 dialog article{
   max-width: 90vw;
 }
-

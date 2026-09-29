@@ -1,11 +1,11 @@
-<h4>Reportes</h4>
-<hr style="height: 3px; border-width: 0; color: gray; background-color: gray" />
-<h6>Letra actual</h6>
+<h2 class="reports-heading">Reportes</h2>
+<hr class="reports-divider">
+<h3 class="reports-subheading">Letra actual</h3>
 <div id="current_round_letter">
-  <h3>{{ current_round.letter|upper }}</h3>
+  <p class="current-letter">{{ current_round.letter|upper }}</p>
 </div>
-<hr style="height: 3px; border-width: 0; color: gray; background-color: gray" />
-<h6>Puntos por jugador</h6>
+<hr class="reports-divider">
+<h3 class="reports-subheading">Puntos por jugador</h3>
 <div id="party_points">
   <table>
     <thead>
@@ -21,13 +21,16 @@
         hx-target="#modal"
         hx-swap="outerHTML transition:true"
         class="party_reports_row"
-        title="Ver respuestas"
       >
-        <td class="reports-username">&#x25BA; {{ user_name }}</td>
+        <td class="reports-username">
+          <button type="button" class="reports-user-button" title="Ver respuestas de {{ user_name }}">
+            <span aria-hidden="true">&#x25BA;</span> {{ user_name }}
+          </button>
+        </td>
         <td class="reports-points">{{ points|default_if_none:"0" }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
-<hr style="height: 3px; border-width: 0; color: gray; background-color: gray" />
+<hr class="reports-divider">
