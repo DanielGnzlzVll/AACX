@@ -1,7 +1,9 @@
 from unittest import mock
 
 import pytest
+from django.db import connection
 from django.test import Client
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 
@@ -210,6 +212,94 @@ def test_detail_party(
     assert response.status_code == expected_status
     if expected_template:
         assert expected_template in [t.name for t in response.templates]
+
+
+def create_round(party, letter, closed):
+    return PartyRound.objects.create(
+        party=party, letter=letter, closed_at=timezone.now() if closed else None
+    )
+
+
+@pytest.mark.parametrize(
+    "state, rounds",
+    [
+        ("not-started", []),
+        ("started", []),
+        ("started", [False]),
+        ("started", [True]),
+        ("started", [True, False]),
+        ("closed", [True, True]),
+    ],
+)
+def test_detail_party_get_does_not_write(
+    logged_in_client, party_factory, alice, state, rounds
+):
+    fields = {
+        "not-started": {},
+        "started": {"started_at": timezone.now()},
+        "closed": {"started_at": timezone.now(), "closed_at": timezone.now()},
+    }[state]
+    party = party_factory(joined_users=[alice], **fields)
+    for letter, closed in zip("AB", rounds):
+        create_round(party, letter, closed)
+
+    with CaptureQueriesContext(connection) as queries:
+        response = logged_in_client.get(
+            reverse("detail_party", kwargs={"party_id": party.id})
+        )
+
+    assert response.status_code == 200
+    assert PartyRound.objects.filter(party=party).count() == len(rounds)
+    writes = [
+        query["sql"]
+        for query in queries
+        if query["sql"].lstrip().split()[0].upper() in {"INSERT", "UPDATE", "DELETE"}
+    ]
+    assert writes == []
+
+
+def get_detail_party(client, party):
+    return client.get(reverse("detail_party", kwargs={"party_id": party.id}))
+
+
+def test_detail_party_waits_for_first_round(logged_in_client, party_factory, alice):
+    party = party_factory(started_at=timezone.now(), joined_users=[alice])
+
+    response = get_detail_party(logged_in_client, party)
+
+    assert response.context["current_round"] is None
+    assert response.context["form"] is None
+    assert "ws-send" not in response.content.decode()
+
+
+def test_detail_party_open_round_is_editable(logged_in_client, party_factory, alice):
+    party = party_factory(started_at=timezone.now(), joined_users=[alice])
+    create_round(party, "A", closed=True)
+    open_round = create_round(party, "B", closed=False)
+
+    response = get_detail_party(logged_in_client, party)
+
+    assert response.context["current_round"] == open_round
+    assert response.context["form"].current_round == open_round
+    assert not response.context["form"].disabled
+    assert "ws-send" in response.content.decode()
+
+
+def test_detail_party_between_rounds_shows_closed_round_disabled(
+    logged_in_client, party_factory, alice
+):
+    party = party_factory(started_at=timezone.now(), joined_users=[alice])
+    closed_round = create_round(party, "A", closed=True)
+    UserRoundAnswer.objects.create(
+        round=closed_round, user=alice, field="name", value="Ana"
+    )
+
+    response = get_detail_party(logged_in_client, party)
+
+    assert response.context["current_round"] == closed_round
+    assert response.context["form"].disabled
+    assert response.context["form"].initial == {"name": "Ana"}
+    assert "ws-send" not in response.content.decode()
 
 
 def test_detail_party_not_found(logged_in_client):
