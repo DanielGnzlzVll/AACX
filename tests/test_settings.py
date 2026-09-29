@@ -59,7 +59,7 @@ def test_production_env_is_parsed():
         "db = s.DATABASES['default']",
         "print(s.DEBUG, s.ALLOWED_HOSTS, s.CSRF_TRUSTED_ORIGINS)",
         "print(db['HOST'], db['PORT'], db['NAME'], db['USER'])",
-        "print(s.CHANNEL_LAYERS['default']['CONFIG']['hosts'])",
+        "print([h['address'] for h in s.CHANNEL_LAYERS['default']['CONFIG']['hosts']])",
         "print(s.CACHES['default']['LOCATION'], s.LEASE_REDIS_URL)",
     )
 
