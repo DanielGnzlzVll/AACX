@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import RegexValidator
 from django.utils.safestring import SafeString
 
 from core import models
@@ -7,6 +8,27 @@ from core import models
 class NoRenderedWidget(forms.HiddenInput):
     def render(self, *args, **kwargs):
         return ""
+
+
+class LoginForm(forms.Form):
+    nickname = forms.CharField(
+        label="Nombre de usuario",
+        min_length=3,
+        max_length=30,
+        strip=True,
+        validators=[
+            RegexValidator(
+                r"^[\w.-]+\Z",
+                "Solo se permiten letras, números, puntos, guiones y guiones bajos.",
+            )
+        ],
+        error_messages={
+            "required": "Escribe un nombre de usuario.",
+            "min_length": "El nombre de usuario debe tener al menos 3 caracteres.",
+            "max_length": "El nombre de usuario debe tener máximo 30 caracteres.",
+        },
+        widget=forms.TextInput(attrs={"autofocus": True, "autocomplete": "off"}),
+    )
 
 
 class PartyForm(forms.ModelForm):

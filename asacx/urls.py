@@ -15,6 +15,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView
 from django.urls import path, include
 
 from core import views
@@ -24,6 +25,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("home/", views.Home.as_view(), name="home"),
     path("login/", views.Login.as_view(), name="login"),
+    path("logout/", LogoutView.as_view(next_page="login"), name="logout"),
     path("party/create/", views.CreateParty.as_view(), name="create_party"),
     path("party/<int:party_id>/", views.DetailParty.as_view(), name="detail_party"),
     path(
