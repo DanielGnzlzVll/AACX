@@ -387,23 +387,14 @@ class PartyRound(models.Model):
 
 
 class UserRoundAnswer(models.Model):
-    NAME_CHOICE = "name"
-    LAST_NAME_CHOICE = "last_name"
-    COUNTRY_CHOICE = "country"
-    CITY_CHOICE = "city"
-    COLOR_CHOICE = "color"
-    THING_CHOICE = "thing"
-    ANIMAL_CHOICE = "animal"
-
-    FIELD_CHOICES = (
-        (NAME_CHOICE, "Nombre"),
-        (LAST_NAME_CHOICE, "Apellido"),
-        (COUNTRY_CHOICE, "País"),
-        (CITY_CHOICE, "Ciudad"),
-        (ANIMAL_CHOICE, "Animal"),
-        (THING_CHOICE, "Cosa"),
-        (COLOR_CHOICE, "Color"),
-    )
+    class Category(models.TextChoices):
+        NAME = "name", "Nombre"
+        LAST_NAME = "last_name", "Apellido"
+        COUNTRY = "country", "País"
+        CITY = "city", "Ciudad"
+        ANIMAL = "animal", "Animal"
+        THING = "thing", "Cosa"
+        COLOR = "color", "Color"
 
     class Verdict(models.TextChoices):
         VALID = "valid", "válida"
@@ -419,7 +410,7 @@ class UserRoundAnswer(models.Model):
     round = models.ForeignKey(PartyRound, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-    field = models.CharField(max_length=50, choices=FIELD_CHOICES)
+    field = models.CharField(max_length=50, choices=Category.choices)
     value = models.CharField(max_length=50)
 
     scored_points = models.IntegerField(null=True, blank=True)
@@ -442,7 +433,7 @@ class AnswerVerdict(models.Model):
     Rows can be added or corrected by hand in the admin.
     """
 
-    field = models.CharField(max_length=50, choices=UserRoundAnswer.FIELD_CHOICES)
+    field = models.CharField(max_length=50, choices=UserRoundAnswer.Category.choices)
     value = models.CharField(max_length=50)
     is_valid = models.BooleanField()
     source = models.CharField(max_length=100, default="manual")
