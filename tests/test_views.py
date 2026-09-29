@@ -1,3 +1,4 @@
+from html.parser import HTMLParser
 from unittest import mock
 
 import pytest
@@ -313,6 +314,71 @@ def test_detail_party_open_round_is_editable(logged_in_client, party_factory, al
     assert response.context["form"].current_round == open_round
     assert not response.context["form"].disabled
     assert "ws-send" in response.content.decode()
+
+
+class AnswersFormTags(HTMLParser):
+    def __init__(self, html):
+        super().__init__()
+        self.form = None
+        self.tags = []
+        self.depth = 0
+        self.feed(html)
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if self.form is None and attrs.get("id") == "party_current_answers_form":
+            self.form = attrs
+            self.depth = 1
+            return
+        if self.depth:
+            self.tags.append((tag, attrs))
+            if tag == "form":
+                self.depth += 1
+
+    def handle_endtag(self, tag):
+        if self.depth and tag == "form":
+            self.depth -= 1
+
+
+def test_detail_party_open_round_shows_saved_answers(
+    logged_in_client, party_factory, alice
+):
+    party = party_factory(started_at=timezone.now(), joined_users=[alice])
+    open_round = create_round(party, "A", closed=False)
+    UserRoundAnswer.objects.create(
+        round=open_round, user=alice, field="name", value="Ana"
+    )
+
+    response = get_detail_party(logged_in_client, party)
+
+    assert response.context["form"].initial == {"name": "Ana"}
+    inputs = {
+        attrs["name"]: attrs.get("value")
+        for tag, attrs in AnswersFormTags(response.content.decode()).tags
+        if tag == "input"
+    }
+    assert inputs["name"] == "Ana"
+
+
+def test_answers_form_sends_every_change_and_enter_cannot_stop(
+    logged_in_client, party_factory, alice
+):
+    party = party_factory(started_at=timezone.now(), joined_users=[alice])
+    create_round(party, "A", closed=False)
+
+    parsed = AnswersFormTags(get_detail_party(logged_in_client, party).content.decode())
+
+    assert parsed.form["hx-trigger"] == "input delay:200ms"
+    tags = [tag for tag, _ in parsed.tags]
+    assert "script" not in tags
+    buttons = [attrs for tag, attrs in parsed.tags if tag == "button"]
+    assert [button["id"] for button in buttons] == ["submit_stop"]
+    assert all(button.get("type") == "button" for button in buttons)
+    assert not any(
+        attrs.get("type") in ("submit", "image")
+        for tag, attrs in parsed.tags
+        if tag == "input"
+    )
 
 
 def test_detail_party_between_rounds_shows_closed_round_disabled(

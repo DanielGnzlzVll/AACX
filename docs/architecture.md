@@ -78,7 +78,7 @@ flowchart LR
 | `/logout/` | `Logout` | A `LogoutView` restricted to POST (`http_method_names = ["post", "options"]`). Redirects to `/login/`. |
 | `/home/` | `Home` | Parties the user can join or rejoin. This is the entry page. Nothing is routed at `/`, so it returns 404. |
 | `/party/create/` | `CreateParty` | Live-validated form. Creates a new party when `submit=true`. It never modifies an existing one. |
-| `/party/<id>/` | `DetailParty` | Waiting page, game page, or final results once the party is closed. The GET is read-only: it shows the latest round, disabled once it is closed, and a waiting state until the state machine opens the first one. |
+| `/party/<id>/` | `DetailParty` | Waiting page, game page, or final results once the party is closed. The GET is read-only: it shows the latest round filled with the player's saved answers, disabled once it is closed, and a waiting state until the state machine opens the first one. |
 | `/party/<id>/user/<username>/answers` | `PartyAnswers` | A player's answers, shown in a modal. Another player's answers only cover closed rounds. Returns 404 unless that user joined or answered in the party. |
 | `/admin/`, `/__debug__/` | Django admin, debug toolbar | |
 
@@ -127,7 +127,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 ### Websocket messages
 
-- **Browser → server**: the answers form uses `ws-send`, so each message is the form's fields as JSON plus a `HEADERS` object added by the htmx ws extension. `PartyConsumer.receive` only accepts messages where `HEADERS["HX-Trigger"] == "party_current_answers_form"`. It validates them with `CurrentAnswersForm`, upserts the answers, and replies with the re-rendered form, or sends `event_party_round_stopped` if `submit_stop` is set.
+- **Browser → server**: the answers form uses `ws-send`, so each message is the form's fields as JSON plus a `HEADERS` object added by the htmx ws extension. `PartyConsumer.receive` only accepts messages where `HEADERS["HX-Trigger"]` is `party_current_answers_form` (autosave) or `submit_stop` (the STOP button). It validates them with `CurrentAnswersForm` and upserts every category, storing an empty value for a field that failed field validation (too long). Then it sends `event_party_round_stopped` if `submit_stop` is set, or replies with `party_current_answers_errors.html`, which holds only the per-field `#answer_error_<field>` elements.
 - **Server → browser**: HTML fragments, swapped by element id (see [Frontend model](#6-frontend-model)). `connect` also sends the plain text `waiting for players to join`, which the ws extension ignores because it contains no element.
 
 ### Round sequence
@@ -162,7 +162,7 @@ sequenceDiagram
         C->>B: #party_past_answers, #party_current_answers, #party_reports
         B->>C: ws-send answers
         C->>DB: upsert UserRoundAnswer
-        C->>B: party_current_answers.html (validation)
+        C->>B: party_current_answers_errors.html (per-field validation)
         alt a player presses STOP
             C->>R: send party-state-machine {event_party_round_stopped, party_id, round_id}
             R->>SM: event_party_round_stopped
@@ -318,7 +318,7 @@ erDiagram
 
 ## 6. Frontend model
 
-The UI is Django templates plus HTMX, and the only custom JavaScript is a focus-restoring script ([ADR 0001](adr/0001-server-rendered-html-with-htmx-over-websockets.md)). HTMX 1.9.12 and its `ws` extension are vendored in `core/static/js/`. The `debug` extension only loads when `settings.DEBUG` is on.
+The UI is Django templates plus HTMX, with no custom JavaScript ([ADR 0001](adr/0001-server-rendered-html-with-htmx-over-websockets.md)). HTMX 1.9.12 and its `ws` extension are vendored in `core/static/js/`. The `debug` extension only loads when `settings.DEBUG` is on.
 
 ### Partial rendering (`base_template`)
 
@@ -342,7 +342,8 @@ The ws extension handles each server message as an HTML fragment. Every top-leve
 | `party_content` | `party_no_started.html` | Inline HTML in `ensure_players_join` ("Esperando Mas Jugadores...") | `PartyStateMachine`, group `html` |
 | `party_content` | `party_no_started.html`, `_party_content.html` (included by `party.html`) | `_party_content.html` | `PartyStateMachine.next_round`, group `html` |
 | `party_current_answers`, `party_reports` | `_party_content.html` | `party_finished_update.html` (final results in place of the form) | `PartyStateMachine.finish_party`, group `html` |
-| `party_current_answers_form`, `script` | `party_current_answers.html` (the id is also the waiting placeholder when no round is open) | `party_current_answers.html` | `PartyConsumer`: validation reply to its own socket, and `event_party_round_stopped` (disabled form) |
+| `party_current_answers_form` | `party_current_answers.html` (the id is also the waiting placeholder when no round is open) | `party_current_answers.html` | `PartyConsumer.event_party_round_stopped` (disabled form) |
+| `answer_error_<field>` | `_answer_error.html`, included once per field by `party_current_answers.html` | `party_current_answers_errors.html` | `PartyConsumer`: autosave reply to its own socket |
 | `party_answers_table` | `party_answers.html` | `party_answers.html` | `PartyConsumer.event_update_past_answers` |
 | `modal` | `base.html` | `party_current_all_users_answers_modal.html` | `PartyStateMachine.display_all_answers`, group `html` |
 
@@ -351,7 +352,8 @@ Things to keep in mind when changing templates or consumers:
 - **Renaming an id breaks a swap, and nothing reports it.** The ids in this table are the contract between the templates and the consumers.
 - **Group broadcasts are rendered once for every player.** `next_round` renders `_party_content.html` without any user in the context, so the past-answers table inside it comes out empty for everyone ([#18]). Per-player content has to be rendered by that player's `PartyConsumer`, like the `event_*` handlers do.
 - **The waiting page and the game page share `#party_content`.** `_party_content.html` wraps the three game panels in it, so the first round broadcast replaces the waiting message. Its `display: contents` keeps the panels as grid items of `.party_game`.
-- **The answers form** (`party_current_answers_form`) sends itself with `ws-send` on input (values longer than one character, 200 ms debounce) and when `#submit_stop` is clicked. The inline `#script` saves the focused input before each send (`htmx:wsBeforeSend`) and restores focus and the cursor after each message (`htmx:wsAfterMessage`), because the reply replaces the form the player is typing in ([#20]).
+- **The answers form** (`party_current_answers_form`) sends itself with `ws-send` on every `input` (200 ms debounce), including empty and one-character values, so the stored answers always match the screen. The autosave reply never contains the inputs: replacing an input while the player types would drop the characters typed while the message was in flight. It only swaps the `#answer_error_<field>` elements, and `.word-error + input` paints the field red.
+- **STOP** is a `type="button"` with its own `ws-send` and `hx-vals='{"submit_stop": "on"}'`, so it sends the form's values plus `submit_stop`, with `HX-Trigger: submit_stop`. It isn't a submit button, so pressing Enter in an answer can't end the round.
 
 The per-player answers modal doesn't use the websocket. Clicking a row in the scores table sends an `hx-get` to `party_answers`, which returns `party_modal_answers.html` and replaces `#modal` (`hx-swap="outerHTML transition:true"`). For another player, it only shows closed rounds.
 
@@ -376,5 +378,4 @@ The issues that track where the implementation differs from the design:
 [#10]: https://github.com/DanielGnzlzVll/AACX/issues/10
 [#16]: https://github.com/DanielGnzlzVll/AACX/issues/16
 [#18]: https://github.com/DanielGnzlzVll/AACX/issues/18
-[#20]: https://github.com/DanielGnzlzVll/AACX/issues/20
 [#24]: https://github.com/DanielGnzlzVll/AACX/issues/24

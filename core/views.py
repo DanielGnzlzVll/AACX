@@ -232,13 +232,11 @@ class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
         context["form"] = None
         if current_round is None:
             return context
-        if current_round.closed_at is None:
-            context["form"] = forms.CurrentAnswersForm(current_round=current_round)
-            return context
-        context["disabled"] = True
+        disabled = current_round.closed_at is not None
+        context["disabled"] = disabled
         context["form"] = forms.CurrentAnswersForm(
             current_round=current_round,
-            disabled=True,
+            disabled=disabled,
             initial=async_to_sync(current_round.aget_initial_data_for_user)(
                 self.request.user
             ),

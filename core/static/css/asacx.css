@@ -234,7 +234,7 @@ hr {
   display: none;
 }
 
-.word_column.word-error > input{
+.word-error + input {
   background-color: red;
 }
 

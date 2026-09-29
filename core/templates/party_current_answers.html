@@ -1,53 +1,31 @@
-<script id="script">
-  if (!window.ultimoElementoConFoco) {
-    // Evento que se ejecuta antes de enviar una solicitud htmx ws
-    document.addEventListener("htmx:wsBeforeSend", function (event) {
-      // Captura el id del elemento con el foco actual
-      const elementoConFoco = document.activeElement;
-      ultimoElementoConFocoId = elementoConFoco ? elementoConFoco.id : null;
-    });
-
-    // Evento que se ejecuta después de completarse la carga de una solicitud htmx ws
-    document.addEventListener("htmx:wsAfterMessage", function (event) {
-      // Verifica si hay un id almacenado y asigna el foco al elemento correspondiente
-      if (ultimoElementoConFocoId) {
-        const elementoConFoco = document.getElementById(
-          ultimoElementoConFocoId
-        );
-        if (elementoConFoco) {
-          elementoConFoco.focus();
-          if (elementoConFoco.setSelectionRange) {
-            elementoConFoco.setSelectionRange(
-              elementoConFoco.value.length,
-              elementoConFoco.value.length
-            );
-          }
-        }
-        // Reinicia la variable después de utilizarla
-        ultimoElementoConFocoId = null;
-      }
-    });
-  }
-</script>
 {% if form %}
 <form
   id="party_current_answers_form"
-  action="post"
-  hx-push-url="true"
   {% if not disabled %}
     ws-send
-    hx-trigger="input[target.value.length > 1] delay:200ms, click from:#submit_stop"
+    hx-trigger="input delay:200ms"
   {% endif %}
   >
-  <div id="random">{{ form.as_div }}</div>
+  <div>
+    {% for field in form.visible_fields %}
+      <div class="word_column">
+        {{ field.label_tag }}
+        {% include "_answer_error.html" %}
+        {{ field }}
+      </div>
+    {% endfor %}
+  </div>
   <button
-    type="submit"
-    value="true"
+    type="button"
     class="secondary"
     style="width: 100%"
     id="submit_stop"
-    name="submit_stop"
-    {% if disabled %}disabled{% endif %}
+    {% if disabled %}
+      disabled
+    {% else %}
+      ws-send
+      hx-vals='{"submit_stop": "on"}'
+    {% endif %}
   >STOP</button>
 </form>
 {% else %}

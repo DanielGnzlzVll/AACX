@@ -2,7 +2,6 @@ import re
 
 from django import forms
 from django.core.validators import RegexValidator
-from django.utils.safestring import SafeString
 
 from core import models
 
@@ -91,8 +90,6 @@ class CurrentAnswersForm(forms.Form):
         required=False,
     )
 
-    error_css_class = "word_column word-error"
-
     def __init__(self, *args, **kwargs):
         self.current_round = kwargs.pop("current_round")
         self.disabled = kwargs.pop("disabled", False)
@@ -107,11 +104,6 @@ class CurrentAnswersForm(forms.Form):
 
         if self.autofocus_name:
             self.fields["name"].widget.attrs["autofocus"] = True
-
-    def as_div(self):
-        return SafeString(
-            super().as_div().replace("<div>", "<div class='word_column'>")
-        )
 
     def clean(self):
         cleaned_data = super().clean().copy()
