@@ -307,3 +307,20 @@ async def test_stop_button_saves_answers_and_stops_round(
         "round_id": round.id,
     }
     assert (await saved_answers(alice))["name"] == "Ana"
+
+
+async def test_new_round_is_filled_with_the_players_saved_answers(
+    ws_communicator, channel_layer, started_party, alice
+):
+    round = await models.PartyRound.objects.aget(party=started_party)
+    await round.save_user_answers(alice, [("name", "Ana")])
+    communicator, _, _ = await connect(ws_communicator, alice, started_party.id)
+
+    await channel_layer.group_send(
+        f"party_{started_party.id}",
+        {"type": "event_new_round", "round_id": round.id},
+    )
+
+    message = await communicator.receive_from()
+    assert 'id="party_content"' in message
+    assert 'value="Ana"' in message

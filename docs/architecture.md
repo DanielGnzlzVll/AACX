@@ -121,7 +121,8 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | `type` | Payload | Producer | `PartyConsumer` handler |
 |---|---|---|---|
-| `html` | `message`: HTML | `ensure_players_join` (waiting-room count), `next_round` (`_party_content.html`), `display_all_answers` (one modal per category, then an empty modal), `finish_party` (`party_finished_update.html`) | `html`: forwards the HTML to the socket as-is. |
+| `html` | `message`: HTML | `ensure_players_join` (waiting-room count), `display_all_answers` (one modal per category, then an empty modal), `finish_party` (`party_finished_update.html`) | `html`: forwards the HTML to the socket as-is. |
+| `event_new_round` | `round_id` | `PartyStateMachine.next_round` | Renders `_party_content.html` for that round, with that user's past answers, the scores and the answers form filled with that user's saved answers. |
 | `event_party_round_stopped` | none | State machine, by whichever path closed the round (timeout or STOP) | Renders `party_current_answers.html` disabled, pre-filled with that user's answers. |
 | `event_update_past_answers` | none | `PartyStateMachine.update_scores` | Renders `party_answers.html` with that user's answers from every round. |
 
@@ -157,9 +158,9 @@ sequenceDiagram
     SM->>DB: started_at = now()
     loop until Party.closed_at is set
         SM->>DB: create round (or reuse the open one)
-        SM->>R: group_send html (_party_content.html)
-        R->>C: html
-        C->>B: #party_past_answers, #party_current_answers, #party_reports
+        SM->>R: group_send event_new_round
+        R->>C: event_new_round
+        C->>B: _party_content.html with this player's past answers
         B->>C: ws-send answers
         C->>DB: upsert UserRoundAnswer
         C->>B: party_current_answers_errors.html (per-field validation)
@@ -340,7 +341,7 @@ The ws extension handles each server message as an HTML fragment. Every top-leve
 | Target id | Defined in | Replaced by | Sent by |
 |---|---|---|---|
 | `party_content` | `party_no_started.html` | Inline HTML in `ensure_players_join` ("Esperando Mas Jugadores...") | `PartyStateMachine`, group `html` |
-| `party_content` | `party_no_started.html`, `_party_content.html` (included by `party.html`) | `_party_content.html` | `PartyStateMachine.next_round`, group `html` |
+| `party_content` | `party_no_started.html`, `_party_content.html` (included by `party.html`) | `_party_content.html` | `PartyConsumer.event_new_round` |
 | `party_current_answers`, `party_reports` | `_party_content.html` | `party_finished_update.html` (final results in place of the form) | `PartyStateMachine.finish_party`, group `html` |
 | `party_current_answers_form` | `party_current_answers.html` (the id is also the waiting placeholder when no round is open) | `party_current_answers.html` | `PartyConsumer.event_party_round_stopped` (disabled form) |
 | `answer_error_<field>` | `_answer_error.html`, included once per field by `party_current_answers.html` | `party_current_answers_errors.html` | `PartyConsumer`: autosave reply to its own socket |
@@ -350,7 +351,7 @@ The ws extension handles each server message as an HTML fragment. Every top-leve
 Things to keep in mind when changing templates or consumers:
 
 - **Renaming an id breaks a swap, and nothing reports it.** The ids in this table are the contract between the templates and the consumers.
-- **Group broadcasts are rendered once for every player.** `next_round` renders `_party_content.html` without any user in the context, so the past-answers table inside it comes out empty for everyone ([#18]). Per-player content has to be rendered by that player's `PartyConsumer`, like the `event_*` handlers do.
+- **Group broadcasts are rendered once for every player.** An `html` broadcast can only carry state that all players share. Anything that depends on the user, like the past-answers table, has to be rendered by that player's `PartyConsumer`, like the `event_*` handlers do.
 - **The waiting page and the game page share `#party_content`.** `_party_content.html` wraps the three game panels in it, so the first round broadcast replaces the waiting message. Its `display: contents` keeps the panels as grid items of `.party_game`.
 - **The answers form** (`party_current_answers_form`) sends itself with `ws-send` on every `input` (200 ms debounce), including empty and one-character values, so the stored answers always match the screen. The autosave reply never contains the inputs: replacing an input while the player types would drop the characters typed while the message was in flight. It only swaps the `#answer_error_<field>` elements, and `.word-error + input` paints the field red.
 - **STOP** is a `type="button"` with its own `ws-send` and `hx-vals='{"submit_stop": "on"}'`, so it sends the form's values plus `submit_stop`, with `HX-Trigger: submit_stop`. It isn't a submit button, so pressing Enter in an answer can't end the round.
@@ -369,7 +370,6 @@ The issues that track where the implementation differs from the design:
 | [#9] | A running party blocks a whole worker, and a STOP that lands on a busy worker only takes effect when the round times out |
 | [#10] | More than one worker can own a party, and a resumed round restarts its timer |
 | [#16] | `PartyConsumer` doesn't check authentication, authorization or input |
-| [#18] | Round broadcasts wipe each player's past answers |
 | [#24] | Dead and incorrect code paths (`party_stared`, unused handlers) |
 
 [#1]: https://github.com/DanielGnzlzVll/AACX/issues/1
@@ -377,5 +377,4 @@ The issues that track where the implementation differs from the design:
 [#9]: https://github.com/DanielGnzlzVll/AACX/issues/9
 [#10]: https://github.com/DanielGnzlzVll/AACX/issues/10
 [#16]: https://github.com/DanielGnzlzVll/AACX/issues/16
-[#18]: https://github.com/DanielGnzlzVll/AACX/issues/18
 [#24]: https://github.com/DanielGnzlzVll/AACX/issues/24
