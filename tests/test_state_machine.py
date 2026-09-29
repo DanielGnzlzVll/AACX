@@ -5,6 +5,7 @@ import types
 import pytest
 from asgiref.sync import sync_to_async
 from asgiref.testing import ApplicationCommunicator
+from django.utils import timezone
 
 from core import consumers, models
 
@@ -12,14 +13,7 @@ pytestmark = pytest.mark.django_db(transaction=True)
 
 
 @pytest.fixture
-async def start_worker(channel_layer, monkeypatch):
-    # The real implementation reads channels_redis internals.
-    async def get_connected_players(self, group):
-        return list(channel_layer.groups.get(group, {}))
-
-    monkeypatch.setattr(
-        consumers.PartyStateMachine, "get_connected_players", get_connected_players
-    )
+async def start_worker(channel_layer):
     workers = []
 
     async def start():
@@ -40,9 +34,6 @@ async def start_worker(channel_layer, monkeypatch):
         for task in tasks:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
-    for task in asyncio.all_tasks():
-        if task.get_name() == "timeout":
-            task.cancel()
 
 
 @pytest.fixture
@@ -51,14 +42,17 @@ async def worker(start_worker):
 
 
 @pytest.fixture
-def ready_party(party_factory, channel_layer, alice, bob):
+def ready_party(party_factory, alice, bob):
     async def create():
         party = await sync_to_async(party_factory)(
             min_players=2, max_round_duration=60
         )
         for user in (alice, bob):
-            await channel_layer.send(
-                f"party_players_{party.id}", {"user_id": user.id}
+            await models.PartyConnection.objects.acreate(
+                party=party,
+                user=user,
+                channel_name=f"{party.id}-{user.username}",
+                last_seen_at=timezone.now(),
             )
         return party
 

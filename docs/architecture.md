@@ -97,7 +97,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | `type` | Payload | Producer | Handler behavior |
 |---|---|---|---|
-| `event_party_started` | `party_id`, `party_name`, optional `force_start` | `PartyConsumer.connect` on every connection to a party that isn't closed. `CoreConfig.ready()` on the master, with `force_start: True`. | Runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). Only the worker that locks the `Party` row with `started_at IS NULL` runs it. The rest log "already locked" and return, unless `force_start` is set. |
+| `event_party_started` | `party_id`, `party_name`, optional `force_start` | `PartyConsumer.connect` on every connection to a party that isn't closed. `CoreConfig.ready()` on the master, with `force_start: True`. | Runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). Only the worker that claims the waiting room runs it (see step 1 of [Party lifecycle](#4-party-lifecycle)). The rest log "already claimed" and return, unless `force_start` is set. |
 | `event_party_round_stopped` | `party_id`, `round_id` | `PartyConsumer.handle_form_submit` when a valid form has `submit_stop` | Closes the round with a conditional `UPDATE ... SET closed_at = now() WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`). If the round was already closed, the STOP is logged and ignored, so duplicate STOPs are harmless. Otherwise it sends `event_party_round_stopped` to group `party_{id}` and `{round_id}` to `party_new_round_{id}`. |
 | `event_party_join` | `party_id` | none | Unused handler ([#24]). |
 
@@ -107,9 +107,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | Payload | Producer | Consumer |
 |---|---|---|
-| `hola`, `date`, `party_id`, `username`, `user_id` | `PartyConsumer.connect`, once per websocket connection | `PartyStateMachine.ensure_players_join` reads one message per expected player and adds `user_id` to `Party.joined_users`. Messages sent after the party starts are never read. |
-
-One message is counted as one player, so a player who reconnects is counted twice ([#15]).
+| `user_id` | `PartyConsumer`, when a connection to a party that hasn't started joins or leaves the waiting room | `PartyStateMachine.ensure_players_join` treats each message as a wake-up and recounts the players from `PartyConnection`. Messages sent after the party starts are never read. |
 
 ### Channel `party_new_round_{id}`
 
@@ -119,7 +117,7 @@ One message is counted as one player, so a player who reconnects is counted twic
 
 ### Group `party_{id}`
 
-`PartyConsumer.connect` joins it. `PartyStateMachine.get_connected_players` counts its members by reading `channels_redis`'s private sorted set ([#15]).
+`PartyConsumer.connect` joins it and `disconnect` leaves it.
 
 | `type` | Payload | Producer | `PartyConsumer` handler |
 |---|---|---|---|
@@ -145,14 +143,16 @@ sequenceDiagram
 
     B->>C: ws connect /party/{id}/
     C->>R: group_add party_{id}
-    C->>R: send party_players_{id} {user_id, ...}
+    C->>DB: joined_users.add(user), insert PartyConnection
+    C->>R: send party_players_{id} {user_id}
     C->>R: send party-state-machine {event_party_started}
     R->>SM: event_party_started
-    SM->>DB: SELECT ... FOR UPDATE SKIP LOCKED (started_at IS NULL)
-    loop min_players times, or until 120 s pass
-        SM->>R: receive party_players_{id}
-        SM->>DB: joined_users.add(user_id)
+    SM->>DB: claim the waiting room (waiting_started_at)
+    loop until min_players distinct users are connected
+        SM->>DB: count distinct users with a live PartyConnection
         SM->>R: group_send html (#party_content)
+        SM->>R: receive party_players_{id}, or poll after 10 s
+        SM->>DB: renew the claim
     end
     SM->>DB: started_at = now()
     loop until Party.closed_at is set
@@ -190,7 +190,7 @@ sequenceDiagram
 
 The lifecycle has no explicit state. It is inferred from `Party.started_at`, `Party.closed_at` and each `PartyRound.closed_at`, and driven by one long coroutine, `PartyStateMachine.event_party_started`:
 
-1. `ensure_players_join` runs inside `transaction.atomic()` while holding `SELECT ... FOR UPDATE SKIP LOCKED` on the party. It waits for `min_players` messages on `party_players_{id}`, or gives up after `MAX_WAITING_TIME` (120 s), in which case the party starts anyway ([#15]). Then it sets `started_at`.
+1. The waiting room. A worker claims the party with a conditional `UPDATE` of `waiting_started_at`, and `ensure_players_join` renews that claim at least every `WAITING_POLL_INTERVAL` (10 s). A claim older than `WAITING_CLAIM_TTL` (60 s) belongs to a dead worker and can be taken over. The party starts once `min_players` distinct users are connected at the same time. There is no deadline: the party never starts with fewer players, however long it waits. When the last player leaves, the worker releases the claim and stops waiting, and the party stays open to join. The next connection claims it again. `started_at` is set with a conditional `UPDATE` that only succeeds for the current claim.
 2. If the party is already closed, the handler returns.
 3. While `Party.closed_at` is NULL:
    - `next_round` returns the open round, or creates one with an unused letter, and broadcasts it.
@@ -203,8 +203,9 @@ The stop condition counts closed rounds in the database, so a party resumed with
 ```mermaid
 stateDiagram-v2
     [*] --> Created: CreateParty
-    Created --> Waiting: first event_party_started locks the Party row
-    Waiting --> RoundOpen: min_players joined or 120 s passed, started_at set
+    Created --> Waiting: event_party_started claims the waiting room
+    Waiting --> Created: last player leaves, claim released
+    Waiting --> RoundOpen: min_players distinct users connected, started_at set
     RoundOpen --> Scoring: STOP or timeout
     Scoring --> RoundOpen: rounds left
     Scoring --> Finished: max_rounds closed rounds, closed_at set
@@ -248,6 +249,8 @@ erDiagram
     USER }o--o{ PARTY : "joined_users"
     USER |o--o{ PARTY : "created_by"
     PARTY ||--o{ PARTY_ROUND : has
+    PARTY ||--o{ PARTY_CONNECTION : "waiting-room presence"
+    USER ||--o{ PARTY_CONNECTION : has
     PARTY_ROUND ||--o{ USER_ROUND_ANSWER : has
 
     PARTY {
@@ -260,6 +263,13 @@ erDiagram
         smallint min_players "default 2, 2..20, required"
         smallint max_round_duration "seconds, default 120, 30..600, required"
         smallint max_rounds "default 5, 1..26, required"
+    }
+    PARTY_CONNECTION {
+        bigint id PK
+        bigint party_id FK
+        int user_id FK
+        varchar channel_name "unique, one row per websocket"
+        datetime last_seen_at "refreshed every 20 s"
     }
     PARTY_ROUND {
         bigint id PK
@@ -289,8 +299,9 @@ erDiagram
 - **The current round** is the party's round with the latest `started_at`. It is open while `closed_at` is NULL. `aget_current_or_next_round` returns it if it is open and otherwise creates a new one, so only the state machine calls it. Callers that only need to read use `aget_current_round`.
 - **A round is closed exactly once.** Every close is a conditional `UPDATE ... WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`, or the one inside `close_round_and_calculate_scores`), and only the caller whose update wins broadcasts the round end.
 - **A party is closed** once it has `max_rounds` closed rounds. `close_round_and_calculate_scores` sets `Party.closed_at` in the same transaction as the scores, with a conditional `UPDATE ... WHERE closed_at IS NULL`. Migration `0014_close_finished_parties` backfilled parties that had already played all their rounds. `Party.is_active` means `closed_at` is NULL.
-- **A party has started** once `started_at` is set. It is set once, by the worker that won the row lock.
-- **`joined_users`** is filled only by the state machine, while the waiting room is open. The HTTP views don't change it.
+- **A party has started** once `started_at` is set. It is set once, by the worker that holds the waiting-room claim.
+- **`joined_users`** gets every user who connects to the party's websocket before it starts, so everyone who waited can play. After the start, only those users can connect. The HTTP views don't change it.
+- **Waiting-room presence** is one `PartyConnection` row per websocket connected while the party waits. The consumer refreshes `last_seen_at` every `HEARTBEAT_INTERVAL` (20 s) and deletes the row on disconnect. Rows older than `TTL` (60 s) belong to dead connections: they aren't counted, and the next connection to that party deletes them. Players are counted as distinct users, so several tabs count once.
 - **Available parties** (`PartyQuerySet.get_available_parties`) are parties that haven't started, plus unclosed parties the user joined. `DetailParty` shows a party if the user joined it or it isn't closed.
 - **Open party names are unique**, case-insensitively. The partial `UniqueConstraint` `unique_open_party_name` on `Lower(name)` where `closed_at IS NULL` enforces it, so a closed party's name can be reused. `CreateParty` always inserts a new party and records `created_by`. `PartyForm.clean_name` rejects a taken name with "Ya existe una partida abierta con ese nombre.", and the view shows the same error if the insert loses a race for the name. Migration `0016_party_created_by_unique_open_name` renamed open duplicates to `name (id)` before adding the constraint.
 - **Party settings are required and bounded.** `min_players` (2..20), `max_round_duration` (30..600 seconds) and `max_rounds` (1..26) are non-null `PositiveSmallIntegerField`s, so the game loop can rely on them in `range()` and the round timeout. `PartyForm` rejects blank or out-of-range values with Spanish errors. Migration `0017_party_settings_not_null` backfilled NULLs with the defaults and clamped out-of-range rows into the bounds.
@@ -355,7 +366,6 @@ The issues that track where the implementation differs from the design:
 | [#1] | Umbrella for moving the lifecycle to the target state machine above |
 | [#9] | A running party blocks a whole worker, and a STOP that lands on a busy worker only takes effect when the round times out |
 | [#10] | More than one worker can own a party, and a resumed round restarts its timer |
-| [#15] | The waiting room counts connections, reads `channels_redis` internals, and starts below `min_players` |
 | [#16] | `PartyConsumer` doesn't check authentication, authorization or input |
 | [#18] | Round broadcasts wipe each player's past answers |
 | [#24] | Dead and incorrect code paths (`party_stared`, unused handlers) |
@@ -364,7 +374,6 @@ The issues that track where the implementation differs from the design:
 [#4]: https://github.com/DanielGnzlzVll/AACX/issues/4
 [#9]: https://github.com/DanielGnzlzVll/AACX/issues/9
 [#10]: https://github.com/DanielGnzlzVll/AACX/issues/10
-[#15]: https://github.com/DanielGnzlzVll/AACX/issues/15
 [#16]: https://github.com/DanielGnzlzVll/AACX/issues/16
 [#18]: https://github.com/DanielGnzlzVll/AACX/issues/18
 [#19]: https://github.com/DanielGnzlzVll/AACX/issues/19

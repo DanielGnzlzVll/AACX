@@ -1,4 +1,5 @@
 import collections
+import datetime
 import random
 import string
 from collections import defaultdict
@@ -133,6 +134,15 @@ class Party(models.Model):
             return []
         return [username for username, points in scores.items() if points == best]
 
+    async def acount_connected_players(self):
+        return (
+            await PartyConnection.objects.alive()
+            .filter(party_id=self.id)
+            .values("user_id")
+            .distinct()
+            .acount()
+        )
+
     async def aget_answers_for_user(self, user, closed_rounds_only=False):
         answers = UserRoundAnswer.objects.filter(
             user_id=user.id,
@@ -160,6 +170,31 @@ class Party(models.Model):
     get_current_round = async_to_sync(aget_current_round)
     get_players_scores = async_to_sync(aget_players_scores)
     get_winners = async_to_sync(aget_winners)
+
+
+class PartyConnectionQuerySet(models.QuerySet):
+    def alive(self):
+        return self.filter(last_seen_at__gte=timezone.now() - PartyConnection.TTL)
+
+    def stale(self):
+        return self.filter(last_seen_at__lt=timezone.now() - PartyConnection.TTL)
+
+
+class PartyConnection(models.Model):
+    HEARTBEAT_INTERVAL = datetime.timedelta(seconds=20)
+    TTL = 3 * HEARTBEAT_INTERVAL
+
+    party = models.ForeignKey(
+        Party, on_delete=models.CASCADE, related_name="connections"
+    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    channel_name = models.CharField(max_length=255, unique=True)
+    last_seen_at = models.DateTimeField()
+
+    objects = PartyConnectionQuerySet.as_manager()
+
+    def __str__(self):
+        return f"{self.party} - {self.user}"
 
 
 class PartyRoundQuerySet(models.QuerySet):
