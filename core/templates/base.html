@@ -25,11 +25,13 @@
         type="text/css"
         href="{% static 'css/asacx.css' %}"
     />
-    <script src="https://unpkg.com/htmx.org@1.9.2" integrity="sha384-L6OqL9pRWyyFU3+/bjdSri+iIphTN/bvYyM37tICVyOJkWZLpP2vGn6VUEXgzg6h" crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/ws.js"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/debug.js"></script>
+    <script src="{% static 'js/htmx-1.9.12.min.js' %}"></script>
+    <script src="{% static 'js/htmx-ext-ws-1.9.12.js' %}"></script>
+    {% if DEBUG %}
+      <script src="{% static 'js/htmx-ext-debug-1.9.12.js' %}"></script>
+    {% endif %}
   {% endblock %}
-  <body id="body" hx-ext="debug">
+  <body id="body"{% if DEBUG %} hx-ext="debug"{% endif %}>
     {% block navbar%}
         <nav class="navbar">
             <li><strong>AACX</strong></li>
@@ -38,7 +40,7 @@
                 <li><a href="{% url 'create_party' %}" hx-get="{% url 'create_party' %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true">Crear nueva partida</a></li>
             </ul>
             <li>
-                <img class="avatar" src="https://i.pravatar.cc/150?u={{ user }}">
+                <span class="avatar" aria-hidden="true">{{ user.get_username|first|upper }}</span>
                 <small>{{ user }}</small>
                 {% if user.is_authenticated %}
                     <form class="logout-form" method="post" action="{% url 'logout' %}">

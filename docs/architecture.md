@@ -318,7 +318,7 @@ erDiagram
 
 ## 6. Frontend model
 
-The UI is Django templates plus HTMX, and the only custom JavaScript is a focus-restoring script ([ADR 0001](adr/0001-server-rendered-html-with-htmx-over-websockets.md)). HTMX 1.9.2, the `ws` extension and the `debug` extension load from unpkg. The extensions aren't version-pinned ([#21]).
+The UI is Django templates plus HTMX, and the only custom JavaScript is a focus-restoring script ([ADR 0001](adr/0001-server-rendered-html-with-htmx-over-websockets.md)). HTMX 1.9.12 and its `ws` extension are vendored in `core/static/js/`. The `debug` extension only loads when `settings.DEBUG` is on.
 
 ### Partial rendering (`base_template`)
 
@@ -377,5 +377,4 @@ The issues that track where the implementation differs from the design:
 [#16]: https://github.com/DanielGnzlzVll/AACX/issues/16
 [#18]: https://github.com/DanielGnzlzVll/AACX/issues/18
 [#20]: https://github.com/DanielGnzlzVll/AACX/issues/20
-[#21]: https://github.com/DanielGnzlzVll/AACX/issues/21
 [#24]: https://github.com/DanielGnzlzVll/AACX/issues/24
