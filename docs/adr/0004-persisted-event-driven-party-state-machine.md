@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed. Tracked in [#1]. Rounds already close through a conditional update, STOP events carry ids ([#4]), the end of a party is persisted ([#5]), and each party has a single owner that resumes it after a restart ([#10]). Supersedes [0002](0002-party-state-machine-as-channels-worker.md) once implemented.
+Accepted, partly implemented. Tracked in [#1]. Rounds close through a conditional update and STOP events carry ids ([#4]), the end of a party is persisted ([#5]), each party runs in its own task ([#9]), waiting-room presence counts players from the DB ([#15]), each `PartyConsumer` renders its player's fragments ([#18]), clients count down from `deadline_at` ([#27]), and each party has a single owner that resumes it after a restart ([#10]). Still to do: a persisted `status` that includes `ABANDONED` ([#83](https://github.com/DanielGnzlzVll/AACX/issues/83)), the round's `number` and `closed_reason`, a reconciler on every worker instead of a single one ([#82](https://github.com/DanielGnzlzVll/AACX/issues/82)), and either one ownership mechanism in place of the waiting-room claim plus the lease, or a record here of why both exist ([#1]). Supersedes [0002](0002-party-state-machine-as-channels-worker.md) once implemented.
 
 ## Context
 
