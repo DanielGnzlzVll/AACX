@@ -105,14 +105,14 @@ def test_rename_duplicate_open_parties_keeps_only_the_oldest_name(party_factory)
 
 @pytest.mark.django_db(transaction=True)
 def test_round_deadline_migration_backfills_from_the_party_duration():
-    old_apps = migrate([("core", "0018_partyconnection")])
+    old_apps = migrate([("core", "0019_answer_verdicts")])
     Party = old_apps.get_model("core", "Party")
     PartyRound = old_apps.get_model("core", "PartyRound")
     party = Party.objects.create(name="p", max_round_duration=90)
     round = PartyRound.objects.create(party=party, letter="A")
 
     try:
-        PartyRound = migrate([("core", "0019_partyround_deadline_at")]).get_model(
+        PartyRound = migrate([("core", "0020_partyround_deadline_at")]).get_model(
             "core", "PartyRound"
         )
 

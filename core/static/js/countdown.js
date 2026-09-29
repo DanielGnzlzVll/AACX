@@ -3,7 +3,7 @@
   const endsAt = new WeakMap();
 
   function tick() {
-    const now = performance.now();
+    const now = Date.now();
     for (const timer of document.querySelectorAll("[data-seconds-left]")) {
       if (!endsAt.has(timer)) {
         endsAt.set(timer, now + Number(timer.dataset.secondsLeft) * 1000);

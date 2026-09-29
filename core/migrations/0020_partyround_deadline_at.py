@@ -17,7 +17,7 @@ def backfill_deadlines(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0018_partyconnection'),
+        ('core', '0019_answer_verdicts'),
     ]
 
     operations = [
