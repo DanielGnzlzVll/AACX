@@ -3,13 +3,14 @@
 {% block content%}
 <form
     id="create_party_form"
-    class="container"
+    class="form-card"
     hx-post="{% url 'create_party' %}"
     hx-trigger="input delay:500ms, click from:#submit"
     hx-push-url="true"
     hx-swap="outerHTML"
     novalidate
 >
+    <h1 class="page-title">Nueva partida</h1>
     {% csrf_token %}
     {{ form.non_field_errors }}
     {% for field in form %}
@@ -28,7 +29,7 @@
             {% endif %}
         </div>
     {% endfor %}
-    <button id="submit" type="submit" name="submit" value="true" class="secondary">Crear nueva partida</button>
+    <button id="submit" type="submit" name="submit" value="true">Crear partida</button>
 </form>
 {% endblock %}
 

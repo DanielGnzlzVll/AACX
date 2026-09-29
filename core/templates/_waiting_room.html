@@ -1,0 +1,9 @@
+<div id="party_content" class="waiting-room">
+    <article>
+        <h1 class="page-title">{{ party.name }}</h1>
+        <p aria-busy="true">Esperando más jugadores...</p>
+        {% if players %}
+        <p class="waiting-count">Jugadores conectados: <strong>{{ players }} de {{ party.min_players }}</strong></p>
+        {% endif %}
+    </article>
+</div>

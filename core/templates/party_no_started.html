@@ -1,7 +1,5 @@
 {% extends base_template %} {% load static %} {% block content%}
 <div class="party_game" hx-ext="ws" ws-connect="/party/{{ party.pk }}/">
-    <div id="party_content">
-        Esperando Mas Jugadores...
-    </div>
+    {% include "_waiting_room.html" %}
 </div>
 {% endblock %}

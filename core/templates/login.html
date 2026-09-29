@@ -6,13 +6,18 @@
 {% endblock %}
 
 {% block content%}
-<form method="POST">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    {{ form.nickname.label_tag }}
-    {{ form.nickname }}
-    {{ form.nickname.errors }}
-    <input type="submit" value="Entrar">
-</form>
+<article class="login-card">
+    <hgroup>
+        <h1 class="brand">AACX</h1>
+        <p>Escribe una palabra por categoría antes de que alguien diga STOP.</p>
+    </hgroup>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {{ form.nickname.label_tag }}
+        {{ form.nickname }}
+        {{ form.nickname.errors }}
+        <input type="submit" value="Entrar">
+    </form>
+</article>
 {% endblock %}
-

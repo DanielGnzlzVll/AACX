@@ -320,6 +320,7 @@ class PartyAnswers(LoginRequiredMixin, HTMXPartialMixin, View):
         context["rounds"] = party.get_answers_for_user(
             user, closed_rounds_only=user != self.request.user
         )
+        context["player"] = user
         context["open"] = "open"
         return context
 

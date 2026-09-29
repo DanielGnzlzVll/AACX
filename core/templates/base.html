@@ -28,14 +28,14 @@
     {% block navbar %}
         <nav class="navbar">
             <ul>
-                <li><strong>AACX</strong></li>
+                <li><strong class="brand">AACX</strong></li>
             </ul>
             <ul>
                 <li><a href="{% url 'home' %}" hx-get="{% url 'home' %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true">Inicio</a></li>
                 <li><a href="{% url 'create_party' %}" hx-get="{% url 'create_party' %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true">Crear nueva partida</a></li>
             </ul>
             <ul>
-                <li>
+                <li class="user-menu">
                     <span class="avatar" aria-hidden="true">{{ user.get_username|first|upper }}</span>
                     <small>{{ user }}</small>
                     {% if user.is_authenticated %}
@@ -51,7 +51,7 @@
     <main id="content" class="container-fluid slide-it">
         {% include "_messages.html" %}
         {% block content %}{% endblock %}
-        <div id="modal"></div>
     </main>
+    <div id="modal"></div>
   </body>
 </html>

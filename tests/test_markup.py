@@ -116,3 +116,13 @@ def test_score_rows_are_keyboard_accessible(page):
     for row in rows:
         buttons = [el for el in row.iter() if el.tag == "button"]
         assert [button.attrs.get("type") for button in buttons] == ["button"]
+
+
+@pytest.mark.parametrize("name", ["home", "create_party", "party"])
+def test_modal_survives_htmx_navigation(page, name):
+    elements = {el.attrs.get("id"): el for el in page(name).iter()}
+
+    modal = elements["modal"]
+    while modal.parent:
+        modal = modal.parent
+        assert modal is not elements["content"]

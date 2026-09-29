@@ -29,6 +29,10 @@
         </td>
         <td class="reports-points">{{ points|default_if_none:"0" }}</td>
       </tr>
+      {% empty %}
+      <tr>
+        <td colspan="2" class="empty-row">Aún no hay puntos.</td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
