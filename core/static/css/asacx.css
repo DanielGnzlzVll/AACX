@@ -65,10 +65,17 @@ body {
 }
 
 .avatar {
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
   height: 64px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: var(--primary-inverse);
+  font-size: 1.75rem;
+  font-weight: bold;
+  vertical-align: middle;
 }
 
 .message {
