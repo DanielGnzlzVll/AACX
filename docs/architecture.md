@@ -406,7 +406,7 @@ Once a party is closed, `DetailParty` renders `_party_content.html` with `party_
 
 | Job | Checks |
 |---|---|
-| `lint` | `ruff check` with the version pinned in `requirements-dev.txt`. Findings show up as annotations on the pull request. |
+| `lint` | `ruff check` and `ruff format --check` with the version pinned in `requirements-dev.txt`. Lint findings show up as annotations on the pull request; formatting fails the job until `ruff format .` is run. |
 | `audit` | `pip-audit` over `requirements.txt` and `requirements-dev.txt`. Fails when a pinned package has a known vulnerability. |
 | `test` | Installs `requirements-dev.txt` on Python 3.13, with `postgres:16` and `redis:7` service containers and `DJANGO_SETTINGS_MODULE=asacx.settings_test`. `manage.py makemigrations --check --dry-run` fails if a model change has no migration, then `pytest` runs. |
 | `build` | Builds the `Dockerfile` with Buildx, without pushing, cached in the GitHub Actions cache. |
