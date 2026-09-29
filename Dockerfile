@@ -5,7 +5,7 @@
 # https://docs.docker.com/engine/reference/builder/
 
 ARG PYTHON_VERSION=3.11.3
-FROM python:${PYTHON_VERSION}-slim as base
+FROM python:${PYTHON_VERSION}-slim AS base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -34,17 +34,27 @@ RUN adduser \
 # into this layer.
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
+    python -m pip install -r requirements.txt
+
+EXPOSE 8000
+
+FROM base AS dev
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=bind,source=requirements.txt,target=requirements.txt \
     --mount=type=bind,source=requirements-dev.txt,target=requirements-dev.txt \
     python -m pip install -r requirements-dev.txt
 
-# Switch to the non-privileged user to run the application.
+ENV DJANGO_DEBUG=true
+
 USER appuser
-
-# Copy the source code into the container.
 COPY . .
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
-# Expose the port that the application listens on.
-EXPOSE 8000
+FROM base AS prod
 
-# Run the application.
-CMD python manage.py runserver 0.0.0.0:8000
+COPY . .
+RUN DJANGO_SECRET_KEY=collectstatic-only python manage.py collectstatic --noinput
+
+USER appuser
+CMD ["daphne", "--bind", "0.0.0.0", "--port", "8000", "asacx.asgi:application"]

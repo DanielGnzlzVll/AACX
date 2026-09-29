@@ -1,7 +1,9 @@
 import os
 
-from asacx.settings import *  # noqa: F401,F403
-from asacx.settings import DATABASES
+os.environ.setdefault("DJANGO_SECRET_KEY", "django-insecure-test-only")
+
+from asacx.settings import *  # noqa: E402,F401,F403
+from asacx.settings import DATABASES  # noqa: E402
 
 DATABASES["default"]["HOST"] = os.environ.get("POSTGRES_HOST", "db")
 DATABASES["default"]["PORT"] = int(os.environ.get("POSTGRES_PORT", 5432))
