@@ -3,9 +3,9 @@ import functools
 import json
 import logging
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from asgiref.sync import sync_to_async
 from django.conf import settings
 from django.utils.module_loading import import_string
 
@@ -179,6 +179,12 @@ def get_validators():
     return [import_string(path)() for path in settings.ANSWER_VALIDATORS if path]
 
 
+# Neither sync_to_async (waits for the thread when cancelled) nor the loop's
+# default executor (joined when asyncio.run exits) lets the deadline cut a slow
+# validator short.
+validator_executor = ThreadPoolExecutor(thread_name_prefix="answer-validator")
+
+
 async def avalidate(pairs, validators=None):
     """Maps each (field, normalized value) pair to True or False.
 
@@ -203,8 +209,8 @@ async def avalidate(pairs, validators=None):
             break
         try:
             async with asyncio.timeout_at(deadline):
-                found = await sync_to_async(validator.validate, thread_sensitive=False)(
-                    pending
+                found = await loop.run_in_executor(
+                    validator_executor, validator.validate, pending
                 )
         except TimeoutError:
             logger.warning(f"{validator.source} timed out on {len(pending)} answers")
