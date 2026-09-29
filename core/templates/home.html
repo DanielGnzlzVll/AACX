@@ -1,23 +1,6 @@
 {% extends base_template %}
 
-{% load static %}
 {% block content%}
 <h1 class="page-title">Partidas</h1>
-{% if parties %}
-<ul class="party-list">
-    {% for party in parties %}
-        <li>
-            <a href="{% url 'detail_party' party.id %}" hx-get="{% url 'detail_party' party.id %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true" class="party-card" title="{{ party.name }}">
-                <strong class="party-name">{{ party.name }}</strong>
-                <span class="party-action">Unirse <span aria-hidden="true">&rarr;</span></span>
-            </a>
-        </li>
-    {% endfor %}
-</ul>
-{% else %}
-<article class="empty-state">
-    <p>No hay partidas disponibles.</p>
-    <a href="{% url 'create_party' %}" hx-get="{% url 'create_party' %}" hx-swap="innerHTML transition:true" hx-target="#content" hx-push-url="true" role="button">Crear nueva partida</a>
-</article>
-{% endif %}
+{% include "_party_list.html" %}
 {% endblock %}

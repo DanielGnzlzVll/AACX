@@ -15,6 +15,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
+from django_htmx.http import HttpResponseClientRedirect
 
 from core import forms, models
 
@@ -185,6 +186,20 @@ class Home(
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
+
+
+class PartyList(LoginRequiredMixin, TemplateResponseMixin, View):
+    template_name = "_party_list.html"
+
+    def handle_no_permission(self):
+        response = super().handle_no_permission()
+        if self.request.htmx:
+            return HttpResponseClientRedirect(response.url)
+        return response
+
+    def get(self, request, *args, **kwargs):
+        parties = models.Party.objects.get_available_parties(request.user)
+        return self.render_to_response({"parties": parties})
 
 
 class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
