@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.views import LogoutView
 from django.db import IntegrityError, transaction
 from django.http import Http404
 from django.shortcuts import redirect
@@ -32,6 +33,7 @@ class HTMXPartialMixin(ContextMixin, TemplateResponseMixin):
 NICKNAME_CLAIM_COOKIE = "aacx_nickname_claim"
 NICKNAME_CLAIM_SALT = "core.views.Login.nickname_claim"
 NICKNAME_CLAIM_MAX_AGE = 60 * 60 * 24 * 365
+NICKNAME_CLAIM_LIMIT = 10
 LOGIN_REJECTED_MESSAGE = "No es posible iniciar sesión con ese nombre de usuario."
 
 
@@ -53,11 +55,15 @@ class Login(
             if user is not None:
                 login(request, user)
                 response = redirect(self.get_success_url())
+                claimed = [user.pk] + [
+                    pk for pk in self.get_claimed_pks() if pk != user.pk
+                ]
                 response.set_signed_cookie(
                     NICKNAME_CLAIM_COOKIE,
-                    str(user.pk),
+                    ",".join(map(str, claimed[:NICKNAME_CLAIM_LIMIT])),
                     salt=NICKNAME_CLAIM_SALT,
                     max_age=NICKNAME_CLAIM_MAX_AGE,
+                    secure=request.is_secure(),
                     httponly=True,
                     samesite="Lax",
                 )
@@ -86,17 +92,25 @@ class Login(
                 return None
             return user
 
-        if user.is_staff or user.is_superuser or user.has_usable_password():
+        if (
+            user.is_staff
+            or user.is_superuser
+            or user.has_usable_password()
+            or not user.is_active
+        ):
             return None
-        claimed_by = self.request.get_signed_cookie(
+        if user.pk not in self.get_claimed_pks():
+            return None
+        return user
+
+    def get_claimed_pks(self):
+        value = self.request.get_signed_cookie(
             NICKNAME_CLAIM_COOKIE,
-            default=None,
+            default="",
             salt=NICKNAME_CLAIM_SALT,
             max_age=NICKNAME_CLAIM_MAX_AGE,
         )
-        if claimed_by != str(user.pk):
-            return None
-        return user
+        return [int(pk) for pk in value.split(",") if pk.isdigit()]
 
     def get_success_url(self):
         next_url = self.request.GET.get("next")
@@ -107,6 +121,10 @@ class Login(
         ):
             return next_url
         return "home"
+
+
+class Logout(LogoutView):
+    http_method_names = ["post", "options"]
 
 
 class Home(

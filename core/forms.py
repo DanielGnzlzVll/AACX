@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from django.core.validators import RegexValidator
 from django.utils.safestring import SafeString
@@ -19,7 +21,9 @@ class LoginForm(forms.Form):
         validators=[
             RegexValidator(
                 r"^[\w.-]+\Z",
-                "Solo se permiten letras, números, puntos, guiones y guiones bajos.",
+                "Solo se permiten letras sin tildes ni ñ, números, puntos, guiones "
+                "y guiones bajos.",
+                flags=re.ASCII,
             )
         ],
         error_messages={
