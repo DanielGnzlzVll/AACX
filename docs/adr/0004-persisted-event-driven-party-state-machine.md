@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted, partly implemented. Tracked in [#1]. Rounds close through a conditional update and STOP events carry ids ([#4]), the end of a party is persisted ([#5]), each party runs in its own task ([#9]), waiting-room presence counts players from the DB ([#15]), each `PartyConsumer` renders its player's fragments ([#18]), clients count down from `deadline_at` ([#27]), and each party has a single owner that a reconciler on every worker resumes after a restart ([#10], [#82]). Still to do: a persisted `status` that includes `ABANDONED` ([#83](https://github.com/DanielGnzlzVll/AACX/issues/83)), the round's `number` and `closed_reason`, and either one ownership mechanism in place of the waiting-room claim plus the lease, or a record here of why both exist ([#1]). Supersedes [0002](0002-party-state-machine-as-channels-worker.md) once implemented.
+Accepted, partly implemented. Tracked in [#1]. Rounds close through a conditional update and STOP events carry ids ([#4]), the end of a party is persisted ([#5]), each party runs in its own task ([#9]), waiting-room presence counts players from the DB ([#15]), each `PartyConsumer` renders its player's fragments ([#18]), clients count down from `deadline_at` ([#27]), each party has a single owner that a reconciler on every worker resumes after a restart ([#10], [#82]), and rounds persist their `number` and `closed_reason` ([#1]). Still to do: a persisted `status` that includes `ABANDONED` ([#83]), and the lease as the only ownership mechanism in place of the waiting-room claim plus the lease ([#89]). Supersedes [0002](0002-party-state-machine-as-channels-worker.md) once implemented.
 
 ## Context
 
@@ -48,3 +48,5 @@ The target lifecycle is drawn in [`architecture.md`](../architecture.md#target).
 [#18]: https://github.com/DanielGnzlzVll/AACX/issues/18
 [#27]: https://github.com/DanielGnzlzVll/AACX/issues/27
 [#82]: https://github.com/DanielGnzlzVll/AACX/issues/82
+[#83]: https://github.com/DanielGnzlzVll/AACX/issues/83
+[#89]: https://github.com/DanielGnzlzVll/AACX/issues/89

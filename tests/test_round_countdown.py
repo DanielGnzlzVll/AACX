@@ -102,7 +102,7 @@ async def test_a_closed_round_stops_every_player_countdown(
 ):
     round = await PartyRound.objects.acreate(party=started_party, letter="A")
     communicator = await ws_connect(alice, f"/party/{started_party.id}/")
-    await round.close()
+    await round.close(PartyRound.ClosedReason.STOP)
 
     await channel_layer.group_send(
         f"party_{started_party.id}", {"type": "event_party_round_stopped"}

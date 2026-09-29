@@ -23,8 +23,16 @@ class UserRoundAnswerInline(admin.TabularInline):
 
 @admin.register(PartyRound)
 class PartyRoundAdmin(admin.ModelAdmin):
-    list_display = ("id", "party", "letter", "started_at", "closed_at")
-    list_filter = ("party", "started_at", "closed_at")
+    list_display = (
+        "id",
+        "party",
+        "number",
+        "letter",
+        "started_at",
+        "closed_at",
+        "closed_reason",
+    )
+    list_filter = ("party", "started_at", "closed_at", "closed_reason")
 
     inlines = [UserRoundAnswerInline]
 

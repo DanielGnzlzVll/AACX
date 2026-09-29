@@ -121,3 +121,56 @@ def test_round_deadline_migration_backfills_from_the_party_duration():
     finally:
         executor = MigrationExecutor(connection)
         executor.migrate(executor.loader.graph.leaf_nodes())
+
+
+@pytest.mark.django_db(transaction=True)
+def test_round_number_and_closed_reason_migration_backfills_from_timestamps():
+    old_apps = migrate([("core", "0021_spanish_labels")])
+    Party = old_apps.get_model("core", "Party")
+    PartyRound = old_apps.get_model("core", "PartyRound")
+    start = timezone.now() - datetime.timedelta(hours=1)
+    minute = datetime.timedelta(minutes=1)
+    party = Party.objects.create(name="p")
+    other = Party.objects.create(name="o")
+    timed_out = PartyRound.objects.create(
+        party=party,
+        letter="B",
+        started_at=start + minute,
+        deadline_at=start + 2 * minute,
+        closed_at=start + 2 * minute,
+    )
+    stopped = PartyRound.objects.create(
+        party=party,
+        letter="A",
+        started_at=start,
+        deadline_at=start + minute,
+        closed_at=start + minute / 2,
+    )
+    open_round = PartyRound.objects.create(
+        party=party,
+        letter="C",
+        started_at=start + 3 * minute,
+        deadline_at=start + 4 * minute,
+    )
+    other_round = PartyRound.objects.create(
+        party=other, letter="A", started_at=start, deadline_at=start + minute
+    )
+
+    try:
+        PartyRound = migrate(
+            [("core", "0022_partyround_number_closed_reason")]
+        ).get_model("core", "PartyRound")
+
+        rounds = {
+            round.pk: (round.number, round.closed_reason)
+            for round in PartyRound.objects.all()
+        }
+        assert rounds == {
+            stopped.pk: (1, "stop"),
+            timed_out.pk: (2, "timeout"),
+            open_round.pk: (3, None),
+            other_round.pk: (1, None),
+        }
+    finally:
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())

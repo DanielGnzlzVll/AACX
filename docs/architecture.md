@@ -121,7 +121,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 | `type` | Payload | Producer | Handler behavior |
 |---|---|---|---|
 | `event_party_started` | `party_id`, `party_name` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. The party reconciler on every worker, for started parties without a live lease. | Starts a task that runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). It does nothing if this worker already has a task for the party. Only the worker that takes the party's lease runs it, the rest log "run by another worker" and return. A party that hasn't started also needs the waiting-room claim (step 1). A started party is resumed from the database. |
-| `event_party_round_stopped` | `party_id`, `round_id` | `PartyConsumer.handle_form_submit` when a valid form has `submit_stop` | Closes the round with a conditional `UPDATE ... SET closed_at = now() WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`). If the round was already closed, the STOP is logged and ignored, so duplicate STOPs are harmless. Otherwise it sends `event_party_round_stopped` to group `party_{id}` and `{round_id}` to `party_new_round_{id}`. |
+| `event_party_round_stopped` | `party_id`, `round_id` | `PartyConsumer.handle_form_submit` when a valid form has `submit_stop` | Closes the round with a conditional `UPDATE ... SET closed_at = now(), closed_reason = 'stop' WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`). If the round was already closed, the STOP is logged and ignored, so duplicate STOPs are harmless. Otherwise it sends `event_party_round_stopped` to group `party_{id}` and `{round_id}` to `party_new_round_{id}`. |
 
 ### Channel `party_players_{id}`
 
@@ -218,8 +218,8 @@ The lifecycle has no explicit state. It is inferred from `Party.started_at`, `Pa
 1. The waiting room. A worker claims the party with a conditional `UPDATE` of `waiting_started_at`, and `ensure_players_join` renews that claim at least every `WAITING_POLL_INTERVAL` (10 s). A claim older than `WAITING_CLAIM_TTL` (60 s) belongs to a dead worker and can be taken over. The party starts once `min_players` distinct users are connected at the same time. There is no deadline: the party never starts with fewer players, however long it waits. When the last player leaves, the worker releases the claim and stops waiting, and the party stays open to join. The next connection claims it again. Each connected player's heartbeat also re-sends `event_party_started`, so a waiting room whose worker died gets a new one once the claim expires. `started_at` is set with a conditional `UPDATE` that only succeeds for the current claim.
 2. If the party is already closed, `play_party` returns. If it has already started, it is resumed: a latest round that is closed may have lost its runner before scoring, so it is scored again. Scoring is idempotent, and it closes the party after the last round.
 3. While `Party.closed_at` is NULL:
-   - `next_round` returns the open round, or creates one with an unused letter, and broadcasts it.
-   - `wait_for_round_end` waits for a STOP on `party_new_round_{id}` or until the round's `deadline_at`, and makes sure the round is closed. A round saves `deadline_at` as `started_at` plus `max_round_duration` when it opens, so a resumed round only gets the time it has left.
+   - `next_round` returns the open round, or creates the next one, numbered from 1, with an unused letter, and broadcasts it.
+   - `wait_for_round_end` waits for a STOP on `party_new_round_{id}` or until the round's `deadline_at`, and makes sure the round is closed, with `closed_reason` `timeout` unless a STOP closed it first. A round saves `deadline_at` as `started_at` plus `max_round_duration` when it opens, so a resumed round only gets the time it has left.
    - `update_scores` validates the round's answers, then scores it. The same transaction sets `Party.closed_at` once the party has `max_rounds` closed rounds.
 4. `finish_party` broadcasts `party_finished_update.html`: the winners, the final scores and a link home.
 
@@ -245,7 +245,7 @@ stateDiagram-v2
 
 ### Target
 
-The target is proposed in [#1] and recorded in [ADR 0004](adr/0004-persisted-event-driven-party-state-machine.md). State is persisted in `Party.status`, transitions are conditional DB updates, events carry ids only, and each party runs as its own `asyncio.Task` owned by one worker through a Redis lease. The per-party tasks, the lease and the reconciler are implemented (see above). So is the round's `deadline_at`. `Party.status`, `ABANDONED` and the round's `closed_reason` are not.
+The target is proposed in [#1] and recorded in [ADR 0004](adr/0004-persisted-event-driven-party-state-machine.md). State is persisted in `Party.status`, transitions are conditional DB updates, events carry ids only, and each party runs as its own `asyncio.Task` owned by one worker through a Redis lease. The per-party tasks, the lease and the reconciler are implemented (see above). So are the round's `number`, `deadline_at` and `closed_reason`. `Party.status` and `ABANDONED` are not ([#83](https://github.com/DanielGnzlzVll/AACX/issues/83)).
 
 ```mermaid
 stateDiagram-v2
@@ -300,10 +300,12 @@ erDiagram
     PARTY_ROUND {
         bigint id PK
         bigint party_id FK
+        smallint number "1, 2, ... in play order, unique per party"
         char letter "unique per party"
         datetime started_at
         datetime deadline_at "started_at plus the party's max_round_duration"
         datetime closed_at "NULL while open"
+        varchar closed_reason "timeout or stop, set with closed_at"
         datetime created_at
     }
     USER_ROUND_ANSWER {
@@ -332,8 +334,9 @@ erDiagram
 
 - **Letters don't repeat.** `unique_together = ("party", "letter")`, so a party can have at most 26 rounds. `max_rounds` is capped at 26 for that reason. `aget_current_or_next_round` picks a random unused letter and raises `"All letters are used"` when none are left.
 - **One answer per player, round and category.** `unique_together = ("round", "user", "field")`. `PartyRound.save_user_answers` upserts with `bulk_create(update_conflicts=True)`, so each autosave overwrites the previous value.
-- **The current round** is the party's round with the latest `started_at`. It is open while `closed_at` is NULL. `aget_current_or_next_round` returns it if it is open and otherwise creates a new one, so only the state machine calls it. Callers that only need to read use `aget_current_round`.
-- **A round is closed exactly once.** Every close is a conditional `UPDATE ... WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`, or the one inside `close_round_and_calculate_scores`), and only the caller whose update wins broadcasts the round end.
+- **Rounds are numbered** 1, 2, ... in the order they open, unique per party (`unique_party_round_number`). `PartyRound.save` assigns the next number, and `aget_current_or_next_round` does so under the party row lock. Migration `0022` numbered existing rounds by `started_at`.
+- **The current round** is the party's round with the highest `number`. It is open while `closed_at` is NULL. `aget_current_or_next_round` returns it if it is open and otherwise creates a new one, so only the state machine calls it. Callers that only need to read use `aget_current_round`.
+- **A round is closed exactly once.** Every close is a conditional `UPDATE ... WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`, or the one inside `close_round_and_calculate_scores`), and only the caller whose update wins broadcasts the round end. The same `UPDATE` sets `closed_reason`: `stop` for a STOP, `timeout` otherwise, so a late close never overwrites it. Migration `0022` backfilled it from `closed_at` against `deadline_at`.
 - **A party is closed** once it has `max_rounds` closed rounds. `close_round_and_calculate_scores` sets `Party.closed_at` in the same transaction as the scores, with a conditional `UPDATE ... WHERE closed_at IS NULL`. Migration `0014_close_finished_parties` backfilled parties that had already played all their rounds. `Party.is_active` means `closed_at` is NULL.
 - **A party has started** once `started_at` is set. It is set once, by the worker that holds the waiting-room claim.
 - **`joined_users`** gets every user who connects to the party's websocket before it starts, so everyone who waited can play. After the start, only those users can connect. The HTTP views don't change it.

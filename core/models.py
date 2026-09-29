@@ -161,7 +161,7 @@ class Party(models.Model):
         # open an extra round next to the owner's, or after the last one.
         party = Party.objects.select_for_update().get(pk=self.pk)
         current = (
-            PartyRound.objects.filter(party_id=self.id).order_by("-started_at").first()
+            PartyRound.objects.filter(party_id=self.id).order_by("-number").first()
         )
         if party.closed_at or (current and current.closed_at is None):
             return current
@@ -180,7 +180,7 @@ class Party(models.Model):
 
     async def aget_current_round(self):
         round = await (
-            PartyRound.objects.filter(party_id=self.id).order_by("-started_at").afirst()
+            PartyRound.objects.filter(party_id=self.id).order_by("-number").afirst()
         )
         return round
 
@@ -223,7 +223,7 @@ class Party(models.Model):
             answers = answers.filter(round__closed_at__isnull=False)
         answers_dict = [
             round
-            async for round in answers.order_by("round").values(
+            async for round in answers.order_by("round__number").values(
                 "field", "value", "round__letter"
             )
         ]
@@ -270,19 +270,27 @@ class PartyConnection(models.Model):
 
 
 class PartyRoundQuerySet(models.QuerySet):
-    async def aclose(self):
+    async def aclose(self, reason):
         return await self.filter(closed_at__isnull=True).aupdate(
-            closed_at=timezone.now()
+            closed_at=timezone.now(), closed_reason=reason
         )
 
 
 class PartyRound(models.Model):
+    class ClosedReason(models.TextChoices):
+        TIMEOUT = "timeout", "tiempo agotado"
+        STOP = "stop", "detenida por un jugador"
+
     party = models.ForeignKey(Party, on_delete=models.CASCADE)
+    number = models.PositiveSmallIntegerField()
     letter = models.CharField(max_length=1)
 
     started_at = models.DateTimeField(default=timezone.now)
     deadline_at = models.DateTimeField()
     closed_at = models.DateTimeField(blank=True, null=True)
+    closed_reason = models.CharField(
+        max_length=10, choices=ClosedReason.choices, null=True, blank=True
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -290,11 +298,21 @@ class PartyRound(models.Model):
 
     class Meta:
         unique_together = ("party", "letter")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["party", "number"], name="unique_party_round_number"
+            ),
+        ]
 
     def __str__(self):
         return f"{self.party} - {self.letter}"
 
     def save(self, *args, **kwargs):
+        if self.number is None:
+            last = PartyRound.objects.filter(party_id=self.party_id).aggregate(
+                last=models.Max("number")
+            )["last"]
+            self.number = (last or 0) + 1
         if self.deadline_at is None:
             duration = datetime.timedelta(seconds=self.party.max_round_duration)
             self.deadline_at = self.started_at + duration
@@ -306,10 +324,10 @@ class PartyRound(models.Model):
             return 0
         return max(math.ceil((self.deadline_at - timezone.now()).total_seconds()), 0)
 
-    async def close(self):
-        closed = await PartyRound.objects.filter(pk=self.pk).aclose()
+    async def close(self, reason):
+        closed = await PartyRound.objects.filter(pk=self.pk).aclose(reason)
         if closed:
-            await self.arefresh_from_db(fields=["closed_at"])
+            await self.arefresh_from_db(fields=["closed_at", "closed_reason"])
         return bool(closed)
 
     async def save_user_answers(self, user, answers):
@@ -339,9 +357,9 @@ class PartyRound(models.Model):
     def _close_round_and_calculate_scores(self, verdicts):
         Party.objects.select_for_update().get(pk=self.party_id)
         PartyRound.objects.filter(pk=self.pk, closed_at__isnull=True).update(
-            closed_at=timezone.now()
+            closed_at=timezone.now(), closed_reason=self.ClosedReason.TIMEOUT
         )
-        self.refresh_from_db(fields=["closed_at"])
+        self.refresh_from_db(fields=["closed_at", "closed_reason"])
 
         answers_to_save = []
         answers_by_field = collections.defaultdict(list)
