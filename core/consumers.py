@@ -139,7 +139,7 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
         )
 
     async def can_join(self, user):
-        return self.party.started_at is None or await self.is_participant(user)
+        return (await self.party.aget_access(user)).can_play
 
     async def is_participant(self, user):
         return await self.party.joined_users.filter(pk=user.pk).aexists()

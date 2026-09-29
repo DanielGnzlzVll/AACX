@@ -253,19 +253,15 @@ class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        party_qs = models.Party.objects.filter(id=kwargs["party_id"]) & (
-            models.Party.objects.filter(joined_users__pk=self.request.user.id)
-            | models.Party.objects.filter(
-                closed_at__isnull=True,
-            )
-        )
-        party_qs = party_qs.order_by("pk").distinct("pk")
-        if not party_qs.exists():
+        self.party = get_object_or_404(models.Party, id=kwargs["party_id"])
+        self.access = self.party.get_access(self.request.user)
+        if self.access is models.PartyAccess.CLOSED:
             raise Http404()
 
-        context["party"] = party_qs.get()
-        self.party = context["party"]
+        context["party"] = self.party
         context["players_scores"] = self.party.get_players_scores()
+        if self.access is models.PartyAccess.STARTED:
+            return context
         context["rounds"] = self.party.get_answers_for_user(self.request.user)
         current_round = context["current_round"] = self.party.get_current_round()
         if self.party.closed_at:
@@ -286,6 +282,8 @@ class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
         return context
 
     def get_template_names(self):
+        if self.access is models.PartyAccess.STARTED:
+            return ["party_started.html"]
         if self.party.started_at:
             return ["party.html"]
         return ["party_no_started.html"]

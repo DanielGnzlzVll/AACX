@@ -214,7 +214,8 @@ def test_create_party_with_blank_settings_shows_errors(logged_in_client):
     "state, joined, expected_status, expected_template",
     [
         ("not-started", False, 200, "party_no_started.html"),
-        ("started", False, 200, "party.html"),
+        ("not-started", True, 200, "party_no_started.html"),
+        ("started", False, 200, "party_started.html"),
         ("started", True, 200, "party.html"),
         ("closed", True, 200, "party.html"),
         ("closed", False, 404, None),
@@ -396,6 +397,27 @@ def test_detail_party_between_rounds_shows_closed_round_disabled(
     assert response.context["form"].disabled
     assert response.context["form"].initial == {"name": "Ana"}
     assert "ws-send" not in response.content.decode()
+
+
+def test_detail_party_started_without_user_is_read_only(
+    logged_in_client, party_factory, bob
+):
+    party = party_factory(started_at=timezone.now(), joined_users=[bob])
+    open_round = create_round(party, "A", closed=False)
+    UserRoundAnswer.objects.create(
+        round=open_round, user=bob, field="name", value="Ana", scored_points=100
+    )
+
+    response = get_detail_party(logged_in_client, party)
+
+    content = response.content.decode()
+    assert "Esta partida ya empezó" in content
+    assert "ws-connect" not in content
+    assert "<form" not in content.split('id="content"')[1]
+    assert "form" not in response.context
+    assert response.context["players_scores"] == {"bob": 100}
+    assert "bob" in content
+    assert f'href="{reverse("home")}"' in content
 
 
 def test_detail_party_not_found(logged_in_client):

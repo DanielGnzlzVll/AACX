@@ -54,6 +54,9 @@ def page(logged_in_client, party_factory, alice, bob):
     )
     PartyRound.objects.create(party=party, letter="B")
     party_factory(joined_users=[alice])
+    started_without_alice = party_factory(
+        started_at=timezone.now(), joined_users=[bob]
+    )
     urls = {
         "login": (Client(), reverse("login")),
         "home": (logged_in_client, reverse("home")),
@@ -61,6 +64,10 @@ def page(logged_in_client, party_factory, alice, bob):
         "party": (
             logged_in_client,
             reverse("detail_party", kwargs={"party_id": party.id}),
+        ),
+        "party_started": (
+            logged_in_client,
+            reverse("detail_party", kwargs={"party_id": started_without_alice.id}),
         ),
     }
 
@@ -73,7 +80,7 @@ def page(logged_in_client, party_factory, alice, bob):
     return render
 
 
-PAGES = ["login", "home", "create_party", "party"]
+PAGES = ["login", "home", "create_party", "party", "party_started"]
 
 
 @pytest.mark.parametrize("name", PAGES)
