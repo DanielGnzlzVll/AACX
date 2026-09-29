@@ -12,11 +12,11 @@ Websocket consumers can't be that authority. There is one per connection, it goe
 
 ## Decision
 
-The lifecycle runs in `PartyStateMachine`, an `AsyncConsumer` bound to the `party-state-machine` channel through `ChannelNameRouter`. The `channel-master` and `channel-worker` containers run it with `manage.py custom_runworker *`.
+The lifecycle runs in `PartyStateMachine`, an `AsyncConsumer` bound to the `party-state-machine` channel through `ChannelNameRouter`. The `channel-worker` containers run it with `manage.py custom_runworker *`.
 
 - Every `PartyConsumer` connection sends `event_party_started`. The first worker to lock the `Party` row with `SELECT ... FOR UPDATE SKIP LOCKED` (where `started_at IS NULL`) runs the party. The others skip it.
 - The winning worker drives the whole party in that one coroutine. Per-party channels act as private queues: `party_players_{id}` for joins, and `party_new_round_{id}` for "end this round now". It broadcasts to the `party_{id}` group.
-- After a restart, `CoreConfig.ready()` on the worker with `CHANNELS_WORKER_MASTER=1` sent `event_party_started` with `force_start` for every party that had started but wasn't closed. A reconciler on that worker and a per-party Redis lease (`PartyLease`) have replaced it: see [0004](0004-persisted-event-driven-party-state-machine.md) and [#10].
+- After a restart, `CoreConfig.ready()` on the worker with `CHANNELS_WORKER_MASTER=1` sent `event_party_started` with `force_start` for every party that had started but wasn't closed. A reconciler on every worker and a per-party Redis lease (`PartyLease`) have replaced it: see [0004](0004-persisted-event-driven-party-state-machine.md), [#10] and [#82].
 
 Celery or a separate game-loop service were not adopted, because either would add infrastructure to a hobby-scale project.
 
@@ -35,3 +35,4 @@ These problems are why [0004](0004-persisted-event-driven-party-state-machine.md
 [#5]: https://github.com/DanielGnzlzVll/AACX/issues/5
 [#9]: https://github.com/DanielGnzlzVll/AACX/issues/9
 [#10]: https://github.com/DanielGnzlzVll/AACX/issues/10
+[#82]: https://github.com/DanielGnzlzVll/AACX/issues/82

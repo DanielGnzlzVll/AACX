@@ -235,8 +235,6 @@ CACHES = {
 
 LEASE_REDIS_URL = env("LEASE_REDIS_URL", default=CACHES["default"]["LOCATION"])
 
-IS_CHANNELS_WORKER_MASTER = env.bool("CHANNELS_WORKER_MASTER", default=False)
-
 if env.bool("DJANGO_HTTPS", default=False):
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True

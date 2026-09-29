@@ -130,7 +130,7 @@ Add `--upgrade-package <name>` to bump a single package, or `--upgrade` to bump 
 
 ## Production
 
-`docker build .` builds the production image: it runs `collectstatic` at build time and serves the app with `daphne asacx.asgi:application` on port 8000. Run the Channels workers from the same image with `python manage.py custom_runworker '*'`, one of them with `CHANNELS_WORKER_MASTER=1`.
+`docker build .` builds the production image: it runs `collectstatic` at build time and serves the app with `daphne asacx.asgi:application` on port 8000. Run the Channels workers from the same image with `python manage.py custom_runworker '*'`. The workers are identical, and each one resumes parties whose worker died.
 
 Settings are read from environment variables. `docker compose` uses the `dev` stage of the `Dockerfile`, which sets `DJANGO_DEBUG=true`, so the defaults below work locally without a `.env`.
 
@@ -148,7 +148,6 @@ Settings are read from environment variables. `docker compose` uses the `dev` st
 | `DJANGO_HSTS_SECONDS` | one year | Only with `DJANGO_HTTPS`. |
 | `DJANGO_BEHIND_TLS_PROXY` | `false` | Trust `X-Forwarded-Proto: https` from the proxy that terminates TLS. Only enable it if that proxy overwrites the header. |
 | `CLIENT_IP_HEADER` | unset | See [ADR 0003](docs/adr/0003-passwordless-nickname-login.md). |
-| `CHANNELS_WORKER_MASTER` | `false` | See [Architecture overview](docs/architecture.md). |
 
 With `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS` and `DJANGO_HTTPS=true` set, `python manage.py check --deploy` reports no issues.
 

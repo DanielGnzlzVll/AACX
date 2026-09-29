@@ -205,9 +205,7 @@ async def open_round_started_ago(party, seconds, letter="A"):
     return round
 
 
-def test_app_startup_runs_no_queries(django_assert_num_queries, settings):
-    settings.IS_CHANNELS_WORKER_MASTER = True
-
+def test_app_startup_runs_no_queries(django_assert_num_queries):
     with django_assert_num_queries(0):
         apps.get_app_config("core").ready()
 
@@ -303,34 +301,60 @@ async def test_a_party_is_resumed_once_its_dead_owner_lease_expires(
 
 
 @pytest.fixture
-async def master_worker(channel_layer, settings, monkeypatch):
-    settings.IS_CHANNELS_WORKER_MASTER = True
+async def start_party_worker(channel_layer, monkeypatch):
     monkeypatch.setattr(custom_runworker, "RECONCILE_INTERVAL", 0.05)
-    worker = custom_runworker.PartyWorker(
-        application=ChannelNameRouter(routing.channel_routing),
-        channels=[consumers.STATE_MACHINE_CHANNEL_NAME],
-        channel_layer=channel_layer,
-    )
-    handle = asyncio.create_task(worker.handle())
+    handles = []
 
-    yield worker
+    def start():
+        worker = custom_runworker.PartyWorker(
+            application=ChannelNameRouter(routing.channel_routing),
+            channels=[consumers.STATE_MACHINE_CHANNEL_NAME],
+            channel_layer=channel_layer,
+        )
+        handles.append(asyncio.create_task(worker.handle()))
+        return worker
+
+    yield start
 
     tasks = [task for task in asyncio.all_tasks() if task is not asyncio.current_task()]
     for task in tasks:
         task.cancel()
-    await asyncio.gather(handle, *tasks, return_exceptions=True)
+    await asyncio.gather(*handles, *tasks, return_exceptions=True)
     await sync_to_async(connections.close_all)()
 
 
-async def test_restarted_master_continues_an_interrupted_party_at_its_round(
-    started_party, master_worker
+async def test_a_restarted_worker_continues_an_interrupted_party_at_its_round(
+    started_party, start_party_worker
 ):
     party = await started_party(max_rounds=3, max_round_duration=60)
     round = await open_round_started_ago(party, 10)
+    start_party_worker()
 
     await eventually(lambda: PartyLease.is_held(party.id))
 
     await asyncio.sleep(0.2)
+    assert await open_round(party) == round
+    assert await models.PartyRound.objects.filter(party=party).acount() == 1
+
+
+async def test_any_surviving_worker_resumes_a_party_whose_owner_died(
+    started_party, start_party_worker
+):
+    party = await started_party(max_rounds=3, max_round_duration=60)
+    round = await open_round_started_ago(party, 10)
+    dead_owner_lease = redis_lock.Lock(
+        get_redis_client(), f"party-lease:{party.id}", expire=1
+    )
+    assert dead_owner_lease.acquire(blocking=False)
+    start_party_worker()
+    start_party_worker()
+
+    async def resumed_by_a_live_worker():
+        owner = await asyncio.to_thread(dead_owner_lease.get_owner_id)
+        return owner is not None and owner != dead_owner_lease.id
+
+    await eventually(resumed_by_a_live_worker, timeout=2)
+
     assert await open_round(party) == round
     assert await models.PartyRound.objects.filter(party=party).acount() == 1
 

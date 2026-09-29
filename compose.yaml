@@ -27,19 +27,13 @@ services:
     ports:
       - "8000:8000"
     command: python manage.py runserver 0.0.0.0:8000
-  channel-master:
+  channel-worker:
     <<: *app
     command: watchmedo auto-restart --directory=/app --ignore-pattern=*sqlite3 --pattern=*.py --recursive -- python manage.py custom_runworker *
     environment:
-      - CHANNELS_WORKER_MASTER=1
       - ANSWER_VALIDATORS
       - ANSWER_VALIDATION_TIMEOUT
       - OLLAMA_MODEL
-  channel-worker:
-    extends:
-      service: channel-master
-    environment:
-      - CHANNELS_WORKER_MASTER=0
     deploy:
       mode: replicated
       replicas: 3

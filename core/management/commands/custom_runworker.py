@@ -1,9 +1,9 @@
 import asyncio
 import logging
+import random
 
 from channels.management.commands.runworker import Command as RunworkerCommand
 from channels.worker import Worker
-from django.conf import settings
 
 from core.consumers import resume_orphaned_parties
 from core.routing import channel_routing
@@ -14,8 +14,11 @@ RECONCILE_INTERVAL = 5
 
 
 async def reconcile_parties(channel_layer):
+    # Runs on every worker, so resuming parties doesn't depend on any single one;
+    # the random offset spreads the passes of workers that start together.
     # Periodic rather than once at startup: a dead worker's lease only expires
     # after PartyLease.TTL, possibly well after this worker restarted.
+    await asyncio.sleep(random.uniform(0, RECONCILE_INTERVAL))
     while True:
         try:
             await resume_orphaned_parties(channel_layer)
@@ -26,8 +29,6 @@ async def reconcile_parties(channel_layer):
 
 class PartyWorker(Worker):
     async def handle(self):
-        if not settings.IS_CHANNELS_WORKER_MASTER:
-            return await super().handle()
         reconciler = asyncio.create_task(reconcile_parties(self.channel_layer))
         try:
             await super().handle()
