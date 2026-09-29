@@ -79,6 +79,17 @@ def test_create_party_creates_party(logged_in_client):
     assert party in response.context["parties"]
 
 
+def test_create_party_sends_nothing_to_the_channel_layer(logged_in_client):
+    with mock.patch("core.testing.MsgpackInMemoryChannelLayer.send") as send:
+        logged_in_client.post(
+            reverse("create_party"),
+            {"name": "new party", "max_rounds": 4, "submit": "true"} | PARTY_SETTINGS,
+        )
+
+    assert Party.objects.filter(name="new party").exists()
+    send.assert_not_called()
+
+
 def test_create_party_stores_its_creator(logged_in_client, alice):
     logged_in_client.post(
         reverse("create_party"),

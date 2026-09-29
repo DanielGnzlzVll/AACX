@@ -1,7 +1,6 @@
 import logging
 
 from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login
@@ -249,15 +248,6 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
 
         context["parties"] = models.Party.objects.get_available_parties(
             self.request.user
-        )
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.send)(
-            "party_state_machine",
-            {
-                "type": "party_stared",
-                "party_name": party.name,
-                "party_id": party.id,
-            },
         )
         return self.render_to_response(
             context, headers={"HX-Reswap": "outerHTML transition:true"}

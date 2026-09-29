@@ -97,7 +97,6 @@ async def test_any_user_can_join_waiting_party(
     await assert_still_open(communicator)
     player = await channel_layer.receive(f"party_players_{party.id}")
     assert player["user_id"] == bob.id
-    assert "hola" not in player
     started = await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
     assert started["party_id"] == party.id
 
