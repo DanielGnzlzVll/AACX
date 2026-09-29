@@ -257,9 +257,9 @@ erDiagram
         datetime closed_at "set when max_rounds rounds are closed"
         datetime created_at
         int created_by FK "NULL for older parties or a deleted creator"
-        int min_players "default 2, min 2"
-        int max_round_duration "seconds, default 120, min 30"
-        int max_rounds "default 5, 1..26, required"
+        smallint min_players "default 2, 2..20, required"
+        smallint max_round_duration "seconds, default 120, 30..600, required"
+        smallint max_rounds "default 5, 1..26, required"
     }
     PARTY_ROUND {
         bigint id PK
@@ -293,7 +293,7 @@ erDiagram
 - **`joined_users`** is filled only by the state machine, while the waiting room is open. The HTTP views don't change it.
 - **Available parties** (`PartyQuerySet.get_available_parties`) are parties that haven't started, plus unclosed parties the user joined. `DetailParty` shows a party if the user joined it or it isn't closed.
 - **Open party names are unique**, case-insensitively. The partial `UniqueConstraint` `unique_open_party_name` on `Lower(name)` where `closed_at IS NULL` enforces it, so a closed party's name can be reused. `CreateParty` always inserts a new party and records `created_by`. `PartyForm.clean_name` rejects a taken name with "Ya existe una partida abierta con ese nombre.", and the view shows the same error if the insert loses a race for the name. Migration `0016_party_created_by_unique_open_name` renamed open duplicates to `name (id)` before adding the constraint.
-- **Party settings** have validators. `max_rounds` is required, but `min_players` and `max_round_duration` are `blank=True, null=True`, so a blank form value is saved as NULL ([#13]).
+- **Party settings are required and bounded.** `min_players` (2..20), `max_round_duration` (30..600 seconds) and `max_rounds` (1..26) are non-null `PositiveSmallIntegerField`s, so the game loop can rely on them in `range()` and the round timeout. `PartyForm` rejects blank or out-of-range values with Spanish errors. Migration `0017_party_settings_not_null` backfilled NULLs with the defaults and clamped out-of-range rows into the bounds.
 
 ### Scoring
 
@@ -364,7 +364,6 @@ The issues that track where the implementation differs from the design:
 [#4]: https://github.com/DanielGnzlzVll/AACX/issues/4
 [#9]: https://github.com/DanielGnzlzVll/AACX/issues/9
 [#10]: https://github.com/DanielGnzlzVll/AACX/issues/10
-[#13]: https://github.com/DanielGnzlzVll/AACX/issues/13
 [#15]: https://github.com/DanielGnzlzVll/AACX/issues/15
 [#16]: https://github.com/DanielGnzlzVll/AACX/issues/16
 [#18]: https://github.com/DanielGnzlzVll/AACX/issues/18
