@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposed. Tracked in [#1]. Rounds already close through a conditional update and STOP events carry ids ([#4]). Supersedes [0002](0002-party-state-machine-as-channels-worker.md) once implemented.
+Proposed. Tracked in [#1]. Rounds already close through a conditional update, STOP events carry ids ([#4]), and the end of a party is persisted ([#5]). Supersedes [0002](0002-party-state-machine-as-channels-worker.md) once implemented.
 
 ## Context
 
@@ -10,8 +10,8 @@ Proposed. Tracked in [#1]. Rounds already close through a conditional update and
 
 - One party occupies a whole worker for its entire duration ([#9]).
 - Events carried Django model instances, which the Redis layer can't serialize ([#4]).
-- The end of a party is never persisted ([#5]).
-- Resuming after a restart replays the whole game ([#10]).
+- The end of a party was never persisted ([#5]).
+- Resuming after a restart replayed the whole game, and nothing gives a party a single owner ([#10]).
 - Waiting-room presence relies on `channels_redis` private internals ([#15]).
 
 ## Decision

@@ -25,7 +25,7 @@ Celery or a separate game-loop service were not adopted, because either would ad
 - There is no extra infrastructure: Redis and the Channels worker processes do everything.
 - Round timing and ordering are decided in one place, so clients can't get out of step.
 - A party takes a whole worker for its entire duration, and a busy worker keeps queuing incoming messages behind it. Concurrent parties are capped by the number of workers, and a STOP can wait for a whole party to end ([#9]).
-- Lifecycle state lives in the coroutine's memory. The end of a party isn't persisted ([#5]), and a restart replays every round, with no guarantee that only one worker owns the party ([#10]).
+- Lifecycle state lives in the coroutine's memory apart from a few timestamps. A party's end is only recorded because scoring sets `closed_at` after the last round ([#5]). After a restart the open round's timer starts again from zero, and nothing guarantees that only one worker owns the party ([#10]).
 - Everything sent through the channel layer has to be msgpack-serializable, so events carry ids, not model instances ([#4]).
 - Waiting-room presence is read from `channels_redis`'s private group keys, and it counts connections instead of players ([#15]).
 
