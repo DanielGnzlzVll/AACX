@@ -21,8 +21,7 @@ Design decisions are recorded as ADRs in [`docs/adr/`](adr/README.md).
 |---|---|---|
 | `migrate` | `manage.py migrate --noinput`, once | Applies migrations before anything else starts, so no server or worker runs against an unmigrated database. |
 | `server` | `manage.py runserver 0.0.0.0:8000` | Because `daphne` is in `INSTALLED_APPS`, `runserver` is Daphne's ASGI server. It serves HTTP views and the `PartyConsumer` websocket on port 8000. |
-| `channel-master` | `watchmedo auto-restart ... manage.py custom_runworker *` with `CHANNELS_WORKER_MASTER=1` | Channels worker for the `party-state-machine` channel. It also runs the party reconciler, which resumes interrupted parties (see below). |
-| `channel-worker` ×3 | Same as `channel-master`, with `CHANNELS_WORKER_MASTER=0` | Additional `party-state-machine` workers. They don't run the reconciler. |
+| `channel-worker` ×3 | `watchmedo auto-restart ... manage.py custom_runworker *` | Identical Channels workers for the `party-state-machine` channel. Each one also runs the party reconciler, which resumes interrupted parties (see below). |
 | `cache` | `redis:7`, healthcheck `redis-cli ping` | Redis database 0 (`REDIS_URL`) is the Channels layer (`channels_redis.core.RedisChannelLayer`). Database 1 (`REDIS_CACHE_URL`) is Django's cache (`django.core.cache.backends.redis.RedisCache`), which holds the per-IP nickname creation counters of `/login/` ([ADR 0003](adr/0003-passwordless-nickname-login.md)). Database 1 also holds the party leases (`LEASE_REDIS_URL`, which defaults to `REDIS_CACHE_URL`). |
 | `db` | `postgres:16` with the `pgdata` volume, healthcheck `pg_isready` over TCP | Django's database. Some queries depend on Postgres (`.distinct("pk")` in the party views). |
 | `ollama`, `ollama-pull` | `ollama/ollama` with the `ollama` volume, only with `--profile llm` | Optional local model for answer validation. `ollama-pull` downloads `OLLAMA_MODEL` once. The default validators don't use it ([ADR 0005](adr/0005-validate-answers-with-word-lists.md)). |
@@ -31,7 +30,7 @@ Design decisions are recorded as ADRs in [`docs/adr/`](adr/README.md).
 
 **`custom_runworker *`**: `runworker` needs explicit channel names. `core/management/commands/custom_runworker.py` expands `*` to every key of `core.routing.channel_routing`, which is just `party-state-machine`.
 
-**`CHANNELS_WORKER_MASTER`**: read into `settings.IS_CHANNELS_WORKER_MASTER`. When it is true, the `PartyWorker` of `custom_runworker` also runs the party reconciler next to its channel listeners. Every `RECONCILE_INTERVAL` (5 s), `resume_orphaned_parties` sends `event_party_started` for each party with `started_at` set, `closed_at` null and no live lease, so a party interrupted by a crash or a restart gets a runner again (see [Party lifecycle](#4-party-lifecycle)). It runs periodically, not once at startup, because a dead worker's lease only expires `PartyLease.TTL` seconds later. Only `channel-master` sets the flag. `CoreConfig.ready()` doesn't touch the database, so management commands such as `migrate` run no party queries.
+**Party reconciler**: the `PartyWorker` of `custom_runworker` runs `reconcile_parties` next to its channel listeners, on every worker. After a random initial offset of up to `RECONCILE_INTERVAL` (5 s), and then every `RECONCILE_INTERVAL`, `resume_orphaned_parties` sends `event_party_started` for each party with `started_at` set, `closed_at` null and no live lease, so a party interrupted by a crash or a restart gets a runner again (see [Party lifecycle](#4-party-lifecycle)). It runs periodically, not once at startup, because a dead worker's lease only expires `PartyLease.TTL` seconds later. No worker is special, so losing any one of them, for good, still gets its parties resumed within `PartyLease.TTL + RECONCILE_INTERVAL` by the others. Several workers may send `event_party_started` for the same party. That is harmless: `party_tasks` ignores a party the worker already runs, and only the worker that takes the lease runs it. The offset spreads the passes of workers that start together. `CoreConfig.ready()` doesn't touch the database, so management commands such as `migrate` run no party queries.
 
 **Worker concurrency**: a Channels worker runs one `PartyStateMachine` instance per channel and dispatches its messages one at a time, so no handler may block. `event_party_started` starts `run_party` as an `asyncio.Task`, keeps it in `PartyStateMachine.party_tasks` until it finishes, and returns right away. Another `event_party_started` for a party that already has a task on that worker is ignored. A worker therefore runs any number of parties at once, and a STOP is handled as soon as it arrives, whichever worker receives it. `run_party` logs any exception from the party and releases its lease, so a crashing party only ends its own task.
 
@@ -53,9 +52,9 @@ flowchart LR
         leases[("Party leases")]
     end
 
-    subgraph workers["channel-master + channel-worker x3"]
+    subgraph workers["channel-worker x3"]
         sm["PartyStateMachine<br/>channel: party-state-machine<br/>one task per party"]
-        reconciler["Party reconciler<br/>master only"]
+        reconciler["Party reconciler<br/>on every worker"]
     end
 
     db[("db (Postgres)<br/>Party, PartyRound,<br/>UserRoundAnswer, auth")]
@@ -121,7 +120,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | `type` | Payload | Producer | Handler behavior |
 |---|---|---|---|
-| `event_party_started` | `party_id`, `party_name` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. The party reconciler on the master, for started parties without a live lease. | Starts a task that runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). It does nothing if this worker already has a task for the party. Only the worker that takes the party's lease runs it, the rest log "run by another worker" and return. A party that hasn't started also needs the waiting-room claim (step 1). A started party is resumed from the database. |
+| `event_party_started` | `party_id`, `party_name` | `PartyConsumer.connect` on every connection to a party that isn't closed, and each waiting-room heartbeat while the party hasn't started. The party reconciler on every worker, for started parties without a live lease. | Starts a task that runs the whole party: waiting room, rounds and scoring (see [Party lifecycle](#4-party-lifecycle)). It does nothing if this worker already has a task for the party. Only the worker that takes the party's lease runs it, the rest log "run by another worker" and return. A party that hasn't started also needs the waiting-room claim (step 1). A started party is resumed from the database. |
 | `event_party_round_stopped` | `party_id`, `round_id` | `PartyConsumer.handle_form_submit` when a valid form has `submit_stop` | Closes the round with a conditional `UPDATE ... SET closed_at = now() WHERE closed_at IS NULL` (`PartyRoundQuerySet.aclose`). If the round was already closed, the STOP is logged and ignored, so duplicate STOPs are harmless. Otherwise it sends `event_party_round_stopped` to group `party_{id}` and `{round_id}` to `party_new_round_{id}`. |
 
 ### Channel `party_players_{id}`
@@ -224,7 +223,7 @@ The lifecycle has no explicit state. It is inferred from `Party.started_at`, `Pa
    - `update_scores` validates the round's answers, then scores it. The same transaction sets `Party.closed_at` once the party has `max_rounds` closed rounds.
 4. `finish_party` broadcasts `party_finished_update.html`: the winners, the final scores and a link home.
 
-Each party has a single owner: the worker that holds its `PartyLease` (`core/leases.py`), a `python-redis-lock` lock on `lock:party-lease:{id}` that expires after `TTL` (15 s). `run_party` takes it without blocking and runs the party through `PartyLease.run_while_held`, which renews the lease every `RENEW_INTERVAL` (5 s) from an asyncio task. If a renewal finds the lease gone, or Redis errors leave too little time before it would expire, the party task is cancelled before another worker can take over. The lease is released when the party ends or crashes, so duplicate `event_party_started` messages and restarts never start a second loop. As a second guard, `aget_current_or_next_round` and scoring lock the `Party` row, so a stale runner can't open a round next to the owner's or after the last one. When a worker dies, its lease expires and the reconciler sends `event_party_started` again. The worker that takes the lease resumes from the database: the open round keeps its letter and its deadline, and the stop condition counts closed rounds, so the party plays exactly `max_rounds` rounds.
+Each party has a single owner: the worker that holds its `PartyLease` (`core/leases.py`), a `python-redis-lock` lock on `lock:party-lease:{id}` that expires after `TTL` (15 s). `run_party` takes it without blocking and runs the party through `PartyLease.run_while_held`, which renews the lease every `RENEW_INTERVAL` (5 s) from an asyncio task. If a renewal finds the lease gone, or Redis errors leave too little time before it would expire, the party task is cancelled before another worker can take over. The lease is released when the party ends or crashes, so duplicate `event_party_started` messages and restarts never start a second loop. As a second guard, `aget_current_or_next_round` and scoring lock the `Party` row, so a stale runner can't open a round next to the owner's or after the last one. When a worker dies, its lease expires and the reconcilers of the remaining workers send `event_party_started` again. The worker that takes the lease resumes from the database: the open round keeps its letter and its deadline, and the stop condition counts closed rounds, so the party plays exactly `max_rounds` rounds.
 
 ```mermaid
 stateDiagram-v2
@@ -265,7 +264,7 @@ stateDiagram-v2
     }
 ```
 
-After a worker restart, a reconciler resumes every `IN_PROGRESS` party that has no live lease. It picks up from the current round and the time left before `deadline_at`, and doesn't replay rounds that are already closed.
+A reconciler on every worker resumes every `IN_PROGRESS` party that has no live lease. It picks up from the current round and the time left before `deadline_at`, and doesn't replay rounds that are already closed.
 
 ## 5. Data model
 
