@@ -510,6 +510,19 @@ main#content {
   align-items: center;
 }
 
+.round-countdown {
+  margin: 0;
+  color: var(--primary);
+  font-size: 2rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.round-countdown.is-warning {
+  color: var(--stop);
+}
+
 #party_points table {
   margin: 0;
 }

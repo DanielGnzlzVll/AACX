@@ -107,7 +107,6 @@ async def test_stop_for_closed_round_is_ignored(
 async def test_stale_round_end_does_not_end_the_current_round(
     state_machine, channel_layer, party, party_round, new_round_channel
 ):
-    party.max_round_duration = 60
     await channel_layer.send(new_round_channel, {"round_id": party_round.id - 1})
 
     with pytest.raises(TimeoutError):
@@ -124,7 +123,7 @@ async def test_stale_round_end_does_not_end_the_current_round(
 async def test_round_timeout_closes_round_and_notifies_players(
     state_machine, receive_or_none, party, party_round, probe
 ):
-    party.max_round_duration = 0
+    party_round.deadline_at = timezone.now()
 
     await state_machine.wait_for_round_end(party, party_round)
 

@@ -1,6 +1,7 @@
 import collections
 import datetime
 import enum
+import math
 import random
 import string
 import unicodedata
@@ -279,7 +280,8 @@ class PartyRound(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE)
     letter = models.CharField(max_length=1)
 
-    started_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(default=timezone.now)
+    deadline_at = models.DateTimeField()
     closed_at = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -291,6 +293,18 @@ class PartyRound(models.Model):
 
     def __str__(self):
         return f"{self.party} - {self.letter}"
+
+    def save(self, *args, **kwargs):
+        if self.deadline_at is None:
+            duration = datetime.timedelta(seconds=self.party.max_round_duration)
+            self.deadline_at = self.started_at + duration
+        super().save(*args, **kwargs)
+
+    @property
+    def seconds_left(self):
+        if self.closed_at:
+            return 0
+        return max(math.ceil((self.deadline_at - timezone.now()).total_seconds()), 0)
 
     async def close(self):
         closed = await PartyRound.objects.filter(pk=self.pk).aclose()

@@ -198,8 +198,10 @@ def started_party(party_factory, alice):
 
 async def open_round_started_ago(party, seconds, letter="A"):
     round = await models.PartyRound.objects.acreate(party=party, letter=letter)
-    round.started_at = timezone.now() - datetime.timedelta(seconds=seconds)
-    await round.asave(update_fields=["started_at"])
+    shift = datetime.timedelta(seconds=seconds)
+    round.started_at -= shift
+    round.deadline_at -= shift
+    await round.asave(update_fields=["started_at", "deadline_at"])
     return round
 
 
@@ -349,6 +351,9 @@ async def test_a_runner_that_loses_its_lease_stops_before_anyone_takes_over(
 
     await eventually(first_stopped, timeout=2)
     await models.Party.objects.filter(id=party.id).aupdate(max_round_duration=0)
+    await models.PartyRound.objects.filter(party=party).aupdate(
+        deadline_at=timezone.now()
+    )
     await start(second, party)
 
     async def party_closed():

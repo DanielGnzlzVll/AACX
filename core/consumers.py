@@ -207,6 +207,10 @@ class PartyConsumer(AsyncWebsocketConsumer, PartyConsumerMixin):
                 "disabled": True,
             },
         )
+        template_string += render_to_string(
+            "_round_countdown.html",
+            {"party": self.party, "current_round": current_round},
+        )
         await self.html({"message": template_string})
 
     async def disconnect(self, close_code):
@@ -333,10 +337,7 @@ class PartyStateMachine(AsyncConsumer, PartyConsumerMixin):
     async def wait_for_round_end(self, party, current_round):
         if current_round.closed_at:
             return
-        deadline = current_round.started_at + datetime.timedelta(
-            seconds=party.max_round_duration
-        )
-        remaining = max((deadline - timezone.now()).total_seconds(), 0)
+        remaining = max((current_round.deadline_at - timezone.now()).total_seconds(), 0)
         try:
             async with asyncio.timeout(remaining):
                 while True:
