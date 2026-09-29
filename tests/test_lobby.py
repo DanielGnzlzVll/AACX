@@ -111,7 +111,9 @@ def test_party_list_poll_with_an_expired_session_redirects_the_page(db):
     response = Client().get(url, HTTP_HX_REQUEST="true")
 
     assert response.status_code == 200
-    assert response.headers["HX-Redirect"] == f"{reverse('login')}?next={url}"
+    assert response.headers["HX-Redirect"] == (
+        f"{reverse('login')}?next={reverse('home')}"
+    )
     assert response.content == b""
 
 

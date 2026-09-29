@@ -99,7 +99,7 @@ After `accept()`, `receive` logs and ignores a message that isn't JSON, has no `
 | `/login/` | `Login` | Nickname login ([ADR 0003](adr/0003-passwordless-nickname-login.md)). |
 | `/logout/` | `Logout` | A `LogoutView` restricted to POST (`http_method_names = ["post", "options"]`). Redirects to `/login/`. |
 | `/home/` | `Home` | Parties the user can join or rejoin. This is the entry page. Nothing is routed at `/`, so it returns 404. |
-| `/home/parties/` | `PartyList` | Just the `_party_list.html` fragment, polled by the home page to keep the list live. A poll without a session gets `HX-Redirect` to the login page, so the whole page navigates instead of the list. |
+| `/home/parties/` | `PartyList` | Just the `_party_list.html` fragment, polled by the home page to keep the list live. A poll without a session gets `HX-Redirect` to the login page with `next=/home/`, so the whole page navigates instead of the list, and logging back in lands on the full home page. |
 | `/party/create/` | `CreateParty` | Live-validated form. Creates a new party when `submit=true`. It never modifies an existing one. |
 | `/party/<id>/` | `DetailParty` | Waiting page, game page, or final results once the party is closed. A user who didn't join a started party gets the read-only `party_started.html` ("Esta partida ya empezó", the scores and a link home) instead. The GET is read-only: it shows the latest round filled with the player's saved answers, disabled once it is closed, and a waiting state until the state machine opens the first one. |
 | `/party/<id>/user/<username>/answers` | `PartyAnswers` | A player's answers, shown in a modal. Another player's answers only cover closed rounds. Returns 404 unless that user joined or answered in the party. |
