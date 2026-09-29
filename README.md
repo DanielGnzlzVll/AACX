@@ -6,7 +6,7 @@ AACX delves into the following technologies and concepts:
 
 1. Django channels
 1. HTMX
-1. Rest (As roy fielding defined)
+1. Hypermedia-driven UI: the server sends HTML, over HTTP and websockets
 1. View Transitions.
 
 
@@ -32,7 +32,7 @@ Let's get started with setting up and running the application.
 
 ## Getting Started
 
-To embark on your gaming journey, simply open your browser and navigate to http://localhost:8000/home. If it's your first time, you might need to create a user account.
+To embark on your gaming journey, simply open your browser and navigate to http://localhost:8000/home/ (nothing is served at `/`). You'll be asked for a nickname: pick any free one and you're in. The nickname stays tied to that browser, see [ADR 0003](docs/adr/0003-passwordless-nickname-login.md).
 
 ### home page
 
@@ -97,8 +97,13 @@ POSTGRES_HOST=localhost POSTGRES_PORT=5432 pytest
 
 Tests use `asacx/settings_test.py`, which swaps Redis for an in-memory channel layer and cache.
 
+## Architecture
+
+- [Architecture overview](docs/architecture.md): runtime topology, message flow between Daphne, `PartyConsumer`, `PartyStateMachine`, Redis and Postgres, the party lifecycle, the data model and the frontend model.
+- [Architecture decision records](docs/adr/README.md).
+
 ## Project decisions:
-In developing AACX, several key decisions were made:
+In developing AACX, several key decisions were made. The ones that shape the architecture are recorded as [ADRs](docs/adr/README.md):
 
 1. Utilization of Django: Leveraging Django's MVC architecture and template system for maximal synergy with HTMX.
 1. Integration of Django Channels: Exploring real-time operations via websockets in Python, diverging from the conventional Node.js or Golang implementations.
