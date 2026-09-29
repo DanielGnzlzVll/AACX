@@ -1,5 +1,6 @@
 import asyncio
 import importlib
+import time
 from unittest import mock
 
 import msgpack
@@ -17,6 +18,7 @@ from django.utils import timezone
 
 from core import consumers, models, routing
 from core.views import (
+    LOGIN_RATE_LIMITED_MESSAGE,
     LOGIN_REJECTED_MESSAGE,
     NICKNAME_CLAIM_COOKIE,
     NICKNAME_CLAIM_LIMIT,
@@ -196,6 +198,90 @@ class LoginTests(TestCase):
         )
 
         self.assertRedirects(response, reverse("home"))
+
+    def create_nickname(self, nickname, **extra):
+        return Client().post(reverse("login"), {"nickname": nickname}, **extra)
+
+    def assert_rate_limited(self, response, nickname):
+        self.assertEqual(response.status_code, 429)
+        self.assertTemplateUsed(response, "login.html")
+        self.assertContains(response, LOGIN_RATE_LIMITED_MESSAGE, status_code=429)
+        self.assertNotIn(SESSION_KEY, response.client.session)
+        self.assertFalse(User.objects.filter(username=nickname).exists())
+
+    @override_settings(LOGIN_NICKNAME_CREATION_LIMIT=2)
+    def test_nickname_creation_over_the_limit_is_rejected(self):
+        for nickname in ("ana", "bob"):
+            self.assertRedirects(self.create_nickname(nickname), reverse("home"))
+
+        self.assert_rate_limited(self.create_nickname("carla"), "carla")
+
+    @override_settings(LOGIN_NICKNAME_CREATION_LIMIT=2)
+    def test_logging_back_in_does_not_count_against_the_limit(self):
+        self.post_login({"nickname": "ana"})
+        for _ in range(3):
+            self.client.post(reverse("logout"))
+            self.assertRedirects(self.post_login({"nickname": "ana"}), reverse("home"))
+
+        self.assertRedirects(self.create_nickname("bob"), reverse("home"))
+
+    @override_settings(LOGIN_NICKNAME_CREATION_LIMIT=1)
+    def test_rejected_nickname_does_not_count_against_the_limit(self):
+        User.objects.create_user("carla", password="s3cret-pass")
+
+        self.assert_rejected(self.post_login({"nickname": "carla"}))
+        self.assertRedirects(self.create_nickname("ana"), reverse("home"))
+
+    @override_settings(LOGIN_NICKNAME_CREATION_LIMIT=1)
+    def test_nickname_creation_limit_is_per_ip(self):
+        self.create_nickname("ana", REMOTE_ADDR="192.0.2.1")
+
+        self.assertRedirects(
+            self.create_nickname("bob", REMOTE_ADDR="192.0.2.2"), reverse("home")
+        )
+        self.assert_rate_limited(
+            self.create_nickname("carla", REMOTE_ADDR="192.0.2.1"), "carla"
+        )
+
+    @override_settings(
+        LOGIN_NICKNAME_CREATION_LIMIT=1, LOGIN_NICKNAME_CREATION_WINDOW=60
+    )
+    def test_nickname_creation_limit_resets_after_the_window(self):
+        self.create_nickname("ana")
+        self.assert_rate_limited(self.create_nickname("bob"), "bob")
+
+        later = time.time() + 61
+        with mock.patch("django.core.cache.backends.locmem.time") as locmem_time:
+            locmem_time.time.return_value = later
+            response = self.create_nickname("bob")
+
+        self.assertRedirects(response, reverse("home"))
+
+    @override_settings(
+        LOGIN_NICKNAME_CREATION_LIMIT=1, CLIENT_IP_HEADER="HTTP_X_FORWARDED_FOR"
+    )
+    def test_client_ip_comes_from_the_trusted_forwarded_header(self):
+        proxy = {"REMOTE_ADDR": "10.0.0.1"}
+        self.create_nickname("ana", HTTP_X_FORWARDED_FOR="192.0.2.1", **proxy)
+
+        self.assertRedirects(
+            self.create_nickname("bob", HTTP_X_FORWARDED_FOR="192.0.2.2", **proxy),
+            reverse("home"),
+        )
+        self.assert_rate_limited(
+            self.create_nickname(
+                "carla", HTTP_X_FORWARDED_FOR="198.51.100.7, 192.0.2.1", **proxy
+            ),
+            "carla",
+        )
+
+    @override_settings(LOGIN_NICKNAME_CREATION_LIMIT=1)
+    def test_forwarded_header_is_ignored_unless_trusted(self):
+        self.create_nickname("ana", HTTP_X_FORWARDED_FOR="192.0.2.1")
+
+        self.assert_rate_limited(
+            self.create_nickname("bob", HTTP_X_FORWARDED_FOR="192.0.2.2"), "bob"
+        )
 
 
 @override_settings(STORAGES=SIMPLE_STORAGES)

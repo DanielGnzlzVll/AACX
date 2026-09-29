@@ -18,6 +18,7 @@ Players log in at `/login/` with only a nickname. Each player is a normal `djang
 - An unknown nickname creates a `User` with an unusable password, and the player is logged in.
 - A known nickname is looked up case-insensitively. It is accepted only when the user's id is in the browser's signed `aacx_nickname_claim` cookie. Each login writes that cookie with the ids of the browser's 10 most recently used nicknames. It is `HttpOnly`, uses `SameSite=Lax`, is `Secure` over HTTPS, and lasts a year. The nickname belongs to the browser that claimed it first.
 - Staff, superuser, inactive and password-protected accounts are always rejected at `/login/`. They log in through `/admin/login/`.
+- Each client IP can create at most `LOGIN_NICKNAME_CREATION_LIMIT` nicknames (20) per `LOGIN_NICKNAME_CREATION_WINDOW` (one hour), counted in Django's cache. Over the limit, `/login/` re-renders the form with HTTP 429 and creates no user. Logging back in to a claimed nickname doesn't count. The client IP is `REMOTE_ADDR`, unless the `CLIENT_IP_HEADER` environment variable names the header set by the reverse proxy (e.g. `HTTP_X_FORWARDED_FOR`). Then its last entry is used, the only one the client can't forge ([#39]).
 - After login, the player goes to the `next` URL if it's on the same host, and to `/home/` otherwise. `/logout/` accepts only POST (`core.views.Logout`).
 
 ## Consequences
@@ -26,7 +27,9 @@ Players log in at `/login/` with only a nickname. Each player is a normal `djang
 - Players can't impersonate each other, and admin accounts can't be reached through the game's login.
 - There is no account recovery. A player who clears cookies or switches browser can't use their nickname again and has to pick a new one. A browser remembers at most 10 nicknames. Logging in with an 11th drops the oldest from the cookie, and that nickname can no longer be used from that browser.
 - Rotating `SECRET_KEY` invalidates every claim cookie, so all nicknames become unclaimable.
+- Players behind one shared IP (an office or a classroom) share the creation limit. A script can still squat a few nicknames per hour from each IP it controls.
 - Authenticating a websocket isn't the same as authorizing it. `PartyConsumer` doesn't check that the user is logged in or belongs to the party ([#16]).
 
 [#2]: https://github.com/DanielGnzlzVll/AACX/issues/2
 [#16]: https://github.com/DanielGnzlzVll/AACX/issues/16
+[#39]: https://github.com/DanielGnzlzVll/AACX/issues/39
