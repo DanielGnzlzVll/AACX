@@ -36,6 +36,7 @@ ballena
 ballena azul
 barbo
 barracuda
+becerro
 beluga
 besugo
 bisonte
@@ -72,12 +73,14 @@ caracol
 caribú
 carnero
 carpa
+cascabel
 castor
 cebra
 cebú
 cerdo
 cernícalo
 chacal
+chapulín
 chigüire
 chigüiro
 chimpancé
@@ -102,12 +105,14 @@ comadreja
 cóndor
 conejillo de indias
 conejo
+cordero
 corvina
 cotorra
 coyote
 cucaracha
 cuervo
 cuervo marino
+culebra
 cuy
 dálmata
 danta
@@ -134,6 +139,7 @@ foca monje
 fragata
 gacela
 gallina
+gallinazo
 gallipato
 gallo
 gamo
@@ -215,6 +221,7 @@ lubina
 luciérnaga
 lucio
 macaco
+mamba
 mamut
 manatí
 mandril
@@ -231,6 +238,7 @@ medusa
 mejillón
 merluza
 mico
+mirla
 mirlo
 mofeta
 mono
@@ -280,6 +288,7 @@ panda
 pangolín
 pantera
 papagayo
+pargo
 pato
 pato real
 pavo
@@ -351,6 +360,8 @@ tarántula
 tarpón
 tejón
 termita
+ternera
+ternero
 tiburón
 tiburón ballena
 tiburón blanco

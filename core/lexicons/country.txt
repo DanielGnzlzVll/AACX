@@ -16,6 +16,7 @@ Australia
 Austria
 Azerbaiyán
 Bahamas
+Bangladesh
 Bangladés
 Barbados
 Baréin
@@ -28,6 +29,7 @@ Bolivia
 Bosnia y Herzegovina
 Bosnia-Herzegovina
 Botsuana
+Botswana
 Brasil
 Brunéi
 Bulgaria
@@ -63,6 +65,7 @@ Curazao
 Côte d’Ivoire
 Diego García
 Dinamarca
+Djibouti
 Dominica
 Ecuador
 Egipto
@@ -111,6 +114,7 @@ India
 Indonesia
 Inglaterra
 Irak
+Iraq
 Irlanda
 Irlanda del Norte
 Irán
@@ -150,11 +154,13 @@ Jersey
 Jordania
 Kazajistán
 Kenia
+Kenya
 Kirguistán
 Kiribati
 Kosovo
 Kuwait
 Laos
+Lesotho
 Lesoto
 Letonia
 Liberia
@@ -169,6 +175,7 @@ Macedonia del Norte
 Madagascar
 Malasia
 Malaui
+Malawi
 Maldivas
 Mali
 Malta
@@ -221,6 +228,7 @@ Ruanda
 Rumania
 Rumanía
 Rusia
+Rwanda
 Sahara Occidental
 Samoa
 Samoa Americana
@@ -282,3 +290,4 @@ Yemen
 Yibuti
 Zambia
 Zimbabue
+Zimbabwe

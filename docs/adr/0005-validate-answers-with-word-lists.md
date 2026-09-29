@@ -8,14 +8,16 @@ Proposed
 
 Scoring only checked the first letter, so `Elefnte`, `Asdf` or `Mesa` as an animal scored like real answers ([#30]). Validation has to run when a round closes, before scoring, for every answer that passes the letter check. It has to add at most a few seconds for 8 players (56 answers), work offline with `docker compose up` on a CPU, and never block a round when it fails.
 
+### First spike
+
 We compared two kinds of validator on a labeled sample of 210 Spanish answers (`scripts/answer_validation_sample.csv`), 30 per category. Each category has 15 valid answers, common and uncommon, and 15 invalid ones: misspellings, words from another category, and gibberish. `scripts/answer_validation_spike.py` shuffles the sample into rounds of 56 unique answers and times each pipeline per round. Unverified answers count as accepted, as they are in the game.
 
 - **Word lists**, built by `scripts/build_lexicons.py` into `core/lexicons/`:
-  - Countries: CLDR Spanish territory names from Babel, plus common variants (Holanda, Inglaterra, Qatar).
+  - Countries: CLDR Spanish territory names from Babel, plus common variants (Holanda, Inglaterra).
   - Cities: GeoNames `cities15000` names, plus the Latin-script alternate names of cities over a million people (Londres, Nueva York).
   - First names and surnames: INE frequency lists, names held by at least 50 people and surnames by at least 100.
   - Animals and colors: curated by hand.
-  - For things there is no list. A dictionary of Spanish words with a wordfreq Zipf frequency of at least 2.5 checks spelling only.
+  - For things there is no list. A dictionary of Spanish words with a wordfreq Zipf frequency of at least 2.5 checked spelling only.
 - **Local models** served by Ollama 0.34.4 on CPU, asked for a strict JSON verdict per answer in one request per round: qwen2.5 0.5B, 1.5B and 3B, gemma2 2B and llama3.2 3B. Each ran alone on the round, and after the lists (as a fallback for answers the lists don't cover).
 
 The spike ran on an 8-core Intel Core Ultra 5 238V laptop (WSL2, Docker Desktop), with llama.cpp limited to 4 threads. The machine was also running other test suites, so the model latencies are pessimistic. Even at several times faster, they miss the budget.
@@ -39,7 +41,30 @@ The spike ran on an 8-core Intel Core Ultra 5 238V laptop (WSL2, Docker Desktop)
 
 ¹ The first round of a process loads the lists.
 
-The deterministic rows are over 12 rounds and the model rows over 4. The strict lists' remaining false rejects were mostly animals missing from the hand-made list (wombat, kiwi, yacaré, pez espada). The animal list then grew from 211 to 401 entries, and Qatar and a few compound colors were added. With those lists, the chosen pipeline scores 94% with 2% false rejects and 10% false accepts. That run is biased: the additions came from reading the sample's misses.
+The deterministic rows are over 12 rounds and the model rows over 4. No model beat the word lists, and every model broke the budget.
+
+### Review of the lists
+
+The strict lists scored well on the sample, but a review with about 500 realistic answers found too many false rejects:
+- Spanish city names such as `Lisboa`, `Atenas`, `Nápoles`, `Ginebra` and `Cuzco`.
+- Country spellings such as `Iraq`, `Kenya` and `Zimbabwe`.
+- Animals missing from the hand-made list, such as `Cordero`, `Culebra`, `Ternero` and `Mero`.
+- Real things below the frequency cutoff, such as `Xilófono`, `Ocarina`, `Ñoqui` and `Sacapuntas`.
+
+The cutoff also kept web noise (`xd`, `xq`) and dropped rare letters. Players can't challenge a verdict, so a false reject costs more than a false accept. The lists changed:
+- Cities also take the Spanish (`es`) names that GeoNames `alternateNamesV2` has for every city in `cities15000`, which covers all those exonyms and `Cuzco`. GeoNames' Spanish country names were left out: they mix in historic names (Persia, Siam), abbreviations and misspellings.
+- The dictionary is the Spanish nouns and adjectives of the Spanish Wiktionary, with their plural and feminine forms (about 148,000). Infinitives (about 12,500) and a few function words are accepted after the first word, as in "máquina de coser".
+- The animal and color lists add the entries of Wiktionary's animal categories (Mamíferos, Aves, Peces and others) and of Colores. A miss in those two categories is rejected only when it isn't a Spanish word, and is otherwise left unverified.
+- `thing.txt` is a hand-made list for things the dictionary lacks.
+
+Every answer from the review is now accepted, some of them through the hand-made lists. On the sample:
+
+| Pipeline | Accuracy | False rejects | False accepts |
+|---|---|---|---|
+| **Default chain** | **89%** | **0%** | **23%** |
+| Every list rejects misses, dictionary for things | 95% | 0% | 10% |
+
+Both rows are biased toward the lists, since several of their additions came from the sample's misses. The extra false accepts of the default chain are real words given for the wrong category, such as `Silla` as an animal.
 
 ## Decision
 
@@ -49,8 +74,8 @@ The deterministic rows are over 12 rounds and the model rows over 4. The strict 
    - `UserRoundAnswer.verdict` stores `valid`, `invalid` or `unverified`, and NULL for answers that failed the letter check or are empty.
    - The answer-reveal modal strikes rejected answers through and marks them "No válida".
 2. **Validators form a chain**, set by the `ANSWER_VALIDATORS` setting (comma-separated in the environment). Each validator returns verdicts for the pairs it can decide and leaves the rest to the next one. The default chain has no model:
-   - `LexiconValidator` accepts listed words and rejects unlisted ones in every category that has a list.
-   - `DictionaryValidator` accepts things spelled as common Spanish words and rejects the rest.
+   - `LexiconValidator` accepts listed words. Unlisted names, surnames, countries and cities are rejected. An unlisted animal or color is rejected only when it isn't a Spanish word, and is otherwise left unverified.
+   - `DictionaryValidator` accepts things that are Spanish nouns or adjectives, and rejects the rest.
 3. **Stored verdicts come first.** `AnswerVerdict(field, value, is_valid, source)` is checked before any validator, so an admin can accept or reject a word by hand. Verdicts from validators that set `cache_verdicts` (the model) are stored there too.
 4. **Failures don't block.** Validators run off the event loop (`sync_to_async(thread_sensitive=False)`) under one deadline, `ANSWER_VALIDATION_TIMEOUT` (5 s). On timeout, the verdicts already found are kept and the rest stay unverified. A validator that raises is skipped. Unverified answers are accepted.
 5. **The model stays optional.** `OllamaValidator` is kept for hardware that can run it in time. `docker compose --profile llm up` starts `ollama` and pulls `OLLAMA_MODEL` (qwen2.5:1.5b by default) into the `ollama` volume. To use it, put `PartialLexiconValidator` first, which only rejects unlisted countries:
@@ -62,16 +87,18 @@ The deterministic rows are over 12 rounds and the model rows over 4. The strict 
 ### Alternatives considered
 
 - **A local model as the main validator.** It wasn't more accurate than the lists, and it took 6 to 48 s per round on CPU and 0.5 to 2.6 GB of RAM. The small models either accepted almost everything or rejected almost everything.
-- **Lists that leave misses unverified.** Instant and never wrong about listed words, but 77–86% of invalid answers got through.
-- **The dictionary for animals and colors too.** Fewer false rejects, but any real word passes as an animal or a color. It let 24% of invalid answers through.
+- **Lists that leave every miss unverified.** Instant and never wrong about listed words, but 75–86% of invalid answers got through.
+- **Lists that reject every miss, animals and colors included.** More accurate on the sample, but no list of animals is complete, and each gap costs a player 100 points.
+- **A web-frequency word list as the dictionary** (wordfreq, used in the first spike). It rejects rare but correct words and keeps web noise.
 - **Fuzzy matching** (e.g. rapidfuzz) to forgive typos. The rule is that answers are spelled correctly, so typos are rejected on purpose.
 
 ## Consequences
 
-- Validation takes under a millisecond per round and needs no extra service. Each worker loads the lists once, which takes about 0.2 s and 16 MB of RAM.
-- `core/lexicons/` is 1.6 MB of plain text. Countries, cities, names, surnames and the dictionary are generated, so rebuild them with the script instead of editing them. The animal and color lists are edited by hand.
-- A correct answer that isn't listed is rejected: an uncommon animal, a small town, a rare name. The fix is to add it to a hand-made list, or to accept it in the admin through `AnswerVerdict`. Letting players challenge a verdict would make this self-service.
-- A word from another category passes for things (`Perro` as a thing), because the dictionary only checks spelling. Place names shared with common words pass as cities (`Mesa`, `Colombia`).
+- Validation takes under a millisecond per round and needs no extra service. Each worker loads the lists once, which takes about 0.4 s and 29 MB of RAM.
+- `core/lexicons/` is 2.7 MB of plain text. The generated files are rebuilt with the script, not edited. `animal.txt`, `color.txt` and `thing.txt` are edited by hand.
+- The data keeps its licenses, listed in `core/lexicons/SOURCES.md`. GeoNames needs attribution (CC BY 4.0), CLDR ships with its notice (Unicode License v3), and INE has to be cited. The Wiktionary-derived files stay under CC BY-SA 4.0.
+- An unlisted name, surname, country or city is rejected: a small town or a rare name. The fix is to add it to a list or to accept it in the admin through `AnswerVerdict`. Letting players challenge a verdict would make this self-service.
+- A real word from another category passes for animals, colors and things (`Silla` as an animal, `Perro` as a thing). Place names shared with common words pass as cities (`Mesa`, `Colombia`).
 - The name and surname lists come from Spain's census, so Latin American names that are rare in Spain can be rejected.
 - Tests use fake validators, and the test settings set `ANSWER_VALIDATORS = []`, so CI needs no model and no lists beyond the repository.
 

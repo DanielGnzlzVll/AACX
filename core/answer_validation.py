@@ -19,15 +19,40 @@ Answer = models.UserRoundAnswer
 
 @functools.cache
 def load_lexicon(name):
-    path = LEXICONS / f"{name}.txt"
-    words = path.read_text().splitlines() if path.exists() else []
+    paths = [LEXICONS / f"{name}.txt", *LEXICONS.glob(f"{name}-*.txt")]
+    words = [
+        word
+        for path in paths
+        if path.exists()
+        for word in path.read_text().splitlines()
+    ]
     return frozenset(models.normalize_answer(word) for word in words) - {""}
 
 
-class LexiconValidator:
-    """Accepts the words listed for their category and rejects the rest.
+FUNCTION_WORDS = frozenset(
+    {"a", "al", "con", "de", "del", "el", "en", "la", "las", "los", "para", "y"}
+)
 
-    Categories without a list are left to the next validator.
+
+def is_spanish_word(value):
+    """True for a noun or adjective, alone or followed by other words.
+
+    The words after the first may also be function words or infinitives, as in
+    "máquina de coser".
+    """
+    head, *rest = value.split() or [""]
+    words, verbs = load_lexicon("word"), load_lexicon("verb")
+    return head in words and all(
+        word in words or word in verbs or word in FUNCTION_WORDS for word in rest
+    )
+
+
+class LexiconValidator:
+    """Accepts the words listed for their category.
+
+    Misses are rejected in closed categories. In soft categories only misses
+    that aren't Spanish words are rejected, since those lists can't be complete.
+    Everything else is left to the next validator.
     """
 
     source = "lexicon"
@@ -38,10 +63,9 @@ class LexiconValidator:
             Answer.LAST_NAME_CHOICE,
             Answer.COUNTRY_CHOICE,
             Answer.CITY_CHOICE,
-            Answer.ANIMAL_CHOICE,
-            Answer.COLOR_CHOICE,
         }
     )
+    soft_fields = frozenset({Answer.ANIMAL_CHOICE, Answer.COLOR_CHOICE})
 
     def validate(self, pairs):
         verdicts = {}
@@ -50,6 +74,8 @@ class LexiconValidator:
                 verdicts[field, value] = True
             elif field in self.closed_fields:
                 verdicts[field, value] = False
+            elif field in self.soft_fields and not is_spanish_word(value):
+                verdicts[field, value] = False
         return verdicts
 
 
@@ -57,10 +83,11 @@ class PartialLexiconValidator(LexiconValidator):
     """Only rejects unlisted countries, and leaves other misses to a model."""
 
     closed_fields = frozenset({Answer.COUNTRY_CHOICE})
+    soft_fields = frozenset()
 
 
 class DictionaryValidator:
-    """Checks spelling against a list of common Spanish words.
+    """Checks spelling against the Spanish nouns and adjectives of Wiktionary.
 
     It says nothing about the category, so it only judges categories that
     accept any common noun.
@@ -71,9 +98,8 @@ class DictionaryValidator:
     fields = frozenset({Answer.THING_CHOICE})
 
     def validate(self, pairs):
-        words = load_lexicon("word")
         return {
-            (field, value): all(word in words for word in value.split())
+            (field, value): is_spanish_word(value)
             for field, value in pairs
             if field in self.fields
         }

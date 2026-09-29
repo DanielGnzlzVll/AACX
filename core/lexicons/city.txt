@@ -33,6 +33,7 @@ A-pu-that-pi
 aaalkhrtwm
 Aabenraa
 Aachen
+Aaiún
 Aakra
 Aakrá
 Aalborg
@@ -53,11 +54,13 @@ abadan
 Abadeh
 Abadia de Goias
 Abadia de Goiás
+Abadán
 Abaete
 Abaetetuba
 Abaeté
 Abakaliki
 Abakan
+Abakán
 Abala
 Abalak
 abana
@@ -71,6 +74,7 @@ Abashiri
 Abasolo
 Abay
 Abaza
+Abazá
 Abba
 Abbeville
 Abbey Wood
@@ -86,6 +90,7 @@ Abeche
 Abejorral
 Abelardo Luz
 Abengourou
+Abenrá
 Abeokuta
 Abepura
 Aberdare
@@ -166,6 +171,7 @@ abu dhabi
 Abu Dhabi emiraat
 Abu Dhabi Island and Internal Islands City
 Abu Gharaq
+Abu Ghraib
 Abu Ghurayb
 Abu Hammad
 Abu Hayl
@@ -202,6 +208,7 @@ Abudža
 Abugia
 Abugo
 abuja
+Abukir
 Abuko
 Aburi
 Abuya
@@ -245,6 +252,7 @@ Acajutiba
 Acajutla
 Acambaro
 Acaponeta
+Acapulco
 Acapulco de Juarez
 Acapulco de Juárez
 Acara
@@ -297,8 +305,10 @@ Acreúna
 Acton
 Actopan
 Acu
+Acuautla
 acukapat
 acunciyon
+Acuña
 Acworth
 Acámbaro
 Ad Dammam
@@ -390,6 +400,7 @@ Adenta
 aderedo
 Ades
 Adet
+Adh Dhaid
 Adh Dhayd
 Adhanah
 Adiake
@@ -418,6 +429,7 @@ Adiyanuthu
 Adjaouere
 Adjaouèrè
 Adjarra
+Adjdabía
 Adjud
 Adjumani
 ADL
@@ -431,6 +443,7 @@ admwntwn
 adnt
 Ado-Ekiti
 Ado-Odo
+Adolfo López Mateos
 Adoni
 Adra
 Adrano
@@ -441,6 +454,7 @@ Adriano
 Adrogue
 Adrogué
 Adré
+Adua
 Adur
 Adustina
 Adwa
@@ -460,7 +474,7 @@ AEaenekoski
 AEbu Saby
 Aebura
 aedeulleideu
-AEnew
+Aenew
 AEngelholm
 AEussere Neustadt
 Af'abet
@@ -485,6 +499,7 @@ afumadabado
 Afurada de Baixo
 Afuá
 Afyonkarahisar
+Afyonkarahissar
 Afzalgarh
 Afzalpur
 Afşin
@@ -499,10 +514,13 @@ Agaro
 Agartala
 Agats
 Agawam
+Agaña
 Agbor
 Agboville
+Agdam
 Agdas
 Agde
+Agdzhabedi
 Agege
 Agen
 Ageo
@@ -526,6 +544,7 @@ Aglipay
 Agnibilekrou
 Agnibilékrou
 Agogo
+Agona Swedru
 Agoo
 Agoura
 Agoura Hills
@@ -537,10 +556,12 @@ Agrestina
 Agri
 Agrigento
 Agrinio
+Agriz
 Agro
 Agropoli
 Agryz
 Agrínio
+Agsu
 Agua Azul do Norte
 Agua Boa
 Agua Branca
@@ -579,6 +600,7 @@ Agulu
 agura
 Agustin Codazzi
 Agustín Codazzi
+Agén
 Agía Paraskeví
 Agía Varvára
 Agüimes
@@ -614,6 +636,7 @@ ahmdabad
 Ahmed Bel Hadj
 Ahmedabad
 Ahmedgarh
+Ahmedpur East
 Ahn Yang
 Ahor
 Ahouanou
@@ -696,6 +719,7 @@ Ajaccio
 Ajaigarh
 ajalo
 Ajalpan
+Ajaltsije
 Ajanur
 Ajaokuta
 Ajapnyak
@@ -709,6 +733,7 @@ Ajim
 Ajka
 Ajman
 Ajmer
+Ajmán
 Ajnala
 Ajni
 Ajnāla
@@ -818,6 +843,7 @@ Al Ahmadi
 Al Ain City
 Al Ajaylat
 Al Asabi'ah
+Al Aziziyah
 Al Aḩmadī
 Al Bab
 Al Bada'a
@@ -843,6 +869,7 @@ Al Birah
 Al Brouj
 Al Bukayriyah
 Al Bukayrīyah
+Al Buraimi
 Al Burayj
 Al Buraymi
 Al Buraymī
@@ -910,6 +937,7 @@ Al Iskandariyah
 Al Iskandarīyah
 Al Jadid
 Al Jadīd
+Al Jahra
 Al Jammaliyah
 Al Jammālīyah
 Al Jawf
@@ -919,6 +947,7 @@ Al Jizah
 Al Jubayhah
 Al Jubayl
 Al Jumayl
+Al Jums
 Al Jumum
 Al Jumūm
 Al Jurf
@@ -1071,6 +1100,7 @@ al-Ghadiriya
 Al-Hamdaniya
 Al-jezair
 Al-Junaynah
+Al-Kaim
 Al-Kharijah
 Al-Khārijah
 Al-Kut
@@ -1102,12 +1132,14 @@ ala-jaza'ira
 Alabaster
 Alabel
 Alaca
+Alacuás
 Alafaya
 Alaghsas
 Alagir
 Alagoa Grande
 Alagoa Nova
 Alagoinhas
+Alaguir
 Alahabad
 Alahabadas
 alajiyarsa
@@ -1135,6 +1167,7 @@ Alangulam
 Alangāyam
 Alankod
 Alanya
+Alapaevsk
 Alapayevsk
 Alapli
 Alaplı
@@ -1178,6 +1211,7 @@ Albstadt
 Albu Kamal
 Albufeira
 Albuquerque
+Alburquerque
 Alcabideche
 Alcala de Guadaira
 Alcala de Henares
@@ -1185,6 +1219,7 @@ Alcala la Real
 Alcalde Diaz
 Alcalde Díaz
 Alcalá de Guadaira
+Alcalá de Guadaíra
 Alcalá de Henares
 Alcalá la Real
 Alcamo
@@ -1195,6 +1230,7 @@ Alcazar de San Juan
 Alcañiz
 Alcher
 Alchevsk
+Alcira
 Alcobaca
 Alcobaça
 Alcobendas
@@ -1207,6 +1243,8 @@ Alcântara
 Alcúdia
 Aldaia
 Aldan
+Aldaya
+Aldea Nueva Zhongxing
 Aldeias Altas
 Alderetes
 Aldershot
@@ -1224,8 +1262,10 @@ Alegsàndiri
 Alehandriya
 Aleixandria
 Aleixandría
+Alejandreta
 Alejandria
 Alejandría
+Alejandrópolis
 alekajandriya
 alekcantiriya
 alekipa
@@ -1247,11 +1287,13 @@ Aleksandrów Łódzki
 Alekseyevka
 Aleksin
 Aleksotas
+Aleksándrov
 Alem Paraiba
 Alencon
 Alengad
 Alengād
 Alenquer
+Alenzón
 Alençon
 Alep
 Alepas
@@ -1285,6 +1327,7 @@ Alexânia
 Aley
 Aleysk
 Alfafar
+Alfaz del Pi
 Alfeld
 Alfena
 Alfenas
@@ -1312,6 +1355,7 @@ Algonquin
 Algorta
 Algueirao
 Algueirão
+Alguer
 Algés
 Algê
 Algír
@@ -1322,6 +1366,7 @@ Alhaurin de la Torre
 Alhaurin el Grande
 Alhaurín de la Torre
 Alhaurín el Grande
+Alhucemas
 Ali
 Ali Mendjeli
 Ali Sabih
@@ -1349,6 +1394,7 @@ Alipur Duar
 Alirajpur
 Aliso Viejo
 Aliwal North
+Aljarafe
 Aljaraque
 alje
 Aljer
@@ -1405,6 +1451,7 @@ Almatî
 Almatõ
 Almatý
 Almatı
+Almazora
 almdynt
 almdynt almnwrh
 almdynt almnwrt
@@ -1477,6 +1524,7 @@ Altdorf bei Nürnberg
 Altea
 Altena
 Altenburg
+Altenburgo
 Altepetl In Cabo
 Altepetl Juarez
 Altepetl Juárez
@@ -1648,6 +1696,7 @@ Ambatofinandrahana
 Ambatolampy
 Ambatondrazaka
 Ambattur
+Amberes
 Amberg
 Ambikapur
 Ambikapuram
@@ -1660,6 +1709,7 @@ Ambodifotatra
 Ambodimanga II
 Ambohidratrimo
 Ambohitrolomahitsy
+Amboim
 Ambon
 Amborg
 Ambositra
@@ -1678,6 +1728,7 @@ Amdjarass
 Amdāvāda
 Ameca
 Amecameca
+Amecameca de Juárez
 Amed
 Amedabato
 Amedebatum
@@ -1731,8 +1782,10 @@ Amol
 Amontada
 Amora
 Amorebieta
+Amorebieta-Echano
 Amos
 Amoy
+Amozoc
 Amozoc de Mota
 Ampahana
 Ampang
@@ -1767,6 +1820,7 @@ amrtasara
 amrtasarah
 amrtsr
 amrytsar
+Amrán
 amsk
 Amstelveen
 Amsterdam
@@ -1916,6 +1970,7 @@ Andernach
 Anderson
 Andes
 Andijon
+Andiján
 Andilamena
 Andimeshk
 Andipalayam
@@ -1959,6 +2014,7 @@ Angat
 Angatuba
 Angeles City
 Angelopolis
+Angelu
 Angermuende
 Angermünde
 Angers
@@ -1977,6 +2033,7 @@ Angra dos Reis
 Angren
 Angri
 Angul
+Angulema
 Anguo
 Anguriyah
 Angyalfoeld
@@ -2119,6 +2176,7 @@ Antiguo Cuscatlán
 Antioch
 Antioch on Sarus
 Antiocheia
+Antioquía
 Antipolo
 Antis Ampempa
 Antofagasta
@@ -2153,6 +2211,7 @@ Anyinam
 Anyuan
 Anzhero-Sudzhensk
 Anzio
+Anádyr
 Anáhuac
 Anápolis
 Aného
@@ -2247,6 +2306,7 @@ Aquidaba
 Aquidabã
 Aquidauana
 Aquiraz
+Aquisgrán
 Ar Chab
 Ar Rabiyah
 Ar Radisiyah Qibli
@@ -2399,6 +2459,7 @@ Arcelia
 Arcella
 Archena
 Archway
+Arcila
 Arcola East
 Arcore
 Arcos
@@ -2407,6 +2468,7 @@ Arcos de Valdevez
 Arcot
 Arcoverde
 Arcueil
+Arcángel
 Ardabil
 Ardabīl
 Ardahan
@@ -2420,6 +2482,7 @@ Ardestān
 Ardeşen
 Ardmore
 Ardon
+Ardón
 Arecibo
 Arecipa
 Areeiro
@@ -2449,6 +2512,7 @@ Arfa Moussaia
 Arfa Moussaïa
 Arfoud
 Arganda
+Arganda del Rey
 Arganzuela
 Argel
 Argentan
@@ -2457,10 +2521,12 @@ Argier
 Argièr
 Argos
 Argueelles
+Arguelles
 Argun
 Argungu
 Argyroupoli
 Argyroúpoli
+Argún
 Argüelles
 Arhavi
 Arheilgen
@@ -2509,6 +2575,7 @@ Arlington
 Arlington Heights
 Arlit
 Arlon
+Arlés
 Armacao dos Buzios
 Armant
 Armavir
@@ -2517,6 +2584,7 @@ Armdale
 Armenia
 Armentieres
 Armentières
+Armeria
 Armidale
 Armilla
 Armyansk
@@ -2552,6 +2620,7 @@ Arroyo Grande
 Arroyo Naranjo
 Arroyo Seco
 Arroyomolinos
+Arrás
 Arsanjan
 Arsanjān
 Arsen'yev
@@ -2674,6 +2743,7 @@ Asane
 Asansol
 Asara
 Asasa
+Asayita
 ASB
 Asbe Teferi
 Asbest
@@ -2690,6 +2760,7 @@ Aschgabat
 Ascoli Piceno
 Ascot
 Ascot Vale
+Asdod
 Asela
 Asenovgrad
 Aserri
@@ -2746,9 +2817,11 @@ Ashkhabad osh
 ashkhabadi
 Ashkhaneh
 Ashland
+Ashmiany
 Ashmont
 Ashmun
 Ashmūn
+Ashok Nagar
 Ashoknagar
 Ashoknagar Kalyangarh
 Ashqabad
@@ -2841,6 +2914,7 @@ astnbwl
 Aston
 Astorga
 Astoria
+Astracán
 Astrakhan
 Astraviec
 Astrea
@@ -2866,6 +2940,7 @@ Asunsyon
 Asunsyun
 asusi'ona
 asutana
+Asuán
 Aswan
 aswnsywn
 Aswān
@@ -2913,6 +2988,7 @@ Atbara
 Atbasar
 Atebubu
 Atemaxac
+Atenas
 Atfih
 Ath
 Ath Thumamah Khamsun
@@ -2988,6 +3064,7 @@ Audincourt
 Aue
 Auerbach
 Augsburg
+Augsburgo
 Augusta
 Augusta Gambriviorum
 Augusta Ubiorum
@@ -3019,6 +3096,7 @@ Aurora do Para
 Aurora do Pará
 Aurād
 Ausa
+Auschwitz
 Austin
 Austintown
 Australind
@@ -3055,6 +3133,8 @@ Aviles
 Avilés
 Avinashi
 Avion
+Aviñón
+Avka
 Avocado Heights
 Avola
 Avon
@@ -3088,6 +3168,7 @@ awlsan
 Awlād Şaqr
 awmsk
 Awoshi
+Awoshie
 awrng abad
 awrnk abad
 awrwmchy
@@ -3099,6 +3180,7 @@ Awsīm
 awtawa
 Awuliya
 awzaka
+Axochiapa
 Axochiapan
 Aya Nagar
 Ayabe
@@ -3143,6 +3225,7 @@ aysfahan
 AYT
 Aytos
 Ayutla de los Libres
+Ayutthaya
 Ayutuxtepeque
 Ayvalik
 Ayvalık
@@ -3201,9 +3284,11 @@ Aznā
 Azogues
 Azov
 Azrou
+Azrú
 Azua
 Azul
 Azumino
+Azuqueca
 Azuqueca de Henares
 Azusa
 Azzaba
@@ -3354,6 +3439,7 @@ Bacoor
 Bacora
 Bacu
 Bacuri
+Bacólod
 Bacú
 Bacău
 Bad Aibling
@@ -3410,6 +3496,7 @@ Badalona
 Badami
 Badamibagh
 Badarganj
+Badaun
 Baddi
 Baddomalhi
 Bade
@@ -3563,6 +3650,7 @@ Bahé-Blaon
 Bahía Blanca
 Bahía de Caráquez
 Bahía Honda
+Bahía Montego
 Bahādurganj
 Bahār
 Bahārak
@@ -3605,6 +3693,7 @@ Baile Atha Cliath
 Baile Átha Cliath
 Bailen
 Bailesti
+Bailey's Crossroads
 Baileys Crossroads
 Bailin
 bailo orizonti
@@ -3615,6 +3704,7 @@ Baimajing
 Bainbridge Island
 bainkaka
 bainkoka
+Baiona
 Baiquan
 Bairagnia
 Baires
@@ -3634,6 +3724,7 @@ Baisheng
 Baishi Zhen
 Baishikante
 Baishishan
+Bait Hanun
 Baitao
 Baitu
 Baituo
@@ -3646,8 +3737,10 @@ Baizi
 Baião
 Baja
 Bajan Nur
+Bajchysarái
 Bajil
 Bajitpur
+Bajmut
 Bajos de Haina
 bajungsi
 BAK
@@ -3746,11 +3839,13 @@ Balfour
 Bali
 Baliguda
 Balik Pulau
+Balikci
 Balikesir
 Balikpapan
 Balingen
 Baliuag
 Baliwan
+Balj
 Baljurashi
 Balkanabat
 Balkh
@@ -3771,6 +3866,7 @@ Balmazujvaros
 Balmazújváros
 Balneario Arroio do Silva
 Balneario Camboriu
+Balneario Camboriú
 Balneario Gaivota
 Balneario Picarras
 Balneario Rincao
@@ -3809,6 +3905,7 @@ Balykshi
 balymbanj
 Balzar
 Baléyara
+Balíuag
 Balāngīr
 Balāţah
 Balıkesir
@@ -3920,10 +4017,12 @@ Banda Aceh
 bandaleulampung
 Bandar
 Bandar Abbas
+Bandar Abbás
 Bandar Baharu
 Bandar Baru Salak Tinggi
 Bandar Bukit Raja
 Bandar Country Homes
+Bandar Jomeiny
 Bandar Kinrara
 Bandar Labuan
 Bandar Lampung
@@ -4076,10 +4175,12 @@ Bani
 Bani Mazar
 Bani Na'im
 Bani Suhayla
+Bani Suheila
 Bani Suwayf
 Bani Suwayf al Jadidah
 Bani Walid
 Bani Yas City
+Bania Luka
 Baniachang
 Banigbe
 Banigbé
@@ -4191,9 +4292,11 @@ Baoying
 Bapatla
 Baprola
 BAQ
+Baqa al-Gharbiyye
 Baqa el Gharbiya
 Baqershahr
 Baqu
+Baquba
 Baqubah
 Bar
 Bar Bigha
@@ -4204,11 +4307,13 @@ Bara Uchana
 Bara Uchāna
 Barabai
 Barabinsk
+Baracaldo
 Baracoa
 Baradero
 Baragua
 Baraguá
 Barah
+Barajas
 Barajas de Madrid
 Barakaldo
 Baraki
@@ -4300,6 +4405,7 @@ Bargny Ngoude
 Bargur
 Bargūr
 Barh
+Barhalganj
 Barhiya
 Bari
 Bari Sadri
@@ -4307,6 +4413,7 @@ Bari Sādri
 Bariadi
 Barika
 barikisimeto
+Bariloche
 Barinas
 Barinitas
 Baripada
@@ -4345,6 +4452,7 @@ barminghama
 Barnagar
 Barnala
 Barnaul
+Barnaúl
 Barnes
 Barnet
 Barneveld
@@ -4421,6 +4529,12 @@ Barriera di Milano
 Barrington
 Barrinha
 Barrio de Peral
+Barrio El Clot
+Barrio el Raval
+Barrio Gótico
+Barrio Gótico de Barcelona
+Barrio la Barceloneta
+Barrio La Sagrera
 Barro
 Barrocas
 Barros Blancos
@@ -4493,6 +4607,7 @@ Bashan
 Bashanet
 Basi
 Basildon
+Basilea
 Basingstoke
 Basirhat City
 Basirpur
@@ -4572,6 +4687,7 @@ Batouri
 batshwngh
 Battagram
 Battambang
+Battaramulla
 Battaramulla South
 Battersea
 Batticaloa
@@ -4590,6 +4706,7 @@ Batu Kurau
 Batu Pahat
 Batubulan
 Batuco
+Batum
 Batumi
 Baturaden
 Baturaja
@@ -4602,6 +4719,7 @@ Bau-tau
 Bauan
 Bauang
 Baubau
+Baucau
 Bauchi
 Baud
 Baudhuinville
@@ -4660,6 +4778,7 @@ Baykal'sk
 Baymak
 Baynjiwayn
 Bayombong
+Bayona
 Bayonet Point
 Bayonne
 Bayota
@@ -4703,6 +4822,7 @@ Baçorá
 Baía
 Baía Farta
 Bañga
+Bañolas
 Bačka Palanka
 Bačka Topola
 Bağcılar
@@ -4715,6 +4835,7 @@ Baḥarkah
 BCN
 BDO
 BDQ
+Be'er Sheva
 Be'er Ya'aqov
 be'ijim
 be'ijina
@@ -4757,6 +4878,7 @@ Bedburg
 Bedele
 Bedelē
 Bedesa
+Bedessa
 Bedford
 Bedford Park-Nortown
 Bedi
@@ -4772,6 +4894,7 @@ Bedēsa
 Beed
 Beekhuizen
 Beerse
+Beerseba
 Beersel
 Beersheba
 Befandriana
@@ -4836,6 +4959,7 @@ Beirût
 Beirūta
 Beising
 Beisu
+Beit She'an
 Beitbridge
 Beitun
 Beiwangli
@@ -4892,6 +5016,7 @@ Belagavi
 belagreda
 Belalcazar
 Belalcázar
+Belalcázer
 Belas
 Belawan
 Belaya Glina
@@ -4900,6 +5025,7 @@ Belchatow
 Beldanga
 Beldānga
 Belebey
+Belebéi
 Beled Hawo
 Beledweyne
 Belehrad
@@ -4971,6 +5097,7 @@ Belmont
 Belmont Cragin
 Belmonte
 Belmopan
+Belmopán
 Belo Campo
 belo hora'ijanta
 belo horijhonte
@@ -4996,6 +5123,7 @@ Belonia
 Beloozyorskiy
 Belorechensk
 Beloretsk
+Beloréchensk
 Belovo
 Belovodskoye
 Beloyarskiy
@@ -5020,6 +5148,7 @@ Belém
 Belém de São Francisco
 Belém do Pará
 Belén
+Belén de Judá
 Belén de Umbría
 Belén Gualcho
 Belëv
@@ -5071,6 +5200,7 @@ Bengalurus
 Bengalúru
 Bengalūras
 Bengalūru
+Bengasi
 Bengbu
 Benghazi
 Bengkayang
@@ -5083,6 +5213,7 @@ Beni Douala
 Beni Enzar
 Beni Khalled
 Beni Khiar
+Beni Melal
 Beni Mellal
 Beni Mered
 Beni Mester
@@ -5095,6 +5226,7 @@ Benicarló
 Benicassim
 Benicia
 Benicàssim
+Benicásim
 Benidorm
 Benim
 Benin
@@ -5184,6 +5316,7 @@ Berezan
 Berezhany
 Berezniaky
 Berezniki
+Bereznikí
 Berezovka
 Berezovskiy
 Berga
@@ -5207,6 +5340,7 @@ Beria
 Beringen
 Berisso
 Berja
+Berkan
 Berkane
 Berkel en Rodenrijs
 Berkeley
@@ -5235,6 +5369,7 @@ Bermejo
 Bermeo
 Bermo
 Bern
+Berna
 Bernau bei Berlin
 Bernburg
 Beroea
@@ -5267,12 +5402,14 @@ Berytus
 Berëzovka
 Berëzovskiy
 Besancon
+Besanzón
 Besançon
 Besbes
 Beshariq
 Beshkent
 Besikduezue
 Beslan
+Beslán
 Besni
 Besre
 Bessemer
@@ -5387,6 +5524,7 @@ Bhaisa
 Bhakkar
 Bhalki
 Bhalswa Jahangirpur
+Bhalwai
 Bhalwal
 Bhamo
 Bhan
@@ -5484,6 +5622,7 @@ Bhor
 bhry
 Bhte
 Bhuban
+Bhubaneshwar
 Bhubaneswar
 Bhudgaon
 Bhuj
@@ -5535,6 +5674,7 @@ Biantang
 Bianzhuang
 Biaora
 Biarritz
+Biarriz
 Biała Podlaska
 Białogard
 Białołeka
@@ -5545,6 +5685,7 @@ Biberach an der Riß
 Bibiani
 Bibir Hat
 Bibirevo
+Biblos
 Bibo
 Bibā
 Bicester
@@ -5564,12 +5705,14 @@ Bidhūna
 Bidur
 Biebrich
 Bieby
+Biel-Bienne
 Bielany
 Bielawa
 Bielefeld
 Biella
 Bielsk Podlaski
 Bielsko-Biala
+Bielsko-Biała
 Bien Hoa
 Bien Hoa City
 Bienczyce
@@ -5645,6 +5788,7 @@ Bilgoraj
 Bilgram
 Bilgrām
 Bilhaur
+Bilhorod-Dnistrovsky
 Bilhorod-Dnistrovskyi
 Bilicenii Vechi
 Bilimora
@@ -5674,6 +5818,7 @@ Bilāspur
 Bim Son
 Bima
 Bimbila
+Bimbilla
 Bimbo
 bin
 bin bu li jin jie wo de
@@ -5707,6 +5852,7 @@ Binonga
 Bintulu
 Bintuni
 Biny Selo
+Binyamina
 Binyamina-Giv'at Ada
 Binzhou
 Bir el Ater
@@ -5748,6 +5894,7 @@ Birnin Gaouré
 Birnin Kebbi
 Birnin Kudu
 Birobidzhan
+Birobidzhán
 Birpara
 Birpur
 Birsk
@@ -5772,6 +5919,7 @@ Bishan
 Bishan New Town
 Bishkek
 Bishnupur
+Bisho
 Bishoftu
 Bishop Auckland
 Bishopbriggs
@@ -5779,6 +5927,7 @@ Bishops Stortford
 Bishopstoke
 Bishrampur
 Bishrāmpur
+Biskek
 Biskra
 Biskupin-Sepolno-Dabie-Bartoszowice
 Biskupin-Sępolno-Dąbie-Bartoszowice
@@ -5794,6 +5943,7 @@ Biswan
 Biswanath Chariali
 Biswān
 bisyakapateunam
+Bisáu
 Bisālgarh
 Bitam
 Bitkine
@@ -5814,6 +5964,7 @@ biyeni howa
 Biysk
 Bizanc
 Bizen
+Bizerta
 Bizerte
 Bizánc
 Biân-iông-chhī
@@ -5849,6 +6000,7 @@ Blagnac
 Blagodarnyy
 Blagoevgrad
 Blagoveshchensk
+Blagovéshchensk
 Blaine
 Blainville
 Blaj
@@ -5951,9 +6103,11 @@ Bobrov
 Bobruysk
 Boca Chica
 Boca da Mata
+Boca de Ratones
 Boca Del Mar
 Boca do Acre
 Boca Raton
+Boca Ratón
 Boca Suno
 Bocaiuva
 Bocaiúva
@@ -6069,6 +6223,7 @@ Bokāro
 Bol
 Bolarum
 Boldumsaz
+Bolduque
 Bole
 Bolenge
 Boleslawiec
@@ -6083,6 +6238,7 @@ Bolobo
 Bologna
 Bologoye
 bolonesi
+Bolonia
 Bolotnoye
 Bolpur
 Bolton
@@ -6124,6 +6280,7 @@ Bonab
 Bonaero
 Bonaeropolis
 Bonan
+Bonanova
 Bonao
 Bonaëropolis
 Bondo
@@ -6155,6 +6312,8 @@ Boo
 Boom
 Boon Lay
 Boone
+Boorama
+Boosaaso
 Boothapandi
 Bootle
 bopal
@@ -6214,6 +6373,7 @@ Borough of Manhattan
 Borough of Queens
 Borough Park
 Borovichi
+Borovichí
 Borovskiy
 Borsa
 Borsad
@@ -6393,6 +6553,7 @@ Braga
 Bragado
 Braganca
 Braganca Paulista
+Braganza
 Bragança
 Bragança Paulista
 bragh
@@ -6492,6 +6653,7 @@ Breissel
 Brejo
 Brejo da Madre de Deus
 Brejo Santo
+Brema
 Bremen
 Bremerhaven
 Bremerton
@@ -6503,10 +6665,12 @@ Brent
 Brentwood
 Brentwood Estates
 Brera
+Bresanona
 Bresbens
 Brescia
 Breselya
 bresiliya
+Breslavia
 Bressanone
 Bresso
 Bressuire
@@ -6526,6 +6690,7 @@ Briarwood
 Brick
 Brickworks Estate
 Bridgend
+Bridgend County Borough
 Bridgeport
 Bridgeton
 Bridgetown
@@ -6653,6 +6818,7 @@ Brugge
 Bruggen
 Brugherio
 Bruiseal
+Brujas
 brukalina
 Bruklin
 Bruklina
@@ -6718,6 +6884,7 @@ Bràsílíà
 Brás
 Bréissel
 Brétigny-sur-Orge
+Brístol
 Brøndbyvester
 Brüggen
 Brühl
@@ -6755,6 +6922,7 @@ Bu-ho-chhi
 Bu-sek-chhi
 Bu-sun-chhi
 Bua Yai
+Buale
 Buan
 Buaran
 Bubanza
@@ -6883,6 +7051,8 @@ Buguda
 Bugulma
 Buguma
 Buguruslan
+Buguruslán
+Bugía
 BUH
 Buhe
 Buhesi
@@ -6896,6 +7066,7 @@ Buinsk
 Buique
 Buitenzorg
 Bujaru
+Bujará
 Bujumbura
 Bukama
 Bukan
@@ -6958,6 +7129,7 @@ Buldana
 Buldāna
 buleusa
 Bulgan
+Bulkiza
 Bulle
 Bullhead City
 Bulolo
@@ -7009,6 +7181,7 @@ Buraydah
 Burayu
 burazavuiru
 Burbank
+Burdeos
 Burdur
 Bure
 Burewala
@@ -7045,6 +7218,7 @@ Burj Islām
 Burjassot
 Burke
 Burla
+Burlada
 Burlata
 Burleigh School
 Burleson
@@ -7150,6 +7324,7 @@ buyenosa a'iresa
 Buyeo
 Buynaksk
 Buyo
+Buyumbura
 Buzau
 Buzen
 Buzhake
@@ -7283,8 +7458,11 @@ Békásmegyer
 Békés
 Békéscsaba
 Bélabo
+Bélaya Kalitvá
+Bélgorod
 Bénin
 Béoumi
+Bérgamo
 Béré
 Bétera
 Béthune
@@ -7309,6 +7487,7 @@ Bú-sūn-chhī
 Búdaipeist
 Búdapest
 Búenos Aíres
+Búfalo
 Búkarest
 Búzi
 Bû-sek-chhī
@@ -7427,6 +7606,7 @@ Bůmbaj
 Bǎodìng
 Bǎojī
 Bənarəs
+Bərdə
 Bəsrə
 Bạc Châu
 Bạc Liêu
@@ -7464,10 +7644,13 @@ Caazapá
 Cabaceiras do Paraguacu
 Cabaceiras do Paraguaçu
 Cabadbaran
+Cabadbarán
 Cabagan
+Cabagán
 Cabaiguan
 Cabaiguán
 Cabanatuan City
+Cabanatúan
 Cabayangan
 Cabeceiras de Basto
 Cabedelo
@@ -7475,11 +7658,16 @@ Cabiao
 Cabildo
 Cabimas
 Cabinda
+Cabo Bojador
+Cabo Coral
 Cabo de Santo Agostinho
 Cabo Frio
+Cabo Frío
+Cabo Haitiano
 Cabo San Lucas
 Cabool
 Caboolture
+Caborca
 Cabot
 Caboul
 Cabra
@@ -7497,6 +7685,7 @@ Cabul
 Cabura
 Cabuyao
 Cabúl
+Cabúyao
 Cacador
 Cacahoatan
 Cacahoatán
@@ -7547,6 +7736,7 @@ Cafelandia
 Cafelândia
 Cafunfo
 Cagayan de Oro
+Cagayán de Oro
 Cage Mazumbo
 Caglayancerit
 Cagliari
@@ -7556,7 +7746,7 @@ Caguas
 Cahama
 Cahors
 Cahul
-CAI
+Cai
 Cai GJoi Vam
 Cai Lay
 Cai Lậy
@@ -7602,14 +7792,17 @@ Calabasas
 Calabozo
 Calaca
 Calafat
+Calafate
 Calafell
 Calahorra
 Calais
 Calama
 Calamba
+Calambá
 Calamvale
 Calangute
 Calapan
+Calapán
 Calarca
 Calarcá
 Calasiao
@@ -7620,6 +7813,7 @@ Calauan
 Calbayog City
 Calbuco
 Calceta
+Calcis
 Calcuta
 Calcutta
 Calcutá
@@ -7651,12 +7845,14 @@ Caloocan
 Caloocan City
 Caloundra
 Calp
+Calpe
 Calpulalpan
 Caltagirone
 Caltanissetta
 Caluire-et-Cuire
 Calulo
 Calumbo
+Calumet
 Calumet City
 Calumpang
 Calumpit
@@ -7665,6 +7861,7 @@ Calverton
 Calvia
 Calvillo
 Calvià
+Calviá
 Calw
 Cam Chau
 Cam Le
@@ -7704,6 +7901,7 @@ Cambara
 Cambará
 Cambe
 Camberley
+Camberra
 Camberwell
 Camboriu
 Camboriú
@@ -7743,6 +7941,7 @@ Campbell
 Campbell River
 Campeche
 Campechuela
+Campello
 Campestre
 Campi Bisenzio
 Campia Turzii
@@ -7804,6 +8003,7 @@ canaco
 Canada de Gomez
 Canakkale
 Cananea
+Cananor
 Canapi
 Canarana
 Canarsie
@@ -7877,6 +8077,7 @@ Cankiri
 Cankt-Peterburg
 Canlaon
 Cannes
+Cannet
 Canning
 Canning Town
 Canning Vale
@@ -7887,6 +8088,7 @@ Canoga Park
 Canoinhas
 Canon City
 Canosa di Puglia
+Canovellas
 Canovelles
 cansa
 Cansancao
@@ -7952,10 +8154,11 @@ Cape Town
 Capela
 Capela do Alto
 Capelinha
-Capelle aan den IJssel
+Capelle aan den Ijssel
 Capesterre-Belle-Eau
 Capiata
 Capiatá
+Capilla del Cerrito
 Capim Grosso
 Capinzal
 Capistrano
@@ -8009,10 +8212,12 @@ Carballo
 Carbonara di Bari
 Carbondale
 Carbonia
+Carcagente
 Carcaixent
 Carcar
 Carcarana
 Carcarañá
+Carcasona
 Carcassonne
 Carcavelos
 Carcovia
@@ -8057,6 +8262,7 @@ Carlisle
 Carlos Barbosa
 Carlos Casares
 Carlos Chagas
+Carlota Amalia
 Carlow
 Carlsbad
 Carlton
@@ -8108,6 +8314,7 @@ Carrickfergus
 Carrieres-sous-Poissy
 Carrigaline
 Carrizal
+Carrizal de Ingenio
 Carrières-sous-Poissy
 Carrollton
 Carrollwood
@@ -8118,6 +8325,7 @@ Carshalton
 Carson
 Carson City
 Cartagena
+Cartagena de Indias
 Cartago
 Cartama
 Cartaya
@@ -8156,6 +8364,7 @@ Casanum
 Casarano
 Casarea
 Casas Adobes
+Casas de La Prosperidad
 Casavatore
 Cascais
 Cascavel
@@ -8167,6 +8376,7 @@ Casco Histórico de Vicálvaro
 Caserta
 Casgyn
 Casigua El Cubo
+Casigua-El Cubo
 Casilda
 Casimiro de Abreu
 Casoria
@@ -8196,6 +8406,7 @@ Castellar del Vallès
 Castelldefels
 Castello de la Plana
 Castelló de la Plana
+Castellón de la Plana
 Castelnau-le-Lez
 Castelo
 Castelo Branco
@@ -8243,8 +8454,10 @@ Catanduva
 Catania
 Catano
 Catanzaro
+Cataratas del Niágara
 Catarina
 Catarman
+Catarmán
 Catarroja
 Cataño
 Catbalogan
@@ -8305,8 +8518,10 @@ Cay
 Cayambe
 Caycuma
 Cayeli
+Cayena
 Cayenne
 Cayey
+Cayo Hueso
 Caypur
 Caza
 Cazenga
@@ -8340,6 +8555,13 @@ Cchuean-cou
 Cchung-cching
 CCS
 CCU
+Cd Carmen
+Cd del Carmen
+Cd Guzman
+Cd Guzmán
+Cd Madero
+Cd Obregon
+Cd Obregón
 Cdmx
 Ceadir-Lunga
 Ceadîr-Lunga
@@ -8441,6 +8663,7 @@ Centre de Flacq
 Centretown
 Centreville
 Centro
+Centro de Filadelfia
 Centro Familiar la Soledad
 Centro Habana
 Centro Novo do Maranhao
@@ -8470,6 +8693,7 @@ Cerny Most
 Cerqueira Cesar
 Cerqueira César
 Cerquilho
+Cerrillos
 Cerritos
 Cerro
 Cerro Azul
@@ -8497,6 +8721,7 @@ Cestas
 Cesário Lange
 Cetagons
 Cetinje
+Cetiña
 Ceu-gong
 Ceuta
 Ceyhan
@@ -8686,6 +8911,7 @@ Chandannagar
 Chandauli
 Chandeh
 Chanderi
+Chandernagor
 Chandia
 Chandigarh
 Chandili
@@ -8693,6 +8919,7 @@ Chandler
 Chandor
 Chandpur
 Chandrakona
+Chandrapur
 Chandrapura
 Chanduasi
 Chandur
@@ -8845,6 +9072,7 @@ Chapel Allerton
 Chapel Hill
 Chapeltown
 Chapra
+Chapáyevsk
 Char Bhadrasan
 Char Bhadrāsan
 Charallave
@@ -9042,6 +9270,7 @@ Chengchow
 Chengde
 Chengdu
 Chengdu Shi
+Chengdé
 Chengdú
 Chenggu
 Chengguan Qu
@@ -9088,12 +9317,14 @@ Cheranellūr
 Cheranmahadevi
 Cheras
 Cherbourg
+Cherburgo-Octeville
 Cherchell
 Cheremkhovo
 Cheremushki
 Cheremushky
 Cherepanovo
 Cherepovets
+Cherepovéts
 Cheria
 Cheriyamundam
 Cherkasy
@@ -9106,6 +9337,7 @@ Chernogorsk
 Chernushka
 Chernyakhovsk
 Chernyanka
+Chernígov
 Cherpulassery
 Cherry Hill
 Cherrybrook
@@ -9253,6 +9485,7 @@ Chichigalpa
 Chicholi
 Chichén-Itzá
 Chickasha
+Chiclana
 Chiclana de la Frontera
 Chiclayo
 Chico
@@ -9328,6 +9561,7 @@ Chilmari
 Chilmāri
 Chilobinsk
 Chilpancingo
+Chilpancingo de los Bravo
 Chimala
 Chimaltenango
 Chimaz
@@ -9458,6 +9692,7 @@ Chittorgarh
 Chittur
 Chittūr
 Chitungwiza
+Chitá
 Chiu-ch'u-ching
 Chiu-chiang
 Chiu-chiang-hsien
@@ -9472,6 +9707,7 @@ Chivolo
 Chiyoda
 Chizhou
 Chiúre
+Chișinău
 Chiềng Cơi
 Chkhangvon
 Chkhanvon
@@ -9518,6 +9754,7 @@ Cholargós
 Cholet
 Choloma
 Cholula
+Cholula de Rivadavia
 Chom Bueng
 Chom Thong
 Choma
@@ -9551,6 +9788,7 @@ Chorakhe Bua
 Chorfa
 Chorley
 Chornomors'k
+Chornomorsk
 Chorod
 Chorozinho
 Chortiatis
@@ -9654,6 +9892,7 @@ Churi
 Churu
 Churāchāndpur
 Chusovoy
+Chusovói
 Chust
 chux ceiy cwng
 Chuxiong
@@ -9706,6 +9945,7 @@ Châu Đốc
 Chã Grande
 Chè-lâm-chhī
 Chè-lêng-chhī
+Chéjov
 Chéngguān Qū
 Chìn-kang-chhī
 Chí Linh
@@ -9715,6 +9955,7 @@ Chóngfú
 Chôan-chiu-chhī
 Chôţţogram
 Chöch chot
+Chúdovo
 Chû-hói-sṳ
 Chûng-sân-sṳ
 Chüanchowfu
@@ -9745,6 +9986,7 @@ Chītāpur
 Chĭng-uōng
 Chōfu
 Chōrōd
+Chŏngjin
 Chŏngju-si
 Chũ
 Chū-kòng-chhī
@@ -9760,6 +10002,7 @@ Ciampea
 Ciampino
 Cianjur
 Cianorte
+Ciberjaya
 Cibinong
 Cibitoke
 Cibolo
@@ -9927,56 +10170,106 @@ Ciudad Altamirano
 Ciudad Apodaca
 Ciudad Autonoma de Buenos Aires
 Ciudad Autónoma de Buenos Aires
+Ciudad Autónoma de Melilla
 Ciudad Benito Juarez
 Ciudad Benito Juárez
 Ciudad Bolivar
 Ciudad Bolivia
 Ciudad Bolívar
 Ciudad Camilo Cienfuegos
+Ciudad Cancún
+Ciudad Cardel
+Ciudad Carmel
 Ciudad Choluteca
 Ciudad Constitucion
 Ciudad Constitución
+Ciudad de Aksu
 Ciudad de Allende
+Ciudad de Apizaco
 Ciudad de Armeria
 Ciudad de Armería
+Ciudad de Aysén
+Ciudad de Battambang
+Ciudad de Belice
 Ciudad de Benin
 Ciudad de Benín
+Ciudad de Cebú
+Ciudad de Colón
 Ciudad de Cordoba
+Ciudad de Corrientes
 Ciudad de Córdoba
+Ciudad de Dolores Hidalgo
+Ciudad de Formosa
+Ciudad de General Roca
+Ciudad de Guatemala
+Ciudad de Huajuapam de León
 Ciudad de Huajuapan de Leon
 Ciudad de Huajuapan de León
 Ciudad de Huitzuco
 Ciudad de Jilin
+Ciudad de Jotán
+Ciudad de Kuwait
 Ciudad de la Paz
+Ciudad de La Rioja
 Ciudad de La Santisima Trinidad y Puerto de Santa Maria del Buen Ayre
 Ciudad de La Santísima Trinidad y Puerto de Santa María del Buen Ayre
+Ciudad de Langley
 Ciudad de Las Heras
 Ciudad de Leon
 Ciudad de León
+Ciudad de Limón
 Ciudad De los Angelos
+Ciudad de Los Anjeles
+Ciudad de Luxemburgo
+Ciudad de Malabo
 Ciudad de Mejico
+Ciudad de Melilla
+Ciudad de Mendoza
 Ciudad de Merida
 Ciudad de Mexico
 Ciudad de Montevideo
 Ciudad de Méjico
 Ciudad de Mérida
 Ciudad de México
+Ciudad de Neuquén
+Ciudad de Pailín
+Ciudad de Panamá
+Ciudad de Resistencia
+Ciudad de Río Cuarto
+Ciudad de Salta
+Ciudad de San Juan
+Ciudad de San Luis
+Ciudad de San Marino
 Ciudad de Santa Cruz de la Sierra
+Ciudad de Santa Fe
+Ciudad de Santa Rosa
+Ciudad de Santiago del Estero
+Ciudad de Siem Riep
+Ciudad de Sihanoukville
 Ciudad de Villa de Alvarez
 Ciudad de Villa de Álvarez
+Ciudad de Villa Montes
+Ciudad de Wuyishan
+Ciudad de Yilan
 Ciudad del Cabo
 Ciudad del Carmen
+Ciudad del Cuzco
 Ciudad del Este
+Ciudad del Vaticano
 Ciudad Delicias
 Ciudad Fernandez
 Ciudad Fernández
+Ciudad Frontera
 Ciudad General Escobedo
+Ciudad Guadalupe
 Ciudad Guadalupe Victoria
+Ciudad Guatemala
 Ciudad Guayana
 Ciudad Guzman
 Ciudad Guzmán
 Ciudad Hidalgo
 Ciudad Ho Chi Minh
+Ciudad Huitzuco
 Ciudad Jardin
 Ciudad Jardín
 Ciudad Juarez
@@ -9987,8 +10280,10 @@ Ciudad Lineal
 Ciudad Lopez Mateos
 Ciudad Lázaro Cárdenas
 Ciudad López Mateos
+Ciudad Madera
 Ciudad Madero
 Ciudad Mante
+Ciudad Mazatlán
 Ciudad Melchor Muzquiz
 Ciudad Melchor Múzquiz
 Ciudad Mendoza
@@ -10010,19 +10305,25 @@ Ciudad Quezon
 Ciudad Real
 Ciudad Rio Bravo
 Ciudad Río Bravo
+Ciudad Sabinas
 Ciudad Sabinas Hidalgo
+Ciudad Sahagun
 Ciudad Sandino
+Ciudad Santa Catarina
 Ciudad Santa Cruz
 Ciudad Satelite
 Ciudad Serdan
 Ciudad Serdán
 Ciudad ti Davao
 Ciudad ti Zamboanga
+Ciudad Trinidad
 Ciudad Trujillo
 Ciudad Universitaria
 Ciudad Valles
 Ciudad Victoria
 Ciudad Vieja
+Ciudadela
+Ciudadela Blanca
 CiudadSantiago
 Ciudat do Cabo
 Ciudá de Dublín
@@ -10117,12 +10418,14 @@ Clydach
 Clydebank
 Clydesdale
 Cláudio
+Cléveris
 CMN
 Co GJo
 Co Loa
 Co To
 Co-cong
 Coacalco
+Coacalco de Berriozával
 Coachella
 Coalcoman de Vazquez Pallares
 Coalcomán de Vázquez Pallares
@@ -10141,9 +10444,11 @@ Cobanhavan
 Cobbs Creek
 Cobham
 Cobija
+Coblenza
 Cobly
 Cobourg
 Coburg
+Coburgo
 Cobán
 Cocal
 Cocal do Sul
@@ -10151,6 +10456,7 @@ Cocalzinho de Goias
 Cocalzinho de Goiás
 Cochabamba
 Cochrane
+Cochín
 Cockburn Town
 Cockeysville
 Cocoa
@@ -10182,11 +10488,16 @@ Coihueco
 Coimbatore
 Coimbra
 Coin
+Coira
 Coishco
 Coity
 Cojimar
 Cojutepeque
 Cojímar
+Col del valle
+Col Lindavista
+Col Nativitas
+Col Polanco
 Colachel
 Colatina
 Colbun
@@ -10204,6 +10515,7 @@ Colima
 Colina
 Colinas
 Colinas do Tocantins
+Collado Villalba
 Collado-Villalba
 Colle di Val d'Elsa
 Colleferro
@@ -10244,9 +10556,17 @@ Colonia Claudia Ara Agrippinensium
 Colonia del Sacramento
 Colonia del Sol
 Colonia del Valle
+Colonia General Alfredo Stroessner
+Colonia las Pintas de Arriba
 Colonia Leopoldina
 Colonia Lindavista
 Colonia Nativitas
+Colonia Polanco
+Colonia San Agustín
+Colonia San Francisco Tesistán
+Colonia San José del Quince
+Colonia San Sebastián el Grande
+Colonia Santa Rosa de Jáuregui
 Colonia Wanda
 Colonial Heights
 Colorado
@@ -10326,6 +10646,7 @@ Concepcion
 Concepcion del Uruguay
 Concepcion Ibaba
 Concepción
+Concepción de La Vega
 Concepción del Uruguay
 Conception Bay South
 Conchal
@@ -10339,6 +10660,8 @@ Concórdia
 Concórdia do Pará
 Conda
 Condado
+Condado de Dublín Sur
+Condado de Melguelh
 Condado de Queens
 Conde
 Condeixa-a-Nova
@@ -10359,6 +10682,7 @@ Congleton
 Conglin
 Congonhas
 Conia
+Conil
 Conil de la Frontera
 Conisbrough
 conkin
@@ -10373,6 +10697,7 @@ Consolacion del Sur
 Consolación del Sur
 Consolação
 Constanta
+Constantina
 Constantine
 Constantinoble
 Constantinopla
@@ -10430,6 +10755,7 @@ Coral Springs
 Coral Terrace
 Coralville
 Coram
+Corat
 Corato
 Coração de Jesus
 Coração de Maria
@@ -10452,10 +10778,12 @@ Coreau
 Coreaú
 Coremas
 Corfu
+Corfú
 Coria del Rio
 Coria del Río
 Corigliano Scalo
 Corinth
+Corintia
 Corinto
 Corio
 Corityba
@@ -10494,6 +10822,7 @@ Corquin
 Corquín
 Corralillo
 Correggio
+Corregidora
 Correia Pinto
 Corrente
 Correntes
@@ -10511,6 +10840,7 @@ Corumbá
 Corupa
 Corupá
 Coruripe
+Coruña
 Corvallis
 Corvera de Asturias
 Cos
@@ -10523,6 +10853,9 @@ Cosmópolis
 Cosoleacaque
 Cosquin
 Cosquín
+Costa Adeje
+Costa de Sunshine
+Costa Dorada
 Costa Mesa
 Costa Rica
 Costantinopoli
@@ -10534,6 +10867,7 @@ Cote-Saint-Luc
 Cotia
 Cotoca
 Cotonou
+Cotonú
 Cotorra
 cotpur
 Cottage Grove
@@ -10555,6 +10889,7 @@ Courbevoie
 Courcelles
 Cournon-d'Auvergne
 Courtenay
+Courtrai
 Couëron
 Cove
 Coventry
@@ -10579,12 +10914,14 @@ Coyoacán
 Coyotepec
 Coyula
 Cozumel
+Coímbra
 Coín
 Cołogna
 CPH
 CPQ
 CPT
 CQL
+Cracovia
 Cradock
 Craibas
 Craigavon
@@ -10640,6 +10977,7 @@ Crofton
 Croix
 Croix-des-Bouquets
 Cronulla
+Crotona
 Crotone
 Croulebarbe
 Crowborough
@@ -10690,8 +11028,10 @@ Cu-chaj
 Cu-cou
 Cua
 Cua Nam
+Cuajimalpa de Morelos
 Cuamba
 Cuango-Luzamba
+Cuart de Poblet
 Cuatro Caminos
 Cuauhtemoc
 Cuauhtémoc
@@ -10737,6 +11077,7 @@ Culemborg
 Culiacan
 Culiacán
 Culion
+Culión
 Cullera
 Culleredo
 Cullinan
@@ -10761,6 +11102,7 @@ Cunco
 Cuncolim
 Cunduacan
 Cunduacán
+Cuneitre
 Cuneo
 Cung Kiem
 Cung Kiệm
@@ -10823,6 +11165,7 @@ Cuttack
 Cuu Giang
 Cuxhaven
 Cuyahoga Falls
+Cuzco
 Cuímba
 Cuíto
 CWB
@@ -10867,6 +11210,7 @@ Czygun
 Częstochowa
 Cà Mau
 Cáceres
+Cádiz
 Cái Răng
 Cái Đôi Vàm
 Cáli
@@ -10889,10 +11233,12 @@ Cäsair
 Céarée
 Céng-gŏng
 Césarée
+Cícero
 Cícero Dantas
 Cív
 Còrdoba
 Cóbanhávan
+Cómpluto
 Córdoba
 Córdoba i Argentina
 Córdova
@@ -10903,6 +11249,7 @@ Côte-Saint-Luc
 Cúa
 Cúcuta
 Căuşeni
+Căușeni
 Cēsis
 Cŏng-ngiê
 Cəmşidpur
@@ -11029,6 +11376,7 @@ Dagon
 Dagu
 Daguan
 Dagupan
+Dagupán
 Dagze
 Dagzê
 Dahanu
@@ -11038,6 +11386,7 @@ Dahegām
 Dahlem
 Dahmani
 Dahuangshan
+Dahuk
 Dai Dou
 Dai Mo
 Dai-keng
@@ -11065,6 +11414,7 @@ Dajabón
 Dajal
 dajeou si
 Dajin
+Dajla
 Dak-ciu
 daka
 Dakaa
@@ -11130,6 +11480,7 @@ Daloa
 Dalserf
 Dalsingh Sarai
 Dalton
+Daltonganj
 Dalu
 Dalung
 Dalupura
@@ -11151,6 +11502,7 @@ damami
 Daman
 Damanhur
 Damansara Damai
+Damar
 Damas
 damasaka
 damasakasa
@@ -11186,6 +11538,7 @@ dameska
 Dameski
 Damghan
 Damiao
+Damieta
 Damietta
 damiska
 dammam
@@ -11245,6 +11598,7 @@ Danta
 Danvers
 Danville
 Danzi
+Danzig
 Daocheng
 Daokou
 Daotian
@@ -11479,6 +11833,7 @@ DeBary
 Debica
 Debila
 Deblin
+Debre Berhan
 Debre Birhan
 Debre Mark'os
 Debre Tabor
@@ -11535,6 +11890,8 @@ Del City
 Del Pilar
 Del Remedio
 Del Rio
+Del Río
+del Valle
 DeLand
 Delanggu
 Delano
@@ -11548,6 +11905,10 @@ Delegacion Cuajimalpa de Morelos
 Delegacion Iztapalapa
 Delegación Cuajimalpa de Morelos
 Delegación Iztapalapa
+Delegación Miguel Hidalgo
+Delegación Tlalpan
+Delegación Tláhuac
+Delegación Xochimilco
 Delegazione Iztapalapa
 Delft
 Delfzijl
@@ -11651,6 +12012,7 @@ Dergaon
 Derhachi
 deri
 Derince
+Derna
 Derry
 Derry Village
 Des Moines
@@ -11660,6 +12022,7 @@ Desa Petaling
 Desaiganj
 Desarmes
 Descalvado
+Dese
 Desenzano del Garda
 Desert Hot Springs
 Deshnoke
@@ -11705,6 +12068,7 @@ Dewas
 Dewdney East
 Dewsbury
 Deyang
+Deyrez-Zor
 Dezful
 Dezhou
 Deán Funes
@@ -11922,6 +12286,7 @@ Dilbeek
 Dilhi
 dili
 Dilijan
+Dilinga
 Dillenburg
 dilli
 Dilling
@@ -11993,6 +12358,7 @@ Dipayal
 Diphu
 Dipolog
 Dippa Kunda
+Dipólog
 Dirba
 Dire
 Dire Dawa
@@ -12003,6 +12369,19 @@ Discovery Park
 Dishna
 Dishnā
 District of Taher
+Distrito de Andapa
+Distrito de Ciutat Vella
+Distrito de Gracia
+Distrito de Horta-Guinardó
+Distrito de Nou Barris
+Distrito de Punakha
+Distrito de Sant Martí
+Distrito de Sants-Montjuïc
+Distrito de Ádler
+Distrito del Ensanche
+Distrito Les Corts
+Distrito Nou Barris
+Distrito Sant Andreu
 Disuq
 Disūq
 Ditzingen
@@ -12073,6 +12452,7 @@ Djibouti
 Djidda
 Djidiouia
 Djidja
+Djizaks
 Djogkarta
 Djougou
 Djugu
@@ -12092,10 +12472,12 @@ Dmitrov
 DMM
 dmshq
 dmsq
+Dmítrov
 dnbad
 Dnipro
 Dniprorudne
 Dniprovskyi
+Dnipró
 Do'stlik Shahri
 Doba
 dobai
@@ -12144,12 +12526,14 @@ Dole
 Dolgoprudnyy
 Dolisie
 Dollard-Des Ormeaux
+Dollard-Des-Ormeaux
 Dolny Kubin
 Dolný Kubín
 Dolo
 Dologon
 Dolores
 Dolores Hidalgo
+Dolores Hidalgo Cuna de la Independencia Nacional
 Dolton
 Dolyna
 Dolynska
@@ -12179,6 +12563,7 @@ Domás
 Don Antonio
 Don Benito
 Don Carlos
+Don Carlos de Maramag
 Don Torcuato
 Don umbalne Rostov
 Don Valley Village
@@ -12199,6 +12584,7 @@ dong bi fu li
 dong guan
 dong guan shi
 Dong Ha
+Dong Hoi
 dong jing
 dong jing dou
 dong wan shi
@@ -12227,6 +12613,7 @@ Dongling
 Dongning
 Dongobesh
 Dongola
+Dongragarh
 Dongsheng
 Dongta
 Dongtai
@@ -12270,6 +12657,7 @@ Dorval
 Dorāha
 Dorūd
 Dos Hermanas
+Dos Quebradas
 Dosquebradas
 Dosso
 Dothan
@@ -12334,6 +12722,7 @@ drbn
 Drean
 Dreieich
 Drensteinfurt
+Dresde
 Dresden
 Dreta de l'Eixample
 Dreux
@@ -12414,6 +12803,7 @@ Dubna
 Dubnica nad Vahom
 Dubnica nad Váhom
 Dubno
+Dubná
 Dubovka
 Dubrajpur
 Dubravka
@@ -12443,6 +12833,7 @@ Duffel
 Dugda
 Dugulubgey
 Duisburg
+Duisburgo
 Duitama
 Duiven
 Duiwelskloof
@@ -12508,8 +12899,10 @@ Dunhao
 Dunhou
 Dunhua
 Dunhuang
+Dunkerque
 Dunkirk
 Dunkwa
+Dunkwa-on-Offin
 Dunstable
 Dunwoody
 Dunyapur
@@ -12933,6 +13326,7 @@ Echemmaia Est
 Echigawa
 Echirolles
 Echizen
+Echmiadzin
 Echo Park
 Echuca
 Ecija
@@ -12976,6 +13370,7 @@ Edgewater
 Edgewood
 edile'ida
 edileda
+Edimburgo
 Edina
 Edinburg
 Edinburgh
@@ -13008,6 +13403,7 @@ Efkarpía
 Efon-Alaaye
 Efrog Newydd
 Egbe
+Egea de los Caballeros
 Eger
 Eggenberg
 Eggenstein-Leopoldshafen
@@ -13023,6 +13419,7 @@ Eha Amufu
 Ehdmantan
 Ehdmonton
 Ehen Hudag
+Ehibar
 Ehingen
 Ehkatepek-de-Morelos
 Ehr-Rijad
@@ -13057,6 +13454,7 @@ Eislingen
 Eißendorf
 Eitorf
 Eixample
+Ejea
 Ejea de los Caballeros
 Ejido
 Ejigbo
@@ -13078,6 +13476,7 @@ Ekondo Titi
 Ekpe
 Ekpoma
 Ekpé
+El Aaiún
 El Abadia
 El Abiodh Sidi Cheikh
 El Achir
@@ -13088,6 +13487,7 @@ El Alia
 El Amria
 El Aouinet
 El Arahal
+El Arish
 El Arrouch
 El Asintal
 El Astillero
@@ -13102,13 +13502,16 @@ El Bauga
 El Bayadh
 el Besos i el Maresme
 el Besòs i el Maresme
+El Bocho
 El Bolson
 El Bolsón
+el Born
 El Cabo
 El Cafetal
 El Caire
 El Cairo
 El Cajon
+El Cajón
 El Calafate
 El Callao
 El Camino Real
@@ -13117,10 +13520,13 @@ el Camp d'en Grassot i Gràcia Nova
 el Camp de l'Arpa del Clot
 El Campello
 El Carmel
+El Carmelo
 El Carmen de Bolivar
 El Carmen de Bolívar
 El Carmen de Chucuri
 El Carmen de Chucurí
+El Carmen de Viboral
+El Carrizal
 El Centro
 El Cerrito
 El Charco
@@ -13148,6 +13554,7 @@ El Gizeh
 El Goloso
 El Grao
 El Grullo
+El Guabo
 el Guinardo
 el Guinardó
 El Hadjar
@@ -13156,6 +13563,7 @@ El Hajeb
 El Hamma
 El Harhoura
 El Hatillo
+El Havre
 el hed
 El Hermel
 El Idrissia
@@ -13176,6 +13584,7 @@ El Limon
 El Limón
 El Malah
 El Mansouria
+El Mansura
 El Marsa
 El Masnou
 El Medina
@@ -13197,8 +13606,10 @@ El Pao
 El Paraiso
 El Paraíso
 El Paso
+El Paso de Robles
 El Paso del Norte
 El Pedregal
+El Pireo
 el Poblenou
 El Prat de Llobregat
 El Progreso
@@ -13207,6 +13618,7 @@ El Pueblo de Nuestra Senora de los Angeles de Porciuncula
 El Pueblo de Nuestra Senora La Reina de Los Angeles de Porcivncula
 El Pueblo de Nuestra Señora de los Ángeles de Porciúncula
 El Pueblo del Rio de Nuestra Senora
+El Puerto
 El Puerto de Santa Maria
 El Puerto de Santa María
 el Putxet i el Farro
@@ -13229,6 +13641,7 @@ El Torno
 El Triunfo
 el Turo de la Peira
 el Turó de la Peira
+El Valle
 El Vendrell
 El Viejo
 El Vigia
@@ -13239,11 +13652,13 @@ El Wak
 El Zulia
 El'ad
 el-ei
+El-Fayum
 El-Giza
 El-Gîza
 El-Qahira
 El-Qâhira
 El-Tor
+El-Yadida
 elahabada
 Elamanchili
 Elamkunnapuzha
@@ -13281,6 +13696,7 @@ Elgin
 Elias Fausto
 Elisabethville
 Elista
+Elistá
 Elixku
 Elizabeth
 Elizabeth City
@@ -13324,6 +13740,7 @@ Elorza
 Eloy
 Eloy Alfaro
 Elsdorf
+Elsinor
 Elst
 Eltham
 Eltville
@@ -13366,6 +13783,7 @@ Emmeloord
 Emmen
 Emmendingen
 Emmerich
+Emmerich am Rhein
 Emmiganur
 Emmiganūr
 Empalme
@@ -13378,6 +13796,7 @@ Emsworth
 Emure-Ekiti
 eMuziwezinto
 en jia mei na
+En Nahud
 En Naqoura
 En Nedjma
 En Nâqoûra
@@ -13401,6 +13820,7 @@ Ende
 Endeavour Hills
 Enem
 Enerhodar
+Enerjodar
 Enfield
 Enfield Lock
 Enfield Town
@@ -13462,7 +13882,9 @@ Eqbālīyeh
 Eqlid
 Eqlīd
 Equeurdreville-Hainneville
+Er Rahad
 Er Roseires
+Er-Rachidía
 er-riadi
 Er-Rijad
 Er-riyad
@@ -13553,17 +13975,21 @@ Erywan
 Erywań
 Erzin
 Erzincan
+Erzincán
 Erzsebetvaros
 Erzsébetváros
 Erzurum
+Erzurúm
 Erémankono
 Erāmala
 Erāttupetta
 Es Senia
 esaphahana
+Esauira
 Esbjerg
 Escada
 Escalante
+Escaldes-Engordany
 Escarcega
 Esch-sur-Alzette
 Eschborn
@@ -13602,12 +14028,15 @@ Eslamshahr
 Esloev
 Eslöv
 Eslāmābād-e Gharb
+Esmalcalda
+Esmara
 Esmeralda
 Esmeraldas
 Esmirna
 Esna
 Espargos
 Esparreguera
+Esparta
 Esparza
 Espelkamp
 Espera Feliz
@@ -13622,6 +14051,7 @@ Espigão dOeste
 Espinal
 Espinho
 Espinosa
+Espira
 Espirito Santo do Pinhal
 Espiye
 Esplanada
@@ -13645,6 +14075,8 @@ Essex
 Essling
 Esslingen
 Estacio
+Estación de Cuatro Caminos
+Estación Metán
 Estahban
 Estahbān
 Estalingrado
@@ -13655,6 +14087,7 @@ Estat de Berlin
 Estat de Berlín
 Estcourt
 Este
+Este de Los Ángeles
 Esteio
 Esteli
 Estelle
@@ -13669,6 +14102,7 @@ Estocòlme
 Estokolma
 Estokolmo
 Estoril
+Estrasburgo
 Estreito
 Estrela
 Estrela de Alagoas
@@ -13746,6 +14180,7 @@ Exmouth
 Extrema
 Extremoz
 Exu
+Eybar
 Eyl
 Eysines
 Eyvan
@@ -13830,6 +14265,7 @@ Falmouth
 Falna
 Falticeni
 Falun
+Faluya
 Falāvarjān
 Famagusta
 Famailla
@@ -13905,6 +14341,7 @@ Faruka
 Farum
 Farydabad
 Farídábád
+Farāh
 Farīdkot
 Farīdpur
 Farīj al Amīr
@@ -13940,6 +14377,7 @@ Faya-Largeau
 Fayetteville
 Fayid
 Fayzabad
+Fayún
 Fazakerley
 Fazelabad
 Fazenda Rio Grande
@@ -14018,6 +14456,7 @@ Ferencváros
 Fereydun Kenar
 Fereydūn Kenār
 Fergana
+Ferganá
 Fergus
 Ferguson
 Feriana
@@ -14104,6 +14543,7 @@ Filiaşi
 Filingue
 Filingué
 Fillmore
+Filí
 Financial District
 Finchley
 Findlay
@@ -14119,6 +14559,7 @@ Finnkolo
 Finote Selam
 Finsterwalde
 Fiorano
+Fiorano Modenese
 firaderufia
 Firmat
 Firminy
@@ -14133,6 +14574,7 @@ Fishtown
 Fitchburg
 Fiumicino
 Five Corners
+Fizuli
 fjayawada
 FKI
 Flagami
@@ -14148,8 +14590,10 @@ Flemalle-Haute
 Fleming Island
 Flemingdon Park
 Flensburg
+Flensburgo
 Fleron
 Flers
+Flesinga
 Fleurus
 Fleury-les-Aubrais
 Flint
@@ -14166,6 +14610,7 @@ Floresta
 Floresta do Araguaia
 Floresti
 Floreşti
+Florești
 Floriano
 Florianopolis
 Florianópolis
@@ -14177,6 +14622,7 @@ Floridsdorf
 Florin
 Florina
 Florissant
+Florín
 Flower Mound
 Flowing Wells
 Flying Fish Cove
@@ -14358,6 +14804,7 @@ Fowyang
 Fowyang-hsien
 Fox Chase
 Foya Kamara
+Foz de Iguazu
 Foz do Iguacu
 Foz do Iguaçu
 Foça
@@ -14374,6 +14821,7 @@ Franca
 Francavilla al Mare
 Francavilla Fontana
 Franceville
+Francfort
 Francisco Beltrao
 Francisco Beltrão
 Francisco Morato
@@ -14384,6 +14832,7 @@ Franco da Rocha
 Franconia
 Franconville
 Frankenberg
+Frankenstein
 Frankenthal
 Frankford
 Frankfort
@@ -14444,6 +14893,8 @@ Freudenberg
 Freudenstadt
 Fria
 Fribourg
+Friburgo
+Friburgo de Brisgovia
 Fridley
 Friedberg
 Friedenau
@@ -14459,6 +14910,7 @@ Friesoythe
 Frinton-on-Sea
 Frischgewaagd
 Frisco
+Frisinga
 Froendenberg
 Frohnau
 Frolovo
@@ -14476,6 +14928,10 @@ Fryazevo
 Fryazino
 frydabad
 Frydek-Mistek
+Fráncfort
+Fráncfort del Meno
+Fráncfort del Odra
+Fráncfort del Óder
 Fréjus
 Fröndenberg
 Frýdek-Místek
@@ -14537,6 +14993,7 @@ Fuengirola
 Fuenlabrada
 Fuente del Berro
 Fuenterrabia
+Fuenterrabía
 Fuentes del Valle
 Fuerstenfeldbruck
 Fuerstenwalde
@@ -14697,6 +15154,7 @@ Fécamp
 Féniks
 Fên-yòng-sṳ
 Fót
+Fúrmanov
 Fünfhaus
 Fürstenfeldbruck
 Fürstenwalde
@@ -14744,6 +15202,7 @@ Gabú
 Gadag
 Gadag-Betageri
 Gadani
+Gadarif
 Gadarwara
 Gaddi Annaram
 Gadhada
@@ -14802,14 +15261,17 @@ Galati
 Galatina
 Galatsi
 Galaţi
+Galați
 Galdakao
 Galdar
+Galdácano
 Galebre
 Galeras
 Galesburg
 Galesong
 Galich
 Galikesh
+Galkayo
 Gallarate
 Gallatin
 Galle
@@ -14824,6 +15286,7 @@ Galvez
 Galway
 Galátsi
 Galébré
+Galípoli
 Galūgāh
 Gama
 Gamagori
@@ -14838,6 +15301,7 @@ Gambēla
 Gameleira
 Gamla Uppsala
 Gamonal
+Gamonal de Ríopico
 Gampengrejo
 Gamping Lor
 Gampola
@@ -14856,9 +15320,11 @@ Gandhidham
 Gandhinagar
 Gandia
 Gandiaye
+Gandja
 Gandu
 Gandzou
 Gandzov
+Gandía
 Gandžov
 Ganei Tikva
 Gang-ciu
@@ -14895,6 +15361,7 @@ Ganshoren
 Ganshui
 Ganta
 Gantang
+Gante
 Gantsjou
 Ganvie
 Ganvié
@@ -14966,6 +15433,7 @@ Garhākota
 Gariadhar
 Garibaldi
 Garissa
+Garián
 Garko
 Garland
 Garmdarreh
@@ -15017,6 +15485,7 @@ Gavana
 Gavanae
 Gavane
 Gavar
+Gavilan de Allende
 Gavrilov-Yam
 Gavà
 gawasaki si
@@ -15048,6 +15517,7 @@ Gazipur
 gazipura
 gaziyabada
 gaziyantepa
+Gazni
 Gazojak
 Gaztambide
 gazuiantepu
@@ -15117,6 +15587,7 @@ General Acha
 General Alvear
 General Belgrano
 General Emilio Aguinaldo
+General Escobedo
 General Gueemes
 General Güemes
 General Jose de San Martin
@@ -15131,6 +15602,7 @@ General Roca
 General Santos
 General Tinio
 General Trias
+General Villamil
 General Villegas
 Genet
 Geneva
@@ -15323,6 +15795,7 @@ Gin-chhoan-chhi
 Ginan
 Ginano
 Ginch'i
+Ginebra
 Ging-ciu
 Ging-hua
 Gingee
@@ -15338,6 +15811,7 @@ Gioia Tauro
 Giok-lim-chhi
 Gion
 Giovinazzo
+Girardot
 Girardot City
 Girau do Ponciano
 Giresun
@@ -15397,6 +15871,7 @@ GJinh Cong
 GJinh Van
 Gjining
 Gjirokaster
+Gjirokastra
 Gjirokastër
 GJo Son
 GJong GJa
@@ -15404,7 +15879,7 @@ GJong Hoan
 GJong Hoi
 GJong Ngac
 GJong Phu
-GJong Xoai
+Gjong Xoai
 Gjorce Petro
 Gjorče Petro
 Gjovik
@@ -15449,6 +15924,7 @@ Gligbeuadji
 Glinde
 Gliwice
 Glogovac
+Glogovia
 Glogow
 Gloria
 Gloria do Goita
@@ -15461,6 +15937,7 @@ Glucholazy
 Glugor
 Glyfada
 Glyfáda
+Glázov
 Glória
 Glória do Goitá
 Gnago
@@ -15482,6 +15959,7 @@ gobe si
 Gobernador Galvez
 Gobernador Gálvez
 Gobernador Virasora
+Gobernador Virasoro
 Gobesa
 Gobichettipalayam
 Gobindgarh
@@ -15605,6 +16083,7 @@ Gonbad-e Kavus
 Gonbad-e Kāvūs
 Gonda City
 Gondal
+Gondar
 Gonder
 Gondia
 Gondiā
@@ -15644,6 +16123,7 @@ Gopavaram
 Gopālganj
 Gor'kij
 Gor'kiy
+Goradnia
 Gorai
 Gorakhpur
 Gorantla
@@ -15651,6 +16131,7 @@ Goraya
 Gorazde
 Goražde
 Gorbitz
+Gorcum
 Gordon Head
 Gore
 Gorelovo
@@ -15661,6 +16142,7 @@ Gori
 Gorinchem
 Goris
 Gorizia
+Gorja
 Gorji-ye Sofla
 Gorjī-ye Soflá
 Gorkey
@@ -15678,6 +16160,7 @@ Gorod Shebekino
 gorod Solnetchnogorsk
 Gorodets
 Gorodishche
+Gorodéts
 Goroka
 Gorongosa
 Gorontalo
@@ -15706,10 +16189,12 @@ Gostyń
 Gotan
 Gotegaon
 Gotemba
+Gotemburgo
 Goth Radhan
 Gotha
 Gothara
 Gothenburg
+Gotinga
 Goto
 Gotse Delchev
 Gotsucho
@@ -15769,6 +16254,8 @@ Grajaú
 Grajewo
 Gramado
 Gramercy Park
+Gran Sudbury
+Gran Varadino
 Granada
 Granadero Baigorria
 Granadilla de Abona
@@ -15855,6 +16342,8 @@ Greenwood
 Greenwood Village
 Greer
 Grefrath
+Gregorio de Laferrere
+Greifswald
 Greiz
 Gremda
 Grenchen
@@ -15888,6 +16377,7 @@ Groesbeek
 Grogol
 Grombalia
 Gronau
+Groninga
 Groningen
 Groot IJsselmonde
 Groot-Brakrivier
@@ -15904,6 +16394,7 @@ Grottaferrata
 Grottaglie
 Grove City
 Groves
+Grozni
 Grozny
 GRU
 Grudziadz
@@ -16058,6 +16549,8 @@ Guaratinguetá
 Guaratuba
 Guaraí
 Guarda
+Guardamar
+Guardamar de la Segura
 Guardamar del Segura
 Guarei
 Guarenas
@@ -16072,6 +16565,7 @@ Guasave
 Guasdualito
 Guasipati
 Guastatoya
+Guate
 Guatemala City
 Guatire
 Guaxupe
@@ -16082,6 +16576,7 @@ Guayama
 Guayaquil
 Guayaramerin
 Guayaramerín
+Guaymas
 Guaynabo
 Guazacapan
 Guazacapán
@@ -16090,6 +16585,7 @@ Guaçuí
 Guaíba
 Guaíra
 Gubadag
+Gubaja
 Gubakha
 Gubat
 Gubbi
@@ -16104,6 +16600,7 @@ Gucun
 Gudalur
 Guder
 Gudermes
+Gudermés
 Gudivada
 Gudivāda
 Gudiyatham
@@ -16138,6 +16635,8 @@ Guerara
 Guercif
 Gueret
 Guergentepe
+Guernica
+Guernica y Luno
 Guerou
 Gueroymak
 Guerpinar
@@ -16157,6 +16656,7 @@ gui lin shi
 gui yang
 gui yang shi
 Guia de Isora
+Guiaguínskaya
 Guiberoua
 Guibéroua
 Guicheng
@@ -16219,6 +16719,7 @@ Gulfport
 Gulgam
 Guli
 Gulin
+Gulistan
 Guliston
 Gulou
 Gulu
@@ -16251,6 +16752,7 @@ Gunung Berapi Asuncion
 Gunungsitoli
 Gununo
 Gunupur
+Gunzburgo
 Gunzenhausen
 Guochuan
 Guocun
@@ -16284,6 +16786,7 @@ Gurupi
 Gurupá
 Guruvayur
 Guruvāyūr
+Gurué
 Gurúè
 Gusau
 Gusev
@@ -16407,11 +16910,14 @@ GZT
 Gành Hào
 Gànzhōu
 Gáldar
+Gálich
 Gálvez
 Gáng-ciŭ
+Gátchina
 Gämi
 Gävle
 Gék-lìng
+Génova
 Gérakas
 Gíza
 Gî-chhiong-chhī
@@ -16421,7 +16927,10 @@ Gîza
 Gò Công
 Gò Vấp
 Gói-iòng
+Gómel
 Gómez Palacio
+Górlovka
+Gótico
 Göd
 Gödöllő
 Gökdepe
@@ -16436,6 +16945,7 @@ Görogly
 Görükle
 Göttingen
 Göyçay
+Güeldres
 Güigüe
 Güimar
 Güines
@@ -16529,6 +17039,7 @@ Hacienda Santa Fe
 Hacilar
 Haciqabul
 Hackensack
+Hacı Zeynalabdin
 Hacılar
 Hacıqabul
 Had Soualem
@@ -16613,6 +17124,7 @@ haikeou si
 Haikou
 Haikou Shi
 Haikow
+Hail
 Hailakandi
 Hailar
 Hailin
@@ -16674,6 +17186,7 @@ Hala
 Hala'ib
 Halab
 halaba
+Halabdscha
 Halabja
 Halac
 halale
@@ -16722,6 +17235,7 @@ Ham GJan
 Ham Lake
 Ham Ninh
 Ham-iong-chhi
+Hama
 Hamada
 Hamadan
 Hamadān
@@ -16745,6 +17259,8 @@ Hamburga
 Hamburgas
 hamburgi
 Hamburgo
+Hamburgo-Altona
+Hamburgo-Harburgo
 Hamburgu
 Hamburgum
 Hamburk
@@ -16758,6 +17274,7 @@ Hambùrk
 Hambûrg
 Hamden
 Hameln
+Hamelín
 Hamepuka
 hamga kamga
 Hamhung
@@ -16766,6 +17283,7 @@ Hami
 Hamidiyeh
 Hamilton
 Hamilton East
+Hamilton Square
 Hamina
 Hamirpur
 Hamm
@@ -16809,6 +17327,7 @@ Hanahan
 hanakana
 Hanam
 Hanamaki
+Hanau
 Hanau am Main
 Hanawa
 Hanburgo
@@ -16920,6 +17439,7 @@ Hanzhong
 Hanzhong Shi
 Hanòi
 Hanói
+Hanóver
 Hančžou
 hao wang jiao zhen
 Haojiaqiao
@@ -16936,6 +17456,7 @@ harabina
 Haramachi
 Harappa
 Harar
+Harar Jugol
 harare
 Harare Western Suburbs
 Hararensis Urbs
@@ -16963,6 +17484,7 @@ Hardoī
 Harelbeke
 Haren
 Harewood
+Hargeisa
 Hargeysa
 haribini
 Haridwar
@@ -16980,6 +17502,7 @@ Harkivo
 Harkov
 Harkova
 Harlem
+Harlem del Este
 Harlesden
 Harlingen
 Harlow
@@ -17026,6 +17549,7 @@ Harvestehude
 Harvey
 Harwich
 Harūr
+Hasaka
 Hasaki
 Hasanabad
 Hasanpur
@@ -17171,6 +17695,7 @@ Hebburn
 Hebi
 Hebian
 Hebron
+Hebrón
 Hechi
 Hechingen
 Hechuan
@@ -17222,6 +17747,7 @@ Heinsberg
 Heishan
 Heishui
 Heist-op-den-Berg
+Heivar
 Heizyo
 Heizyo Hu
 Heizyō
@@ -17312,6 +17838,8 @@ Hepu
 Heqian
 Heqiao
 Heqing
+Heraclión
+Heraklion
 Herat
 Herblay-sur-Seine
 Herborn
@@ -17340,11 +17868,14 @@ Herne
 Herne Bay
 Herning
 Heroica Caborca
+Heroica Ciudad de Cananea
+Heroica Ciudad de Huajuapan de León
 Heroica Ciudad de Juchitan de Zaragoza
 Heroica Ciudad de Juchitán de Zaragoza
 Heroica Ciudad de Tlaxiaco
 Heroica Guaymas
 Heroica Matamoros
+Heroica Nogales
 Heroica Puebla de Zaragoza
 Heroica Zitacuaro
 Herouville-Saint-Clair
@@ -17362,6 +17893,7 @@ Herzele
 Herzliya
 Herzogenaurach
 Herzogenrath
+Heróica Caborca
 Heróica Puebla de Zaragoza
 Heróica Zitácuaro
 Herāt
@@ -17391,6 +17923,7 @@ Hewlêr
 hexfey
 Hexing
 Heyan
+Heybar
 Heyfey
 Heysham
 Heyuan
@@ -17453,6 +17986,7 @@ Highlands Ranch
 Highton
 Highview
 Higuerote
+Higüey
 Hihya
 Hihyā
 HIJ
@@ -17490,6 +18024,7 @@ Himora
 Hinakallu
 Hinatuan
 Hincesti
+Hincha
 Hinche
 Hinckley
 Hindaun
@@ -17588,6 +18123,7 @@ Hlubocepy
 Hlubočepy
 Hlukhiv
 Hlybokaye
+Hlújiv
 Hmaw Bi
 hmbwrg
 hna nthng
@@ -17674,6 +18210,7 @@ Hoffman Estates
 Hofgeismar
 Hofheim am Taunus
 Hofu
+Hofuf
 Hoge Vucht
 hohahata
 Hohcouh
@@ -17798,6 +18335,7 @@ Honnali
 Honnavar
 Honnāli
 Honolulu
+Honolulú
 Hoofddorp
 Hoogeveen
 Hoogezand
@@ -17853,7 +18391,9 @@ Horwich
 Horyuji
 Hosa'ina
 Hosadurga
+Hosakote
 Hosapete
+Hosdurga
 Hoshakuji
 Hoshiarpur
 Hoshiārpur
@@ -17861,6 +18401,7 @@ Hosimin
 Hosimina
 Hosiminh
 Hoskote
+Hospitalet de Llobregat
 Hostafrancs
 Hostivar
 Hostivař
@@ -17957,6 +18498,7 @@ Hsiang-chou-fou
 Hsiang-fan
 Hsiang-yang
 Hsiang-yang-hsien
+Hsichih
 Hsien-yang
 Hsien-yang-hsien
 Hsien-yang-shih
@@ -18052,6 +18594,10 @@ Huaiyin
 Huaiyuan Chengguanzhen
 Huajbej
 Huajing
+Huajuapan
+Huajuapan de León
+Huajuápam
+Huajuápam de León
 Hualien City
 Hualin
 Hualmay
@@ -18159,6 +18705,7 @@ Huinong
 Huiqu
 Huissen
 Huitsjou
+Huitzilzingo
 Huixian Chengguanzhen
 Huixing
 Huixquilucan
@@ -18235,6 +18782,7 @@ Huoqiu Chengguanzhen
 Huoshilafu
 Hupari
 Hura
+Hurgada
 Hurghada
 Hurlingham
 Hurricane
@@ -18272,6 +18820,7 @@ Huzhou Shi
 Huái'ān
 Huánuco
 Hué
+Huércal Overa
 Huşi
 Huế
 Huệ Châu
@@ -18322,6 +18871,7 @@ hydr abad
 hydr abad dkn
 hydrabad
 Hyeres
+Hyerès
 Hyesan
 Hyesan-dong
 Hyosha
@@ -18336,6 +18886,7 @@ hyustana
 Hyuston
 hyusuton
 Hyvinge
+Hyvinkää
 hyw
 hywstn
 hywstwn
@@ -18374,10 +18925,12 @@ Hässleholm
 Hèng-iòng
 Héliopolis
 Hénin-Beaumont
+Hérouville Saint-Clair
 Hérouville-Saint-Clair
 Hê-tse
 Hêng-iông-chhī
 Hînceşti
+Hîncești
 Hò-nui-sṳ
 Hòa Bình
 Hòa Cường
@@ -18390,6 +18943,7 @@ Hô Chi Minh Ville
 Hô-Chi-Minh-Ville
 Hôpital Saint-Louis
 Höfðaborg
+Hökmali
 Hörde
 Hörstel
 Hötting
@@ -18503,6 +19057,7 @@ Iati
 iaunde
 Iaçu
 Iaşi
+Iași
 Iba
 ibadan
 Ibadan shaary
@@ -18553,6 +19108,7 @@ Ibiúna
 Ibnat
 Ibo Town
 Ibotirama
+Ibra
 Ibrahimpatnam
 Ibrāhīmpatnam
 Ibshaway
@@ -18619,6 +19175,7 @@ Ieng-dai
 Ieper
 Ierevan
 Iereván
+Iesi
 IEV
 Ifakara
 Ifanadiana
@@ -18885,6 +19442,7 @@ Indi
 Indian Trail
 Indianapolis
 Indianola
+Indianápolis
 Indiara
 Indiaroba
 Indio
@@ -18958,6 +19516,7 @@ International City
 Intich'o
 intor
 Intson
+Intá
 Inuyama
 Inver Grove Heights
 Invercargill
@@ -18982,6 +19541,7 @@ Iong-ciu
 Iong-gong
 Iong-kang-chhi
 Iowa City
+Ioánina
 Ioánnina
 Ipaba
 Ipameri
@@ -19046,6 +19606,7 @@ Irbīl
 Irece
 Irecê
 Irewe
+Irgalem
 Iriba
 Iriga City
 Irimbiliyam
@@ -19076,6 +19637,8 @@ Irvington
 Iryango
 Irákleio
 Irákleion
+Irún
+Irún-Uranzu
 Isa
 Isabela
 isafahana
@@ -19150,6 +19713,7 @@ Iskindirîya
 Iskitim
 Isla
 Isla Cristina
+Isla oeste
 Isla Vista
 Islamabad
 Islamgarh
@@ -19163,6 +19727,7 @@ Islip
 Islāmnagar
 Islāmpur
 Ismailia
+Ismailía
 Ismayilli
 Ismir
 Isnos
@@ -19373,7 +19938,9 @@ Ivohibe
 Ivory Park
 Ivoti
 Ivrea
+Ivry sobre Sena
 Ivry-sur-Seine
+Ivánovo
 Iwade
 Iwai
 Iwaki
@@ -19395,10 +19962,12 @@ IXR
 Ixtaczoquitlan
 Ixtaczoquitlán
 Ixtapa
+Ixtapa Zihuatanejo
 Ixtapa-Zihuatanejo
 Ixtapalapa
 Ixtapaluca
 Ixtapan de la Sal
+Ixtayopan
 Ixtepec
 Ixtlan del Rio
 Ixtlán del Río
@@ -19414,6 +19983,7 @@ Izamal
 izamira
 Izazi
 Izberbash
+Izcalli
 Izegem
 Izeh
 Izhevsk
@@ -19424,6 +19994,7 @@ Izluchinsk
 IZM
 Izmayil
 Izmaylovo
+Izmaíl
 Izmir
 Izmira
 Izmiras
@@ -19436,8 +20007,10 @@ Iztacalco
 Iztaoalaoa
 Iztapalapa
 Iztapalapan
+Iztapaluca
 Iztapalāpan
 Izu
+Izucar
 Izucar de Matamoros
 Izumi
 Izumiotsu
@@ -19447,6 +20020,7 @@ Izumiōtsu
 Izumo
 Izunokuni
 Izyum
+Izúcar
 Izúcar de Matamoros
 Içara
 Iòng-ciŭ
@@ -19495,6 +20069,7 @@ Jaboatao dos Guararapes
 Jaboatão dos Guararapes
 Jaboticabal
 Jaboticatubas
+Jabárovsk
 Jabālyā
 Jacaltenango
 Jacana
@@ -19521,10 +20096,12 @@ jada
 Jadcherla
 Jaddah
 Jadugora
+Jadyzhensk
 jaegseunbil
 Jaemsae
 Jaen
 Jaervenpaeae
+Jafa
 Jafarabad
 Jafaro
 Jaffa
@@ -19613,9 +20190,11 @@ Jakobstad
 Jakomini
 jakswnfyl
 jakusonbiru
+Jalach
 Jalai Nur
 Jalajala
 Jalakandapuram
+Jalal-Abad
 Jalalabad
 Jalali
 Jalalpore
@@ -19635,6 +20214,7 @@ Jalgaon
 Jalgaon Jamod
 Jalilabad
 Jalingo
+Jalisco
 Jalladiampet
 Jalna
 Jalochi
@@ -19694,8 +20274,11 @@ Jamundi
 Jamundí
 Jamuria
 jamushedopuru
+Jamán
 Jamālpur
 Jamūī
+Jan Yunis
+Jan Yunís
 Jan'chehn
 Jan'taj
 Janakkala
@@ -19743,6 +20326,7 @@ Janpu
 Jansath
 Jantai
 Jantaj
+Janty-Mansisk
 Januaria
 Janub as Surrah
 Januária
@@ -19760,6 +20344,7 @@ Japaratuba
 Japekrom
 Japeri
 Jarabacoa
+Jarabali
 Jarabulus
 Jaragua
 Jaragua do Sul
@@ -19803,6 +20388,7 @@ jasa
 Jasaan
 Jasdan
 Jashpur Nagar
+Jashuri
 Jasidih
 Jasim
 jasing si
@@ -19813,6 +20399,7 @@ Jasper
 Jaspur
 Jastrzebie Zdroj
 Jastrzębie Zdrój
+Jastrzębie-Zdrój
 Jaswantnagar
 Jaszbereny
 Jasło
@@ -19841,6 +20428,7 @@ Javanrud
 Javea
 Javānrūd
 Jawad
+Jawahar
 Jawaharnagar
 Jawhar
 Jawi
@@ -19887,6 +20475,7 @@ Jeffersontown
 Jeffersonville
 Jeffreys Bay
 Jega
+Jeju
 Jeju City
 Jekabpils
 Jekaterinburg
@@ -19912,8 +20501,10 @@ Jen-ccheng
 Jen-tchaj
 Jen-čcheng
 Jena
+Jenchela
 Jenchun
 Jendouba
+Jenifra
 Jenipapo dos Vieiras
 Jenison
 Jenjarum
@@ -19929,6 +20520,7 @@ Jequitinhonha
 Jequié
 Jerada
 Jerantut
+Jerash
 Jeremie
 Jeremoabo
 Jerevan
@@ -19936,13 +20528,18 @@ Jerevanas
 Jerevani
 Jereván
 Jerewan
+Jerez
 Jerez de Garcia Salinas
 Jerez de García Salinas
 Jerez de la Frontera
 Jericho
+Jericó
 Jerjewan
 Jersey City
+Jersón
 Jerusalem
+Jerusalén
+Jerusalén Este
 Jesi
 Jessore
 Jesus del Monte
@@ -19967,6 +20564,7 @@ Jhalidā
 Jhalod
 Jhalrapatan
 Jhalu
+Jhang Sadar
 Jhang Sadr
 Jhanjharpur
 Jhanjhārpur
@@ -20129,9 +20727,11 @@ jilin si
 jilina
 Jilinstad
 Jilādiguda
+Jima
 Jimaguayu
 Jimaguayú
 Jimeta
+Jimki
 Jimma
 Jimo
 jin bian
@@ -20212,6 +20812,7 @@ Jinčuan
 Jipijapa
 Jiquilpan de Juarez
 Jiquilpan de Juárez
+Jiquílpan de Juárez
 Jirapa
 Jirapur
 Jirkov
@@ -20241,6 +20842,7 @@ Jiushan
 Jiutai
 Jiutepec
 Jiuxian
+Jiva
 Jiwani
 Jiwanpur
 Jixi
@@ -20250,6 +20852,7 @@ Jiyuan
 Jizan
 Jizhou
 Jizzax
+Jizán
 Jiāngmén
 Jiĉang
 Jičín
@@ -20344,7 +20947,10 @@ Jokokhama
 Joliet
 Joliette
 Jollyville
+Jolmskaya
 Jolo
+Joló
+Jolón
 Jombang
 Jomvu
 Jona
@@ -20360,6 +20966,7 @@ Jorat
 Jordaan
 Jordan
 Jorhat
+Jorramchar
 Jos
 josa
 Jose Bonifacio
@@ -20377,7 +20984,9 @@ josu
 José Bonifácio
 José Cardel
 José de Freitas
+José Gálvez
 José Mariano Jiménez
+José María Ezeiza
 Joue-les-Tours
 Jounieh
 Jouy-le-Moutier
@@ -20403,6 +21012,7 @@ Juan Aldama
 Juan de Acosta
 Juan Diaz
 Juan Díaz
+Juan Eulogio Estigarribia
 Juan Griego
 Juan Jose Castelli
 Juan Jose Rios
@@ -20418,11 +21028,14 @@ Juatuba
 Juazeiro
 Juazeiro do Norte
 Juba
+Jubail
 Jubayt
 Jubbulpore
 Jucas
 Juchen
 Juchitepec
+Juchitepec de Mariano Rivapalacio
+Juchitán de Zaragoza
 Jucurutu
 Jucás
 Judah
@@ -20546,6 +21159,8 @@ jzyrt abwzby wjzr dakhlyt akhry
 Jáltipan de Morelos
 Jánde
 Jászberény
+Játiva
+Jávea
 Jämsä
 Järvenpää
 Jérémie
@@ -20760,6 +21375,7 @@ Kafr Laha
 Kafr Lāhā
 Kafr Manda
 Kafr Mandā
+Kafr Qara
 Kafr Qasim
 Kafr Qāsim
 Kafr Sa'd
@@ -20847,6 +21463,7 @@ Kairana
 Kairas
 kairo
 Kairouan
+Kairuán
 Kairó
 Kairāna
 Kais
@@ -20883,6 +21500,7 @@ kajhana
 Kajiado
 Kajiki
 Kajiya
+Kajovka
 Kajro
 Kajseri
 Kajsery
@@ -20990,6 +21608,7 @@ Kalikātā
 Kalima
 Kalimpong
 Kaliningrad
+Kaliningrado
 Kalininsk
 Kalininskiy
 Kalinjur
@@ -21109,6 +21728,7 @@ Kamareddi
 Kamarhati
 Kamaruddinnagar
 Kamata
+Kamatero
 Kamateron
 Kamaterón
 Kamatgi
@@ -21462,6 +22082,8 @@ Kapstaden
 Kapstadt
 Kapsztad
 kapul
+Kapurtala
+Kapurthala
 Kapurthala Town
 Kaputa
 Kapétown
@@ -21502,6 +22124,7 @@ Karadz
 Karadzs
 Karadż
 Karadž
+Karaganda
 Karagandy
 Karago
 Karahrud
@@ -21717,6 +22340,7 @@ Kasese
 Kaset Sombun
 Kaset Wisai
 Kasganj
+Kasgar
 Kashan
 Kashgar
 Kashi
@@ -21764,6 +22388,7 @@ Kasumigaura
 Kasungu
 Kasur
 Kasã
+Kasímov
 Kasāra
 Katabi
 Katagami
@@ -21775,6 +22400,7 @@ Katangi
 Katano
 Kataragama
 Katav-Ivanovsk
+Katav-Ivánovsk
 Kataysk
 Katemandu
 Katerero
@@ -21871,6 +22497,7 @@ Kaupmannahoefn
 Kaupmannahöfn
 Kaura Namoda
 Kavadarci
+Kavaja
 Kavaje
 Kavajë
 Kavakli
@@ -21916,6 +22543,7 @@ Kawkareik
 kawlalampexr
 Kawm Hamadah
 Kawm Ḩamādah
+Kawthaung
 Kawthoung
 Kax
 Kaya
@@ -22156,11 +22784,13 @@ Kerkûk
 Kerkük
 Kerman
 Kermanshah
+Kermán
 Kernersville
 Kerou
 Kerouane
 Kerpen
 Kerrville
+Kerteh
 Kertih
 Kertosono
 Keru
@@ -22261,6 +22891,7 @@ Khajderabad
 Khajfon
 Khajkou
 Khajoori Khas
+Khajuraho
 Khajuraho Group of Monuments
 Khalabat
 Khalandrion
@@ -22449,6 +23080,7 @@ KHN
 kho bea
 Kho Shi Min
 Khobar
+Khodjent
 Khojchzhou
 Khokh khot
 Khokhot
@@ -22472,6 +23104,7 @@ Khonkong
 khopenheken
 Khopoli
 Khordha
+Khorog
 Khoroshevo-Mnevniki
 Khoroshëvo-Mnevniki
 Khorramabad
@@ -22590,6 +23223,7 @@ Kibara
 Kibiti
 Kiboga
 Kibondo
+Kibray
 Kibre Mengist
 Kibungo
 Kibuye
@@ -22618,6 +23252,7 @@ Kievi
 Kievom
 Kievu
 Kiew
+Kifa
 Kiffa
 Kifisia
 Kifisiá
@@ -22688,6 +23323,7 @@ Kilmarnock
 Kilosa
 Kilwa Masoko
 Kilwinning
+Kilómetro Cuarenta y Tres
 Kim
 Kim Hoa
 Kim Lien
@@ -22841,6 +23477,7 @@ Kirovo-Chepetsk
 Kirovsk
 Kirsanov
 Kirsehir
+Kirsánov
 Kirtipur
 kirukuku
 Kirumba
@@ -22851,9 +23488,11 @@ Kiryandongo Refugee Camp
 Kiryas Joel
 Kiryat Gat
 Kiryat Ono
+Kiryat Shemona
 Kiryu
 Kiryū
 Kirzhach
+Kiréyevsk
 Kirāri Sulemānnagar
 Kisai
 Kisan'nkani
@@ -22888,6 +23527,7 @@ Kiskunfélegyháza
 Kiskunhalas
 Kiskőrös
 Kislovodsk
+Kismaayo
 Kismayo
 Kisoro
 Kispest
@@ -22905,6 +23545,7 @@ Kitaibaraki
 Kitakami
 Kitakata
 Kitakyushu
+Kitakyūshū
 Kitale
 Kitama
 Kitami
@@ -22977,6 +23618,7 @@ KLA
 Kladno
 Kladow
 Klaeng
+Klagenfurt
 Klagenfurt am Woerthersee
 Klagenfurt am Wörthersee
 Klaipeda
@@ -23057,6 +23699,7 @@ Kobeo
 Koblenz
 Kobo
 Koboko
+Kobriny
 Kobryn
 Kobul
 Kobuleti
@@ -23085,6 +23728,7 @@ Kodan
 Kodar
 Kodarma
 Kodaň
+Koderma
 Kodinar
 Kodinsk
 Kodoli
@@ -23248,6 +23892,7 @@ Komotiní
 Kompalli
 Kompe
 Kompienga
+Komsomolsk del Amur
 Komsomolsk-on-Amur
 Komtikas
 Komárno
@@ -23404,6 +24049,7 @@ Koro
 Korochi
 Korogwe
 Korolev
+Koroliov
 Korolyov
 Koronadal
 Koropi
@@ -23445,11 +24091,13 @@ Kosonsoy
 Kosovo Polje
 Kostanay
 Kostandnupolis
+Kostanái
 Koster
 Kosti
 Kostomuksha
 Kostopil
 Kostroma
+Kostromá
 Kostrzyn nad Odra
 Kostrzyn nad Odrą
 Kostyantynivka
@@ -23671,6 +24319,7 @@ krasanoyarasaka
 krasanoyarska
 Krasnaya Glinka
 Krasnik
+Krasnoarmeisk
 Krasnoarmeysk
 Krasnoarmeyskaya
 Krasnodar
@@ -23689,6 +24338,7 @@ Krasnoturinsk
 Krasnoufimsk
 Krasnoural'sk
 Krasnovishersk
+Krasnovodsk
 Krasnoyarsk
 krasnoyarska
 Krasnoye Selo
@@ -23768,10 +24418,12 @@ Krungdeb
 krungtheph
 krungthephmhankhr
 Krusevac
+Kruya
 Kruševac
 Krychaw
 Krymsk
 Kryukiv
+Kryvy Rig
 Kryvyy Rih
 Krzyki-Partynice
 Královo Pole
@@ -23806,6 +24458,7 @@ Kuala Kedah
 Kuala Ketil
 Kuala Krai
 Kuala Kubu Baharu
+Kuala Kubu Bharu
 Kuala Kurau
 Kuala Lipis
 Kuala Lumpor
@@ -23845,6 +24498,7 @@ Kuchera
 Kuchinarai
 Kuchinda
 Kuching
+Kuchova
 Kuchāman
 Kucove
 Kuda
@@ -23860,6 +24514,7 @@ Kudlu
 Kudrovo
 Kudus
 Kudymkar
+Kudímkar
 Kudāl
 Kuecuekcekmece
 Kuecuekcigli
@@ -23938,6 +24593,7 @@ Kulim
 Kulittalai
 Kullattur
 Kullattūr
+Kullu
 Kulmbach
 kulna
 Kulno
@@ -23996,6 +24652,7 @@ Kunda
 Kunda dya Baze
 Kundapura
 Kundarkhi
+Kundarki
 Kundgol
 Kundian
 Kundla
@@ -24072,6 +24729,8 @@ Kure
 Kurenivka
 Kurgan
 Kurganinsk
+Kurgán
+Kurgáninsk
 Kuri Dulal
 Kurichchi
 kurichiba
@@ -24141,6 +24800,7 @@ Kusong-si
 Kustantiniyah
 Kusum Pur
 Kusŏng-si
+Kut
 Kut Chap
 Kuta
 Kuta Bandung
@@ -24159,6 +24819,7 @@ Kutha Semarang
 Kutha Surabaya
 Kutha Tangerang
 Kuthalam
+Kuthanallur
 Kutiatodu
 Kutiyana
 Kutiyāna
@@ -24180,6 +24841,7 @@ Kutum
 kuvanco
 Kuvandyk
 kuvetta
+Kuwait
 Kuwait City
 Kuwana
 kuweta
@@ -24338,6 +25000,7 @@ Kyjiv
 Kyjiw
 Kyle
 kylgry
+Kymore
 kyngwan
 kynshasa
 kynzhw
@@ -24380,6 +25043,7 @@ Kàdúná
 Kàm-chû-sṳ
 Kábul
 Káhira
+Kániv
 Kánò
 Káposztásmegyer
 Káthmandu
@@ -24394,6 +25058,7 @@ Ké-Macina
 Kébémer
 Kédougou
 Kélibia
+Kémerovo
 Kérou
 Kérouané
 Kétou
@@ -24402,6 +25067,12 @@ Kíev
 Kígalí
 Kíjó
 Kím-chiu-chhī
+Kímovsk
+Kíneshma
+Kírishi
+Kírov
+Kírovsk
+Kízel
 Kîev
 Kîm-fà-sṳ
 Kînşasa
@@ -24411,6 +25082,7 @@ Kóbe
 Kóng-chû-sṳ
 Kópavogur
 Kórinthos
+Kórosten
 Kôbe-chhī
 Kông-mùn-sṳ
 Köbenhavn
@@ -24438,6 +25110,7 @@ Kùi-iông-chhī
 Kùi-káng-chhī
 Kùrìtíbà
 Kúala Lúmpúr
+Kúibyshev
 Kü-tsing-fu
 Kükiang
 Kükong
@@ -24582,7 +25255,7 @@ L'Eliana
 L'govskiy
 L'Hay-les-Roses
 L'Haÿ-les-Roses
-L'Hospitalet de Llobregat
+l'Hospitalet de Llobregat
 L'Ile-Bizard-Sainte-Genevieve
 L'Isle-sur-la-Sorgue
 L.A.Sagaram
@@ -24603,6 +25276,7 @@ La Banda
 La Barca
 la Barceloneta
 La Baule-Escoublac
+La Bella Easo
 La Blancarde
 La Bonanova
 La Bordeta
@@ -24610,6 +25284,7 @@ La Breita
 La Cabima
 La Calera
 La Canada Flintridge
+La Canea
 La Carlota
 La Carolina
 La Castellana
@@ -24619,13 +25294,16 @@ La Ceja
 La Celle-Saint-Cloud
 La Chapelle-sur-Erdre
 La Chaux-de-Fonds
+La Chona
 La Chorrera
 La Ciotat
 La Cite-Limoilou
 La Cité-Limoilou
 la Ciudad Condal
+La Cocina del Infierno
 La Concepcion
 La Concepción
+La Coruña
 La Courneuve
 La Crau
 La Crescenta-Montrose
@@ -24634,8 +25312,10 @@ La Cruz
 La Defense
 La Dolorita
 La Dorada
+La Eliana
 La Ermita
 La Esperanza
+La Estrada
 La Estrella
 La Falda
 La Felguera
@@ -24647,6 +25327,7 @@ La Garde
 La Garenne-Colombes
 la ge si
 La Gi
+La Goleta
 La Gomera
 La Goulette
 La Grange
@@ -24661,6 +25342,7 @@ La Habra
 La Haute-Saint-Charles
 La Havana
 La Havane
+La Haya
 la he er
 La Iguala
 La Isla
@@ -24708,6 +25390,7 @@ La Pasas
 la paz
 La Paz Centro
 La Peca
+La Pequeña Habana
 La Piedad de Cabadas
 La Pineda
 La Pintana
@@ -24718,6 +25401,7 @@ La Porte
 La Possession
 La Prairie
 La Presa
+La Prosperidad
 la Prosperitat
 La Providencia Siglo XXI
 La Puente
@@ -24737,6 +25421,7 @@ La Seyne-sur-Mer
 La Sierpe
 La Solana
 La Spezia
+La tacita de plata
 La Tebaida
 La Teste-de-Buch
 La Trinidad
@@ -24745,9 +25430,11 @@ La Trinité
 La Troncal
 La Union
 La Unión
+La Valeta
 La Valette-du-Var
 La Vega
 La Vela de Coro
+La Ventosa
 La Vergne
 La Verne
 la Verneda i la Pau
@@ -24755,15 +25442,18 @@ La Victoria
 la Vila de Gracia
 la Vila de Gràcia
 La Villa del Rosario
+la villa jarrillera
 La Villa y Corte de Madrid
 La Virginia
 La Vista
 la wa er pin di
+La Zubia
 La-Pas
 La-Pas shaary
 La-Pazo
 Laajasalo
 Laascaanood
+Laascanood
 Laattaouia
 Laatzen
 Laayoune
@@ -24785,8 +25475,10 @@ Labuhan Deli
 Labuleng
 Labutta
 Labytnangi
+Labytnangui
 Labé
 Lac Duong
+Lacedemonia
 Lacey
 Lachi
 Lachori
@@ -24854,6 +25546,7 @@ Lagosas
 lagoseu
 lagosi
 Lagoso
+Lagouat
 LaGrange
 Laguilayan
 Laguna
@@ -25105,6 +25798,7 @@ Langley Park
 Langlin
 Langouo
 langpuleu
+Langreo
 Langru
 Langsa
 Langtoucun
@@ -25144,6 +25838,7 @@ Laoang
 Laohekou
 Laojunmiao
 Laon
+Laos
 Lapa
 Lapai
 lapaja
@@ -25220,6 +25915,7 @@ lasa enjilasa
 Lasalgaon
 LaSalle
 Lasarte
+Lasarte-Oria
 Lasem
 Lashibi
 Lashio
@@ -25266,6 +25962,7 @@ Laurelton
 Lauri
 Laurinburg
 Lauro de Freitas
+Lausana
 Lausanne
 Lautaro
 Lautoka
@@ -25339,6 +26036,7 @@ Le Mee-sur-Seine
 Le Moule
 Le Mée-sur-Seine
 Le Pecq
+Le Pecq-sur-Seine
 Le Perreux-sur-Marne
 Le Petit-Quevilly
 Le Plateau
@@ -25440,6 +26138,7 @@ Leiria
 Leisure City
 Leixlip
 Leiyang
+Lejona
 lek xs
 Lek-buang-cui
 Lekki
@@ -25576,6 +26275,7 @@ Lexington
 Lexington-Fayette
 Leyland
 Leytonstone
+Leyva Solano
 Lezhe
 Lezhë
 Leça da Palmeira
@@ -25583,6 +26283,7 @@ Leça do Bailio
 León
 León de los Aldama
 León de los Aldamas
+Leópolis
 LFW
 LHabana
 Lhasa
@@ -25689,6 +26390,7 @@ Lidu
 Lidzbark Warminski
 Lidzbark Warmiński
 Liege
+Lieja
 Lien-chiang
 Lien-chiang-hsien
 Liepaja
@@ -25714,6 +26416,7 @@ Likhobory
 Likino-Dulevo
 Likisa
 Likisá
+Lila
 lilamgve
 lilangave
 Lilienthal
@@ -25754,6 +26457,7 @@ Limbdi
 Limbe
 Limbiate
 Limburg an der Lahn
+Limburgo del Lahn
 Lime
 Limehouse
 Limeil-Brevannes
@@ -25801,6 +26505,7 @@ Lincolnia
 Linda
 Linda-a-Velha
 Lindau
+Lindavista
 Linden
 Linden-Nord
 Lindenholt
@@ -25876,9 +26581,11 @@ Liptovsky Mikulas
 Liptovský Mikuláš
 Lira
 Lirang
+Liria
 Lisakovsk
 Lisala
 Lisandria dEgittu
+Lisboa
 Lisbon
 Lisburn
 Lisen
@@ -25926,6 +26633,7 @@ Liu-sha-hsu
 Liu-sha-hsü
 Liu-yang-hsien
 Liuanchow
+Liubliana
 Liubotyn
 Liuchow
 Liuchowfu
@@ -25982,6 +26690,7 @@ Lièu-siàng
 Liévin
 Liêu Thành
 Liùng-ngâm-sṳ
+Liúbertsy
 Liǔzhōu
 Liễu Châu
 Liễu Giai
@@ -26110,6 +26819,7 @@ Lom Sak
 loma
 Loma Bonita
 Loma de Gato
+Loma el Rosario
 Loma Linda
 Loma Plata
 Lomas de Zamora
@@ -26123,6 +26833,7 @@ Lomita
 Lomme
 Lommel
 Lomonosov
+Lomonósov
 Lompoc
 Lomza
 Lomé
@@ -26274,12 +26985,14 @@ Los Anzheles
 Los Banos
 Los Barrios
 Los Baños
+Los Cayos
 Los Dos Caminos
 Los Gatos
 Los Llanos de Aridane
 Los Lunas
 Los Madriles
 Los Mochis
+Los Nogales
 Los Palacios
 Los Palacios y Villafranca
 Los Patios
@@ -26291,6 +27004,7 @@ Los Reyes Acaquilpan
 Los Reyes de Juarez
 Los Reyes de Juárez
 Los Reyes de Salgado
+Los Reyes La Paz
 Los Rosales
 Los Teques
 Los Toldos
@@ -26351,6 +27065,7 @@ Louvain-la-Neuve
 Louveira
 Louviers
 Louzaka
+Lovaina
 Lovech
 Loveland
 Loves Park
@@ -26364,6 +27079,7 @@ Lower West Side
 Lowestoft
 Lowicz
 Loxstedt
+Loyabad
 Loyang
 Loznica
 Lozova
@@ -26406,6 +27122,7 @@ Lubartów
 Lubata
 Lubań
 Lubbock
+Lubeca
 Lubero
 Lubin
 Lublin
@@ -26441,6 +27158,7 @@ Lucena
 Lucenec
 Lucento
 Lucera
+Lucerna
 Lucero
 Luchegorsk
 Lucheng
@@ -26468,6 +27186,7 @@ Luduş
 Ludvika
 Ludwigsburg
 Ludwigsfelde
+Ludwigshafen
 Ludwigshafen am Rhein
 Luebbecke
 Luebeck
@@ -26503,7 +27222,9 @@ Lui-ho-chhi
 Luis Correia
 Luis Eduardo Magalhaes
 Luis Eduardo Magalhães
+Luisburgo
 Lujan
+Lujovitsy
 Luján
 Lukavac
 Lukaya
@@ -26549,6 +27270,7 @@ Lundu
 Lundun
 Lundunir
 Lundúnir
+Luneburgo
 Lunel
 Luneville
 Lung-dung
@@ -26654,6 +27376,7 @@ Lusambo
 Lusan
 Lushan
 Lushar
+Lushnja
 Lushnje
 Lushnjë
 Lushoto
@@ -26671,6 +27394,7 @@ Lutsk
 Lutuhyne
 Lutz
 Lutèce
+Lutúgine
 Luuq
 luvanta
 Luwero
@@ -26678,6 +27402,7 @@ Luwingu
 Luwuk
 luxanda
 Luxembourg
+Luxemburgo
 Luxor
 luyanda
 Luz
@@ -26768,8 +27493,10 @@ Lào Cai
 Lábrea
 Lágymányos
 Láhaur
+Lála Musa
 Láng Thượng
 Lárisa
+Lárnaca
 Lázaro Cárdenas
 Lâhore
 Lâm Nghi
@@ -26779,6 +27506,8 @@ Lâm-lêng-chhī
 Lâm-thong-chhī
 Lân-chiu-chhī
 Lé Cap
+Léninsk
+Léninsk-Kuznetski
 Léo
 Léogâne
 Léopoldville
@@ -26793,6 +27522,7 @@ Líbano
 Lílongve
 Líma
 Líoma
+Lípetsk
 Lívingston
 Líšeň
 Lîm-kî-chhī
@@ -26806,6 +27536,7 @@ Lùng-dŭng
 Lúanda
 Lúi-hô-chhī
 Lúsaka
+Lúxor
 Lûn-tun
 Lûsaka
 Lü-ta
@@ -26922,6 +27653,7 @@ mabwtw
 Mabéhiri
 Macae
 Macaiba
+Macao
 Macapa
 Macaparana
 Macapá
@@ -26990,6 +27722,7 @@ Madaripur
 Madarounfa
 Madattukkulam
 Madavan
+Madavaram
 Madaya
 Madayi
 Maddaloni
@@ -27026,6 +27759,7 @@ Madinat Khalifah
 Madinat Wadi an Natrun
 Madinat-ehs-Sadr
 Madipakkam
+Madippakkam
 Madison
 Madison Heights
 Madisonville
@@ -27110,6 +27844,7 @@ Magadan
 Magadi
 Magadiscio
 Magadysha
+Magadán
 Magalang
 Magamaga
 Magangue
@@ -27125,6 +27860,7 @@ Magdalena Contreras
 Magdalena de Kino
 Magdanly
 Magdeburg
+Magdeburgo
 Mage
 Magelang
 Magenta
@@ -27147,7 +27883,9 @@ Magu
 Maguan
 Magugpo Poblacion
 Magugu
+Maguilov
 Magumeri
+Maguncia
 Magway
 Magé
 Maha Sarakham
@@ -27195,6 +27933,7 @@ Mahesāna
 Mahgawan
 Mahgawān
 Mahiari
+Mahikeng
 Mahilyow
 Mahina
 Mahires
@@ -27287,6 +28026,7 @@ Maiu-ming
 Maiurno
 Maizhokunggar
 Maizuru
+Majachkalá
 Majadahonda
 Majalengka
 Majalgaon
@@ -27361,6 +28101,7 @@ Malaba
 Malabanban Norte
 Malabo
 Malabon
+Malaca
 Malacacheta
 Malacatan
 Malacatán
@@ -27426,6 +28167,7 @@ Maliana
 Malianzhuang
 Malihabad
 Malilipot
+Malinas
 Malinau
 Malindi
 Malingao
@@ -27454,6 +28196,7 @@ Malpe
 Malpura
 Maltby
 Maltepe
+Maluko
 Malumfashi
 Malungun
 Malur
@@ -27464,6 +28207,7 @@ Malvar
 Malvern
 Malvern East
 Malyn
+Malé
 Malārd
 Malāyer
 Malīhābād
@@ -27539,6 +28283,7 @@ manaws
 Manay
 Manaŭso
 Manbij
+Manbiy
 Manchar
 Mancherial
 Manchester
@@ -27562,6 +28307,7 @@ mandallei
 Mandaluyong
 Mandaluyong City
 mandaly
+Mandalúyong
 Mandalī
 Mandamarri
 Mandan
@@ -27612,6 +28358,7 @@ Mangaldan
 Mangalia
 Mangalme
 Mangalmé
+Mangalore
 Mangaluru
 Mangalvedha
 Mangaratiba
@@ -27691,6 +28438,7 @@ Mankachar
 Mankato
 Mankayan
 Mankesim
+Mankessim
 Mankhetten
 Mankhul
 Mankhūl
@@ -27885,9 +28633,11 @@ Marayur
 Maraã
 Maraú
 Marbach am Neckar
+Marbach de Neckar
 Marbella
 Marblehead
 Marburg an der Lahn
+Marburgo
 Marcavelica
 March
 Marche-en-Famenne
@@ -27926,6 +28676,7 @@ Margherita
 Marhanets
 Marhaura
 Mari
+Maria Christina
 Maria la Baja
 Mariahilf
 Mariahu
@@ -27939,6 +28690,7 @@ Mariano
 Mariano Comense
 Mariano Roque Alonso
 Mariara
+Marib
 Maribor
 Marica
 Maricopa
@@ -27963,6 +28715,7 @@ Marilao
 Marilia
 Marin
 Marina
+Marina de Dubái
 Marina di Ardea-Tor San Lorenzo
 Marina di Carrara
 Marina di Massa
@@ -28021,6 +28774,7 @@ Maroúsi
 Marpole
 Marquard
 Marquette
+Marrakech
 Marrakesh
 Marratxi
 Marratxí
@@ -28057,6 +28811,7 @@ Martinópolis
 Martorell
 Martos
 Marturu
+Martínez
 Martínez de la Torre
 Martūru
 Marudi
@@ -28104,6 +28859,7 @@ masayw
 Masbate
 Mascalucia
 Mascara
+Mascate
 Maschhad
 Mascot
 Mascouche
@@ -28163,6 +28919,7 @@ Massy
 Mastaga
 Masterton
 Mastic
+Mastrique
 Mastung
 Masuda
 Masul
@@ -28273,6 +29030,7 @@ Matías Romero Avendaño
 Matões
 Matões do Norte
 Mau
+Mau Aima
 Mau Aimma
 Mau Danh
 Maua
@@ -28338,6 +29096,7 @@ Maying
 Maykop
 Mayma
 Maymana
+Maymanah
 Maynila
 Maynooth
 mayshan
@@ -28366,6 +29125,7 @@ Mazinde
 Mazouna
 Mazyr
 Mazār-e Sharīf
+Mazār-e Šarīf
 Maâtkas
 Maçayó
 Maïné Soroa
@@ -28377,6 +29137,7 @@ Maşyāf
 Maşīrah
 Mašhad
 Maţāy
+Mažeikiai
 Mașhad
 Maḩallat Damanah
 Maḩallāt
@@ -28589,7 +29350,7 @@ Meiningen
 meisan si
 Meise
 Meishan
-Meissen
+Meißen
 Meixad
 Meizhou
 Mej-san
@@ -28698,6 +29459,7 @@ Mene de Mauroa
 Mene Grande
 Menemen
 Menen
+Menfis
 meng ba sa
 meng de wei de ya
 meng luo wei ya
@@ -28723,6 +29485,7 @@ Mennānyam
 Menomonee Falls
 Menomonie
 Menongue
+Menouf
 Mentakab
 Mentan
 Mentana
@@ -28808,6 +29571,7 @@ meshhedi
 Meshkhed
 Meshkin Dasht
 Meshkīn Dasht
+Mesina
 Meskiana
 Mesquite
 Messaad
@@ -28849,6 +29613,7 @@ Meu-miàng-sṳ
 Meudon
 Meulaboh
 meuwanja
+Mevaseret Sion
 Mevasseret Tsiyyon
 MevasseretTsiyyon
 MEX
@@ -28879,6 +29644,7 @@ Meyzieu
 Mezcales
 Mezgor'e
 Mezhdurechensk
+Mezhduréchensk
 Mezokovesd
 Mezotur
 Mezőkövesd
@@ -28939,6 +29705,7 @@ Micheng
 Michigan City
 Michle
 Michurinsk
+Michúrinsk
 Micklagard
 Micklagård
 Micolene
@@ -28981,11 +29748,14 @@ Mien-yang-hsien
 Mienchow
 Mieng-iong
 Mienjan
+Miercurea Ciuc
 Miercurea-Ciuc
 Mieres
+Mieres del Camino
 Mifune
 MIG
 Migdal Ha'Emeq
+Migdal HaEmek
 Mignoure
 Mignouré
 Migori
@@ -29129,12 +29899,14 @@ Mine
 Mineiros
 Mineola
 Mineralnye Vody
+Mineápolis
 ming gu wu
 ming gu wu shi
 ming si ke
 ming si ke shi
 Ming-hang
 Minga
+Mingacevir
 Mingachevir
 Mingala Tangnyunt
 Mingaladon
@@ -29188,6 +29960,8 @@ Minyat an Naşr
 Minyā al Qamḩ
 Mioveni
 Mir Pur Turk
+Mira
+Mira Loma
 Mira Mesa
 Mira Taglio
 Mirabel
@@ -29226,6 +30000,7 @@ Mirdif
 Mirfield
 Mirganj
 Miri
+Mirni
 Mirny
 Mirnyy
 Mirpur Khas
@@ -29252,6 +30027,7 @@ Misilmeri
 Miskolc
 Mislata
 Misr
+Misrata
 Misratah
 Misrikh
 Missao Velha
@@ -29279,9 +30055,11 @@ Mitchell
 Mitha Tiwana
 Mithepur
 Mithi
+Mitilene
 Mito
 Mitoyo
 Mitras Poniente
+Mitrovica
 Mitrovice
 Mitrovicë
 Mitry-Mory
@@ -29547,6 +30325,7 @@ Molins de Rei
 Mollendo
 Mollet del Valles
 Mollet del Vallès
+Mollet del Vallés
 Molo
 Molodizhne
 Moloto South
@@ -29581,6 +30360,7 @@ monarovi'a
 Monastir
 monbasa
 Moncada
+Moncada i Reixac
 Moncalieri
 Moncao
 Monchegorsk
@@ -29591,6 +30371,7 @@ Mondlo
 Mondovi
 Mondovì
 Mondragone
+Mondragón
 Monfalcone
 Monforte de Lemos
 Mong Cai
@@ -29669,6 +30450,7 @@ Montbéliard
 Montcada i Reixac
 Montceau-les-Mines
 Montclair
+Montdragon
 Monte Alegre
 Monte Alegre de Minas
 Monte Alto
@@ -29902,6 +30684,7 @@ Morvi
 Morwa
 Morón
 Morón de la Frontera
+Morózovsk
 Morādābād
 Morār
 mosala
@@ -30138,6 +30921,7 @@ Muaná
 Muar
 Muara Bungo
 Muara Teweh
+Muaskar
 muba'i
 Mubarakpur
 Mubende
@@ -30289,11 +31073,28 @@ Mungeli
 Munger
 Mungia
 Mungo
+Munguía
 Mungyeong
 Munhen
 Munic
 Munich
 Munich ed Baviera
+Municipio Chacao
+Municipio de Abington
+Municipio de Barnet
+Municipio de Bensalem
+Municipio de Copacabana
+Municipio de East Brunswick
+Municipio de Jor
+Municipio de Lakewood
+Municipio de Maple Shade
+Municipio de Metepec
+Municipio de Middletown
+Municipio de West Bloomfield
+Municipio de Whitehall
+Municipio El Hatillo
+Municipio La Piedad
+Municipio Tovar
 Munih
 Munike
 Munique
@@ -30433,6 +31234,7 @@ muwanza
 MUX
 Muxaluando
 Muy Fiel y Reconquistadora Ciudad de San Felipe y Santiago de Montevideo
+Muy Noble y Muy Leal Ciudad de Santiago de los Caballeros
 Muyuka
 Muzaffarabad
 Muzaffargarh
@@ -30575,6 +31377,8 @@ Mzimba
 Mzuzu
 Màn-kuk
 Málaga
+Mánchester
+Mánturovo
 Mário Campos
 Mát-xcơ-va
 Mátyásföld
@@ -30611,7 +31415,9 @@ Mílanó
 Mînsk
 Mònacu
 Mòskwa
+Módena
 Mógadisjú
+Mónaco
 Móng Cái
 Mórfou
 Móstoles
@@ -30624,17 +31430,21 @@ Möng La
 Möng Yang
 Möng Yawng
 Mörfelden-Walldorf
+Möron
 Mörön
 Mössingen
 Mùnich ëd Baviera
 Múnic
 Múnich
+Múrmansk
+Múrom
 Mûsil
 Mühlacker
 Mühldorf
 Mühlhausen
 Mühlheim am Main
 Mülheim
+Mülheim an der Ruhr
 Müllheim
 München
 Münegh
@@ -30852,6 +31662,7 @@ Nagykőrös
 Nagīna
 Naha
 Nahan
+Nahariya
 Nahariyya
 Naharlagun
 Nahavand
@@ -30903,13 +31714,16 @@ Najafābād
 najaphagara
 najaphagarha
 najapkar
+Najchivén
 Najfargharh
 Najibabad
+Najodka
 Najran
 Najrobi
 Najrobi osh
 Najrobio
 Najrobo
+Najrán
 Najrān
 Naju
 Najībābād
@@ -30976,6 +31790,7 @@ Nallūr
 Nalut
 Nam Can
 Nam Cheong
+Nam Dinh
 Nam Duong
 Nam Dương
 Nam GJinh
@@ -30998,6 +31813,7 @@ Namagiripettai
 Namakkal
 Namalombwe
 Namangan
+Namangán
 Namanyere
 Namapa-erati
 namapenha
@@ -31023,6 +31839,7 @@ Namlea
 Namminikara
 Namp'o
 Nampa
+Nampo
 Namponkore
 Namponkoré
 Nampula
@@ -31122,6 +31939,7 @@ Nancsang
 Nancun
 Nancy
 Nandaime
+Nandaimé
 Nandajie
 Nanded
 Nandgaon
@@ -31272,6 +32090,7 @@ Naples
 Napāsar
 Naqadah
 Naqadeh
+Naqoura
 Naqoya
 Naqādah
 Nar'yan-Mar
@@ -31303,6 +32122,7 @@ Naravarikuppam
 Narayanganj
 Narayankher
 Narayanpet
+Narbona
 Narbonne
 Nardo
 Nardò
@@ -31363,6 +32183,7 @@ Nasimshahr
 Nasinu
 Nasir Abaad
 Nasirabad
+Nasiriya
 Nasiriyah
 Nasirshahr
 nask
@@ -31377,6 +32198,7 @@ Nasukarasuyama
 Nasushiobara
 nasyk
 Naszik
+Nasáu
 Nasīm Shahr
 Nasīrābād
 Natagaima
@@ -31393,6 +32215,7 @@ Natick
 National City
 Natitingou
 Natividade
+Nativitas
 Natona
 Natore
 Natori-shi
@@ -31410,6 +32233,7 @@ Naujininkai
 Naujoji Vilnia
 Naukot
 Naumburg
+Naumburgo
 Naushahra Virkan
 Naushahro Firoz
 Nautanwa
@@ -31438,6 +32262,7 @@ Navi-Mumbaj
 Navirai
 Naviraí
 Navodari
+Navoi
 Navoiy
 Navojoa
 Navolato
@@ -31464,6 +32289,7 @@ Naxi
 Naxçıvan
 Nay Pyi Taw
 Naya Gaon
+Nayaf
 Nayagarh
 Nayanakulam
 Nayf
@@ -31482,6 +32308,7 @@ Nazarabad
 Nazare
 Nazare da Mata
 Nazare Paulista
+Nazaret
 Nazareth
 Nazarovo
 Nazaré
@@ -31641,6 +32468,7 @@ Neryungri
 Nerópolis
 Nesahualkojotlis
 Nesher
+Ness Tziona
 Ness Ziona
 Nesterovskaya
 Neston
@@ -31785,6 +32613,7 @@ Newburyport
 Newcastle
 Newcastle under Lyme
 Newcastle upon Tyne
+Newcastle-upon-Tyne
 Newington
 Newmarket
 Newnan
@@ -31816,6 +32645,7 @@ Nezahualcoyotl
 Nezahualcóyotl
 Nezahualkojotlo
 Nezlobnaya
+Neápolis
 Neópolis
 ng'mnh
 Nga Bay
@@ -31830,6 +32660,7 @@ Ngaoundal
 Ngaoundere
 Ngaoundéré
 Ngara
+Ngaundere
 Ngawi
 NGB
 Ngemplak
@@ -31920,6 +32751,7 @@ Niapidou
 Nibong Tebal
 Nicastro
 Nice
+Nicea
 Nicetown-Tioga
 Nichelino
 Nichinan
@@ -32008,6 +32840,7 @@ Nimach
 Nimaj
 Nimaparha
 Nimbahera
+Nimega
 Nimes
 Nimāparha
 Ninbo
@@ -32031,6 +32864,7 @@ Ningsia-hsien
 Ningsiafu
 Ningyang
 Ninh Ba
+Ninh Binh
 Ninh Hoa
 Ninh Hòa
 Nino Jesus
@@ -32060,6 +32894,7 @@ Nis
 Nisang
 Niscemi
 Nischni Nowgorod
+Nishapur
 Nishi-Tokyo-shi
 Nishiarai
 Nishifukuma
@@ -32095,6 +32930,7 @@ niyame
 niyami
 niyuyark nakaram
 Niz-Hajo
+Niza
 Nizahon II
 Nizamabad
 nizani novagoroda
@@ -32102,6 +32938,8 @@ Nizhnekamsk
 Nizhnesortymskiy
 Nizhneudinsk
 Nizhnevartovsk
+Nizhnevártovsk
+Nizhneúdinsk
 Nizhni Novgorod
 Nizhni Novqorod
 Nizhni Nóvgorod
@@ -32190,6 +33028,7 @@ Nogi
 Noginsk
 Nogoya
 Nogoyá
+Noguinsk
 Nohar
 Nohsa
 Noi Giang
@@ -32391,6 +33230,7 @@ Nova Iguacu
 Nova Iguaçu
 Nova Iorque
 Nova Ipixuna
+Nova Kajovka
 Nova Kakhovka
 Nova Lima
 Nova Mamore
@@ -32457,7 +33297,7 @@ Novo Cruzeiro
 Novo Gama
 Novo Hamburgo
 Novo Horizonte
-Novo Mesto
+Novo mesto
 Novo Oriente
 Novo Progresso
 Novo Repartimento
@@ -32481,12 +33321,14 @@ Novokubansk
 Novokuybyshevsk
 Novokuz'minki
 Novokuznetsk
+Novokúibyshevsk
 Novomichurinsk
 Novomoskovsk
 Novonikolaevsk
 Novonikolayevsk
 Novopavlovsk
 Novopokrovskaya
+Novopokróvskaya
 Novopolotsk
 Novorossiysk
 Novoshakhtinsk
@@ -32565,6 +33407,7 @@ Nsanje
 Nsawam
 Nshamba
 Nsoatre
+Nsuatre
 Nsukka
 Nsunga
 Ntaka
@@ -32592,6 +33435,7 @@ nu'akacota
 Nu'ayjah
 nu'oyakasuta
 Nua-Eabhrac
+Nuadibú
 nuagsyoteu
 Nuakchot
 Nuakshot
@@ -32616,30 +33460,43 @@ Nuenen
 Nuestra Senora de La Paz
 Nuestra Senora Santa Maria de la Asuncion
 Nuestra Señora de La Paz
+Nuestra Señora del Rosario de Baruta
 Nuestra Señora Santa María de la Asunción
 Nueva Bolivia
+Nueva Delhi
 Nueva Espana
 Nueva España
+Nueva Friburgo
 Nueva Gerona
 Nueva Granada
+Nueva Guatemala
+Nueva Guatemala de la Asunción
 Nueva Guinea
+Nueva Iberia
 Nueva Imperial
 Nueva Italia de Ruiz
 Nueva Loja
+Nueva Orleans
+Nueva Plymouth
+Nueva Rochelle
 Nueva Rosita
 Nueva Taipei
 Nueva Taipéi
 Nueva York
+Nueva Ámsterdam
 Nueve de Julio
 Nuevitas
 Nuevo Belen
 Nuevo Belén
+Nuevo Brandeburgo
+Nuevo Brunswick
 Nuevo Casas Grandes
 Nuevo Imperial
 Nuevo Laredo
 Nuevo Mexico
 Nuevo México
 Nuevo San Carlos
+Nuevo Ulm
 Nuh
 Nui Sap
 Nui Thanh
@@ -32654,6 +33511,7 @@ Numancia
 Numata
 Numazu
 Numbai
+Numea
 Nuneaton
 Nungua
 Nungwi
@@ -32672,6 +33530,7 @@ Nur-Sultan
 Nur-Sultano
 Nur-Sultán
 Nurabad
+Nurafshon
 Nuremberg
 Nurlat
 Nurmijaervi
@@ -32720,6 +33579,7 @@ Nyandoma
 Nyangao
 Nyanza
 Nyaung
+Nyaung U
 Nyaung-U
 Nyaungdon
 Nyaunglebin
@@ -32776,6 +33636,7 @@ Náchod
 Nágpur
 Nándorfehérvár
 Náousa
+Nápoles
 Nászik
 Não-Me-Toque
 Nässjö
@@ -32792,9 +33653,11 @@ Níamey
 Níjar
 Níkaia
 Nísia Floresta
+Nízhniaya Turá
 Nî-chhûn-sṳ
 Nîmes
 Nòva York
+Nóvgorod-Síverski
 Nõmme
 Nördlingen
 Nørresundby
@@ -32802,6 +33665,7 @@ Núaksjott
 Núcleo Bandeirante
 Núi Sập
 Núi Thành
+Núremberg
 Nümbrecht
 Nürtingen
 Nýja Jórvík
@@ -32893,6 +33757,7 @@ Oamishirasato
 Oarai
 Oas
 Oaxaca
+Oaxaca de Juárez
 Oba
 Obala
 Obalende
@@ -32939,6 +33804,7 @@ Ochakovo-Matveyevskoye
 Ocher
 Ochira
 Ocho Rios
+Ocho Ríos
 Ochota
 Ochtrup
 Ochër
@@ -32954,7 +33820,9 @@ Ocotlán
 Ocotlán de Morelos
 Ocoyoacac
 Ocozocoautla de Espinosa
+Ocrida
 Octeville
+Ocumare
 Ocumare del Tuy
 Od
 Odacho-oda
@@ -32984,6 +33852,7 @@ Odissos
 Odivelas
 Odorheiu Secuiesc
 ODS
+Oduponkpehe
 Oděsa
 Oea
 OEdemis
@@ -33125,6 +33994,7 @@ Old Shinyanga
 Old Swan
 Old Trafford
 Oldenburg
+Oldenburgo
 Oldenzaal
 Oldham
 Olecko
@@ -33173,6 +34043,7 @@ Olupona
 Olympia
 Olympic
 Olímpia
+Olóngapo
 Om'sku
 Omachi
 Omaezaki
@@ -33245,6 +34116,7 @@ Onomichi
 Onsong
 Onsŏng
 Ontario
+Onteniente
 Ontinyent
 Onyar
 Onịchạ
@@ -33263,6 +34135,7 @@ Opit
 Opladen
 Opoczno
 Opole
+Oporto
 Oppidum Ubiorum
 Opportunity
 OPQ
@@ -33295,12 +34168,15 @@ Ordos khot
 Ordu
 Oregon
 Oregon City
+Oregón City
 Orekhovo-Borisovo
 Orekhovo-Borisovo Severnoye
 Orekhovo-Zuyevo
 Orel
 Orem
+Oremburgo
 Orenburg
+Orense
 Orestiada
 Orestiáda
 Orhangazi
@@ -33324,6 +34200,7 @@ Orland Park
 Orlandia
 Orlando
 Orleans
+Orleáns
 Orlova
 Orlovskiy
 Orlová
@@ -33344,6 +34221,7 @@ Oroshaza
 Orosháza
 Oroszlany
 Oroszlány
+Orotava
 Oroville
 Orpington
 Orsay
@@ -33362,6 +34240,8 @@ Orunia Górna-Gdańsk Południe
 Oruro
 Orvault
 Orzesze
+Orán
+Oréjovo-Zúyevo
 Orël
 Orós
 Orăştie
@@ -33432,6 +34312,7 @@ Ossining
 Ostankinskiy
 Ostashkov
 Ostend
+Ostende
 Osterholz-Scharmbeck
 Ostfildern
 Ostona
@@ -33545,6 +34426,7 @@ Ouislane
 Oujda
 Oulad Ayad
 Oulad Barhil
+Oulad Djellal
 Oulad Tayeb
 Oulad Teima
 Oulad Teïma
@@ -33576,6 +34458,7 @@ Ouro Preto do Oeste
 Ouro Sogui
 Ourolandia
 Ourolândia
+Ourossogui
 Ouroumtchi
 Ouroumtsi
 Ourém
@@ -33694,6 +34577,7 @@ Pacho
 Pachor
 Pachora
 Pachperwa
+Pachuca
 Pachuca de Soto
 Pacific Grove
 Pacific Palisades
@@ -33706,6 +34590,7 @@ Paco de Arcos
 Paco do Lumiar
 Pacode
 Pacol
+Pacífica
 Pacífico
 Pad Idan
 Padalarang
@@ -33737,6 +34622,8 @@ Paech'on-up
 Paek'ak
 Paernu
 Paete
+Paez
+Pafos
 Pagadian
 Pagalungan
 Pagaluñgan
@@ -33832,6 +34719,7 @@ Palau
 Palavakkam
 Palavansathu
 Palayad
+Palayan
 Palayan City
 Palazzolo sull'Oglio
 Palaú
@@ -33890,6 +34778,7 @@ Palm River-Clair Mel
 Palm Springs
 Palm Valley
 Palma
+Palma de Mallorca
 Palma del Rio
 Palma del Río
 Palma di Montechiaro
@@ -33899,6 +34788,7 @@ Palmar de Varela
 Palmares
 Palmarito Tochapan
 Palmas
+Palmas de Gran Canaria
 Palmas de Monte Alto
 palmbang
 Palmdale
@@ -33913,6 +34803,7 @@ Palmela
 Palmer
 Palmers Green
 Palmerston
+Palmerston Norte
 Palmerston North
 Palmetto Bay
 Palmi
@@ -33939,6 +34830,7 @@ Palwal
 Palwal Rural
 Palwancha
 palymbang
+Palásovka
 Palèmbang
 Palín
 Palāsa
@@ -33969,11 +34861,13 @@ Panachikkad
 Panadura
 Panagar
 Panagyurishte
+Panaji
 Panakkudi
 Panalanoy
 Panama City
 Panambi
 Paname
+Panamá
 Panangad
 Panarukan
 Panatina
@@ -34076,7 +34970,7 @@ Paotana Hat
 Paotou
 Paoua
 Paoy Paet
-PAP
+Pap
 Papa
 Papakura
 Papalotla
@@ -34088,6 +34982,7 @@ Papatoetoe
 Papaya
 Papeete
 Papenburg
+Papenburgo
 Papendrecht
 Paphos
 Papillion
@@ -34241,6 +35136,7 @@ Parkville
 Parkwood Manor
 Parkwoods-Donalda
 Parla
+Parli
 Parli Vaijnath
 Parli Vaijnāth
 Parlier
@@ -34306,6 +35202,7 @@ Parūr
 Pasadena
 Pasaia
 Pasaje
+Pasajes
 Pasan
 Pasargad
 Pasarkemis
@@ -34401,6 +35298,7 @@ Patran
 Patratu
 Patrocinio
 Patrocínio
+Patrás
 Patrātu
 Pattamadai
 Pattambi
@@ -34456,6 +35354,7 @@ Pavlovsk
 Pavlovskaya
 Pavlovskiy Posad
 Pavugada
+Pavía
 Pawayan
 Pawgan
 Pawni
@@ -34561,6 +35460,7 @@ Peicheng
 Peine
 Peixoto de Azevedo
 peiyngyang
+Peja
 Peje
 Pejë
 Pekalongan
@@ -34691,6 +35591,7 @@ Peringathur
 Peringottupulam
 Perinjanam
 Perintalmanna
+Perinthalmanna
 perisa
 Peristeri
 Peristéri
@@ -34711,6 +35612,7 @@ Pernambuco
 Pernik
 Perote
 Perpignan
+Perpiñán
 Perris
 Perry
 Perry Hall
@@ -34792,6 +35694,7 @@ Pet-kîn
 Petagas
 Petah Tiqva
 Petaẖ Tiqva
+Petaj Tikva
 Petaling Jaya
 Petaluma
 Petapa
@@ -34836,6 +35739,7 @@ Petrolândia
 Petropavl
 Petropavlovsk-Kamchatsky
 Petropolis
+Petropávlovsk-Kamchatski
 Petrosani
 Petroupolis
 Petrovsk
@@ -34849,6 +35753,7 @@ Petrópolis
 Petržalka
 Petursborg
 Petushki
+Petushkí
 Petworth
 peulaha
 peulitolia
@@ -34864,6 +35769,7 @@ Peña Grande
 Peñaflor
 Peñalolén
 Peñaranda
+Peñarol
 Peŝavaro
 Peŝto
 Peşaver
@@ -35065,15 +35971,18 @@ Piastów
 Piata
 Piatra Neamt
 Piatra Neamţ
+Piatyjatky
 Piatã
 Piazza Armerina
 Piaçabuçu
+Picasent
 Picassent
 Pichanal
 Picheng
 Pichor
 Pickering
 Pickerington
+Picnic Point
 Picnic Point-North Lynnwood
 Pico Rivera
 Pico Truncado
@@ -35089,6 +35998,7 @@ Piecki-Migowo
 Piedade
 Piedecuesta
 Piedras Negras
+Piedrasnegras
 Piekary Slaskie
 Piekary Śląskie
 Pieksaemaeki
@@ -35102,6 +36012,7 @@ Pierrefonds-Roxboro
 Piestany
 Piet Retief
 Pietari
+Pietarsaari
 Pietermaritzburg
 Pietrasanta
 Piešťany
@@ -35169,6 +36080,7 @@ Pin-chiang
 Pin-chiang-hsien
 Pinahat
 Pinamalayan
+Pinamalayán
 Pinamar
 Pinamungahan
 Pinar de Chamartin
@@ -35179,6 +36091,7 @@ Pinar del Río
 Pinarayi
 Pinarāyi
 Pinas
+Pincia
 Pind Dadan Khan
 Pindai
 Pindamonhangaba
@@ -35196,6 +36109,7 @@ Pindwāra
 Pine Bluff
 Pine Hills
 Pinecrest
+Pineda
 Pineda de Mar
 Pinehurst
 Pinellas Park
@@ -35217,6 +36131,7 @@ Pingtan
 Pingwu County
 Pingxiang
 Pingyang
+Pingyao
 Pingyi
 Pingyin
 Pingzhuang
@@ -35237,6 +36152,7 @@ Pinkiang
 Pinneberg
 Pinner
 Pinole
+Pinotepa
 Pinotepa Nacional
 Pinsk
 Pinto
@@ -35386,6 +36302,7 @@ piyam iyam
 piyonyan
 Pizarro
 Pizhou
+Pizote
 Piñas
 Piúma
 Piła
@@ -35429,8 +36346,12 @@ Plato
 Plattsburgh
 Plauen
 Plavsk
+Playa de Aaiún
+Playa del Aaiun
+Playa del Aaiún
 Playa del Carmen
 Playa del Ingles
+Playa del Inglés
 Playas
 Playas del Rosario
 Plaza de la Revolucion
@@ -35443,6 +36364,7 @@ Pleasant View
 Pleasanton
 Pleasantville
 Pleasure Ridge Park
+Pleebo
 Pleebo City
 Pleiku
 Pleszew
@@ -35575,6 +36497,7 @@ Polichni
 Polkowice
 Pollachi
 Pollenca
+Pollensa
 Pollença
 Polo Nord
 Polohy
@@ -35603,6 +36526,7 @@ Pompano Beach
 Pompei
 Pompeia
 Pompeu
+Pompeya
 Pompéia
 Pompéu
 Ponca City
@@ -35737,6 +36661,7 @@ Port Said
 Port Saint Lucie
 Port Shepstone
 Port Sudan
+Port Vila
 Port Washington
 Port Xarcourt
 Port-au-Prince
@@ -35805,6 +36730,7 @@ Porto Ferreira
 Porto Franco
 Porto Grande
 Porto Nacional
+Porto Novo
 Porto Principe
 Porto Príncipe
 Porto Real
@@ -35824,6 +36750,7 @@ Portoprensa
 Portoprinco
 Portoviejo
 Portslade
+Portslade-by-Sea
 Portsmouth
 Portsmouth Heights
 portu alegri
@@ -35843,6 +36770,7 @@ Porz am Rhein
 Posadas
 posan si
 Posillipo
+Posnania
 Poso
 Posorja
 Posse
@@ -35886,6 +36814,7 @@ Považská Bystrica
 Povoa de Santa Iria
 Povoa de Varzim
 Povorino
+Povórino
 Powai
 powantonowaru
 Poway
@@ -35894,6 +36823,7 @@ Poxoréu
 Poyang
 poyenta-noyara
 Poykovskiy
+Poza Rica
 Poza Rica de Hidalgo
 Pozarevac
 Pozega
@@ -36029,6 +36959,7 @@ Prilep
 Primeira Cruz
 Primer Ensanche
 Primero de Enero
+Primorsko-Ajtarsk
 Primorsko-Akhtarsk
 Primrose Place
 Prince Albert
@@ -36049,11 +36980,14 @@ Privolzhsk
 Privolzhskiy
 Priyutovo
 Prizren
+Priština
 Probolinggo
 Proddatur
 Proddatūr
 Profesor Salvador Mazza
 Progreso
+Progreso de Alvaro Obregon
+Progreso de Castro
 Progreso de Obregon
 Progreso de Obregón
 Prokhladnyy
@@ -36078,6 +37012,11 @@ Prousa
 Provenals del Poblenou
 Providence
 Providenciales
+Provincia de Bandundu
+Provincia de Bayburt
+Provincia de Macerata
+Provincia de Nazca
+Provincia de Tokat
 Provo
 prt
 prtwrya
@@ -36117,10 +37056,12 @@ Prāntij
 pshawr
 Psie Pole
 Psie Pole Zawidawie
+Pskent
 Pskov
 Pszczyna
 Pta
 ptnh
+Pto Vallarta
 Ptolemaida
 Ptolemaḯda
 Ptuj
@@ -36147,6 +37088,7 @@ Pu-li-su-pan
 puaengteunualeu
 Pubal
 Pucallpa
+Pucela
 Pucheng
 Puchheim
 Puchi
@@ -36174,8 +37116,11 @@ Puebla City
 Puebla de los Angeles
 Puebla de los Ángeles
 Puebla de Saragosa
+Puebla de Vallbona
 Puebla de Zaragoza
 Pueblo
+Pueblo de Calivo
+Pueblo de Caña
 Pueblo De Los Angeles
 Pueblo Los Angelos
 Pueblo Nuevo
@@ -36195,6 +37140,7 @@ Puente-Genil
 Puerta Bonita
 Puerta del Angel
 Puerto Alegre
+Puerto Argentino
 Puerto Asis
 Puerto Asís
 Puerto Ayacucho
@@ -36211,14 +37157,17 @@ Puerto Carreno
 Puerto Carreño
 Puerto Colombia
 Puerto Cortez
+Puerto Cortés
 Puerto Cumarebo
 Puerto de la Cruz
+Puerto de Santa María
 Puerto del Carmen
 Puerto del Rosario
 Puerto Deseado
 Puerto El Triunfo
 Puerto Elizabeth
 Puerto Escondido
+Puerto España
 Puerto Esperanza
 Puerto Francisco de Orellana
 Puerto Iguazu
@@ -36226,11 +37175,15 @@ Puerto Iguazú
 Puerto La Cruz
 Puerto Leguizamo
 Puerto Leguízamo
+Puerto Libre
 Puerto Lopez
+Puerto Louis
 Puerto López
 Puerto Madryn
 Puerto Maldonado
+Puerto Mexico
 Puerto Montt
+Puerto Moresby
 Puerto Natales
 Puerto Padre
 Puerto Penasco
@@ -36247,6 +37200,9 @@ Puerto Salgar
 Puerto San Jose
 Puerto San José
 Puerto Santander
+Puerto Saíd
+Puerto Stanley
+Puerto Sudán
 Puerto Tejada
 Puerto Triunfo
 Puerto Vallarta
@@ -36337,6 +37293,7 @@ Punta de Mata
 Punta de Piedras
 Punta Gorda
 Punta Gorda Isles
+Punta Porá
 Puntarenas
 Punto Fijo
 Puné
@@ -36375,6 +37332,7 @@ Purwokerto
 Purwā
 Puryong-up
 Puryŏng-ŭp
+Puréparo de Echaíz
 Purépero de Echáiz
 Purísima de Bustos
 Purāini
@@ -36437,6 +37395,7 @@ Puyün
 Puzhal
 Puzhathi
 Puzi
+Puzol
 Puçol
 Puławy
 Pułtusk
@@ -36486,6 +37445,7 @@ pynyqs
 Pyoengyang
 pyon'gyang
 pyongayanga
+Pyongsong
 Pyongyang
 Pyongyang-si
 Pyrgos
@@ -36497,6 +37457,7 @@ Pyu
 pywng yang
 pywngyang
 Pyöngyang
+Páez
 Pájara
 Pánlóngchéng Jīngjì Kāifāqū
 Pánuco
@@ -36506,6 +37467,9 @@ Párizs
 Pátapo
 Pátra
 Pátzcuaro
+Pávlovo
+Pávlovsk
+Pávlovskaya
 Pâiu-iòng
 Pâu-thèu-sṳ
 Pão de Açúcar
@@ -36523,6 +37487,7 @@ Pénjamo
 Péqùin
 Pérama
 Pérez
+Pérgamo
 Périgueux
 Péruwelz
 Pétionville
@@ -36533,6 +37498,8 @@ Píritu
 Písek
 Pòtoprens
 Pó-tēng-chhī
+Pójvistnevo
+Pólatsk
 Pórticos de San Antonio
 Póvoa de Santa Iria
 Póvoa de Varzim
@@ -36542,6 +37509,8 @@ Pôrto de São Francisco dos Casaes
 Põhja-Tallinn
 Púchov
 Púne
+Púshkar
+Púshkino
 Püspökladány
 Püttlingen
 Pýrgos
@@ -36670,9 +37639,11 @@ QAX
 Qayroqqum
 Qayseri
 qazan
+Qazax
 Qazianteb
 Qaziantep
 Qazvin
+Qazvín
 Qaşabeh-e Karaj
 Qaşr al Qarabūllī
 Qaşr Bin Ghashīr
@@ -36756,6 +37727,7 @@ Qir Moav
 Qiryat Ata
 Qiryat Bialik
 Qiryat HaYovel
+Qiryat Mal'aji
 Qiryat Mal'akhi
 Qiryat Motsqin
 Qiryat Shmona
@@ -36778,6 +37750,7 @@ QNI
 qnw
 Qo'qon
 Qo'shko'pir
+Qobu
 Qods
 Qom
 Qonce
@@ -36936,6 +37909,7 @@ Qujing
 Qujing Hiria
 Qulsary
 quluniat
+Qundūz
 Qunghirot
 Qurayyat
 Qurayyāt
@@ -36957,6 +37931,7 @@ Quzhou
 Quán Hàu
 Québec
 Quíbor
+Quíos
 Quý Cảng
 Quý Dương
 Quţūr
@@ -37044,6 +38019,7 @@ Radlin
 Radnor
 radodara
 Radolfzell
+Radolfzell am Bodensee
 Radom
 Radomsko
 Radomyshl
@@ -37140,6 +38116,7 @@ Rajsamand
 Rajshahi
 Rajula
 Rajura
+Rajín
 Rajākheri
 Rakhiv
 Rakivka
@@ -37163,6 +38140,7 @@ Ramachettipalaiyam
 Ramada
 Ramadi
 Ramagundam
+Ramala
 Ramallah
 Ramallo
 Raman
@@ -37171,7 +38149,7 @@ Ramanattukara
 Ramanayyapeta
 Ramapuram
 Ramat Gan
-Ramat HaSharon
+Ramat Hasharon
 Ramavarappadu
 Rambouillet
 ramci
@@ -37297,6 +38275,7 @@ Raposo Tavares
 Raposos
 Rapperswil
 Raqo
+Raqqa
 Ras Al Khaimah
 Ras el Aioun
 Ras el Ma
@@ -37332,6 +38311,7 @@ Rathenow
 Rathfarnham
 Ratia
 Ratingen
+Ratisbona
 Ratlam
 Ratlām
 Ratnagiri
@@ -37460,6 +38440,7 @@ Reghaïa
 Reghin-Sat
 Regiao de Campinas
 Regina
+Regio de Calabria
 Regio de Callao
 Registro
 Região de Campinas
@@ -37475,6 +38456,7 @@ Rehovot
 Rehsifi
 Reẖovot
 Reigate
+Reikiavik
 Reims
 Reinach
 Reinbek
@@ -37489,8 +38471,10 @@ Rejon placu Grunwaldzkiego
 Rejon placu Swietego Macieja
 Rejon placu Świętego Macieja
 Rejon ulicy Traugutta
+Rejovot
 Relau
 Relizane
+Relizán
 Remagen
 Remanso
 Rembangan
@@ -37526,6 +38510,7 @@ Renningen
 Reno
 Renqiu
 Rensha
+Rentería
 Renton
 Renukut
 Renukūt
@@ -37538,6 +38523,7 @@ Reo
 reon
 Reoti
 Repalle
+Reparto Alamar
 Repelon
 Repelón
 Repentigny
@@ -37582,6 +38568,7 @@ Rewari
 Rewāri
 Rexburg
 Reyes Acozac
+Reyes la Paz
 Reyhanli
 Reyhanlı
 Reykjanesbaer
@@ -37644,6 +38631,9 @@ Riado
 Riadum
 Rialto
 Riant
+Riazhsk
+Riazán
+Ribarroja
 Ribarroja del Turia
 Ribas do Rio Pardo
 Ribat Al Khayr
@@ -37695,6 +38685,7 @@ Riemst
 Riesa
 Rietberg
 Rieti
+Riffa
 Rifu
 Riga
 Rihad
@@ -37823,6 +38814,7 @@ Risalpur Cantonment
 Risca
 Rishikesh
 Rishon LeTsiyyon
+Rishon LeZion
 Rishra
 Rishton
 Rishīkesh
@@ -37927,6 +38919,7 @@ Rodolfo Sanchez Taboada
 Rodolfo Sánchez Taboada
 Rodovre
 Rodriguez
+Rodríguez
 Roehampton
 Roeme
 Roermond
@@ -37964,6 +38957,7 @@ Romano di Lombardia
 Romans-sur-Isere
 Romans-sur-Isère
 Romblon
+Romblón
 rome
 Romeoville
 Romford
@@ -38011,6 +39005,7 @@ Rorainópolis
 roranro
 Rosa Zarate
 Rosales
+Rosales de Pangasinán
 Rosamond
 Rosana
 rosanzerusu
@@ -38143,6 +39138,7 @@ Roy
 Royal Leamington Spa
 Royal Oak
 Royal Palm Beach
+Royal Sutton Coldfield
 Royal Tunbridge Wells
 Royan
 Royston
@@ -38160,7 +39156,9 @@ Rrashbull
 rsyph
 Rtishchevo
 RTO
+Rtíshchevo
 Ruaha
+Ruan
 ruanda
 Ruangwa
 Rubanda
@@ -38198,9 +39196,11 @@ Rugby
 Rugeley
 RUH
 Ruhango
+Ruhengeri
 rui an
 Rui'an
 Ruidian
+Ruinas de Palenque
 Ruiru
 Ruislip
 Rujewa
@@ -38248,6 +39248,7 @@ Rutoma
 Rutshuru
 Ruvo di Puglia
 Ruwa
+Ruwais
 Ruwandiz
 Ruy Barbosa
 Ruyin
@@ -38301,8 +39302,10 @@ Rájpur
 Rákoskeresztúr
 Rákospalota
 Rákosszentmihály
+Rámenskoye
 Ráncsí
 Rávalpindí
+Rávena
 Ráňčí
 Râmnicu Sărat
 Râmnicu Vâlcea
@@ -38313,14 +39316,18 @@ Råmma
 Råsunda
 Rémire-Montjoly
 Réo
+Rétino
 Ríad
 Rím
+Rímini
 Río Abajo
 Río Blanco
+Río Branco
 Río Bueno
 Río Cauto
 Río Ceballos
 Río Chico
+Río Claro
 Río Colorado
 Río Cuarto
 Río de Janeiro
@@ -38328,15 +39335,20 @@ Río de Teapa
 Río Gallegos
 Río Grande
 Río Guayabal de Yateras
+Río Linda
 Río Segundo
 Río Tercero
+Ríoverde
 Rîbniţa
+Rîbnița
 Róm
 Róma
+Róterdam
 Różanka-Polanka
 Rösrath
 Rødovre
 Rüsselsheim am Main
+Rýbinsk
 Rābigh
 Rādhanpur
 Rāghogarh
@@ -38436,6 +39448,7 @@ sa-cyacvanga
 Sa-erh-t'u
 Sa-ning
 Saaba
+Saafelden
 Saalfeld
 Saalfelden am Steinernen Meer
 Saanich
@@ -38496,6 +39509,7 @@ Sacomã
 Sacramento
 Sadabad
 Sadabe
+Sadah
 Sadalgi
 Sadao
 Sadasivpet
@@ -38530,6 +39544,7 @@ Safonovo
 Safranbolu
 Safwa
 Safwan
+Safí
 Safīpur
 Saga
 Sagae
@@ -38598,6 +39613,7 @@ saina di'ego
 saina entoniyo
 sainazaina
 Saint Albans
+Saint Albert
 Saint Andrews
 Saint Charles
 Saint Clair Shores
@@ -38613,6 +39629,7 @@ Saint John West
 Saint John's
 Saint Joseph
 Saint Kilda
+Saint Louis
 Saint Louis Park
 Saint Matthews
 Saint Michael
@@ -38625,6 +39642,7 @@ Saint Petersbourg
 Saint Petersburg
 Saint Pierre
 Saint Pétersbourg
+Saint Thomas
 Saint Thomas Mount
 Saint-Amand-les-Eaux
 Saint-Ambroise
@@ -38754,6 +39772,7 @@ saitama
 Saito
 Saiyad-ul-ajaib
 Sajgon
+Sajnin
 Sakado
 Sakai
 Sakai-nakajima
@@ -38801,6 +39820,7 @@ Saladillo
 Salaga
 Salah Bey
 Salalah
+Salalá
 Salama
 Salamanca
 Salamedu
@@ -38822,6 +39842,7 @@ Saldanha
 Sale
 Sale Al Jadida
 Salehieh
+Salejard
 Salekhard
 Salem
 Salerno
@@ -38835,6 +39856,7 @@ Salgotarjan
 Salgueiro
 Salgótarján
 Sali
+Saligorsk
 Saligram
 Salihli
 Salima
@@ -38896,10 +39918,12 @@ salwadwr
 Salwá
 Salyan
 Salzburg
+Salzburgo
 Salzgitter
 Salzkotten
 Salé
 Salé Al Jadida
+Salónica
 Salāya
 Sam
 Sam Phran
@@ -38933,10 +39957,12 @@ Samar osh
 samara
 Samarae
 Samarang
+Samarcanda
 Samare
 Samarga
 Samarinda
 Samarkand
+Samarkanda
 Samaro
 Samastipur
 Samba
@@ -38991,6 +40017,7 @@ Samāna
 Samāra
 Samāstipur
 San
+San Adrián de Besós
 San Agustin
 San Agustín
 San al Hajar al Qibliyah
@@ -39004,6 +40031,7 @@ San Andres Xecul
 San Andrés
 San Andrés Cholula
 San Andrés Cuexcontitlán
+San Andrés de la Barca
 San Andrés del Rabanedo
 San Andrés Itzapa
 San Andrés Tuxtla
@@ -39012,6 +40040,7 @@ San Angelo
 San Antero
 San Antonijus
 San Antonio
+San Antonio Abad
 San Antonio Acahualco
 San Antonio de Areco
 San Antonio de Bejar
@@ -39039,12 +40068,13 @@ San Bartolomé de Tirajana
 San Benedetto del Tronto
 San Benito
 San Benito Abad
+San Bernandino Tlaxcalancingo
 San Bernardino
 San Bernardino Tlaxcalancingo
 San Bernardo
 San Blas-Canillejas
 San Bonifacio
-San Borja
+san borja
 San Bruno
 San Buenaventura
 San Carlo All'Arena
@@ -39055,6 +40085,7 @@ San Carlos de Bolívar
 San Carlos del Zulia
 San Carlos Park
 San Cataldo
+San Celoni
 San Chaung
 San Clemente
 San Cristobal
@@ -39063,6 +40094,7 @@ San Cristobal Ecatepec
 San Cristobal Ecatepec de Morelos
 San Cristobal Verapaz
 San Cristóbal
+San Cristóbal de La Laguna
 San Cristóbal de las Casas
 San Cristóbal Ecatepec
 San Cristóbal Ecatepec de Morelos
@@ -39080,10 +40112,13 @@ San Donato
 San Donato Milanese
 San Donà di Piave
 san dyyghw
+San Egreve
 San Estanislao
 San Esteban
 San Felice A Cancello
 San Felipe
+San Felipe de Puerto Plata
+San Feliú de Llobregat
 San Ferdinando
 San Fermin
 San Fermín
@@ -39091,10 +40126,15 @@ San Fernando
 San Fernando de Apure
 San Fernando de Henares
 San Fernando de Monte Cristi
+San Fernando del Valle de Catamarca
 San Francisco
 San Francisco Acuautla
+San Francisco Altepexi
+San Francisco Coacalco
 San Francisco Cuaxusco
+San Francisco Cuaxuxco
 San Francisco De Borja
+San Francisco de Campeche
 San Francisco de los Romo
 San Francisco de Macoris
 San Francisco de Macorís
@@ -39102,6 +40142,7 @@ San Francisco de Quito
 San Francisco de Yojoa
 San Francisco del Rincon
 San Francisco del Rincón
+San Francisco del Sur
 San Francisco El Alto
 San Francisco Tesistan
 San Francisco Tesistán
@@ -39109,8 +40150,10 @@ San Francisco Tlalcilalcalpan
 San Francisco Zapotitlan
 San Francisco Zapotitlán
 San Gabriel
+San Galo
 San German
 San Germán
+San Geronimo Ixtepec
 San Gil
 San Giorgio a Cremano
 San Giovanni a Teduccio
@@ -39128,8 +40171,10 @@ San Ignacio de Sabaneta
 San Ignacio de Velasco
 San Ildefonso
 San Isidro
+San Isidro de El General
 San Jacinto
 San Javier
+San Javier de Loncomilla
 San Jeronimo
 San Jeronimo Cuatro Vientos
 San Jerónimo
@@ -39158,6 +40203,7 @@ San Jose Guadalupe Otzacatipan
 San Jose Iturbide
 San Jose Pinula
 San Josecito
+San Josesito
 San José
 San José de Barlovento
 San José de Colinas
@@ -39171,20 +40217,25 @@ San José de Ocoa
 San José del Cabo
 San José del Castillo
 San José del Guaviare
+San José del Monte
 San José del Quince
 San José del Valle
+San José el Quince
 San José Guadalupe Otzacatipan
 San José Iturbide
 San José Pinula
 San Juan
+San Juan Acatzingo
 San Juan Bautista
 San Juan Capistrano
+San Juan de Alicante
 San Juan de Aznalfarache
 San Juan de Dios
 San Juan de Flores
 San Juan de la Maguana
 San Juan de los Lagos
 San Juan de los Morros
+San Juan de Terranova
 San Juan de Uraba
 San Juan de Urabá
 San Juan del Cesar
@@ -39229,6 +40280,7 @@ San Martin Cuautlalpan
 San Martin de la Vega
 San Martin de los Andes
 San Martin de Pangoa
+San Martin Texmelucan
 San Martin Texmelucan de Labastida
 San Martín
 San Martín Azcatepec
@@ -39236,6 +40288,8 @@ San Martín Cuautlalpan
 San Martín de la Vega
 San Martín de los Andes
 San Martín de Pangoa
+San Martín Texmelucan
+San María Totoltepec
 San Mateo
 San Mateo Atenco
 San Mateo Huitzilzingo
@@ -39254,6 +40308,7 @@ San Miguel del Padron
 San Miguel del Padrón
 San Miguel el Alto
 San Miguel Topilejo
+San Miguel Xico
 San Miguelito
 San Miniato
 San Miniato Basso
@@ -39263,8 +40318,10 @@ San Nicola la Strada
 San Nicolas
 San Nicolas de los Arroyos
 San Nicolas de los Garza
+San Nicolás de Ilocos
 San Nicolás de los Arroyos
 San Nicolás de los Garza
+San Nicolás de los Garzas
 San Ntienko
 San Onofre
 San Pa Tong
@@ -39291,22 +40348,27 @@ San Pedro Alcántara
 San Pedro Ayampuc
 San Pedro Carcha
 San Pedro Carchá
+San Pedro Cholula
 San Pedro de Copan
 San Pedro de Copán
 San Pedro de Jujuy
 San Pedro de la Paz
+San Pedro de Las Colonias
 San Pedro de Lloc
 San Pedro de Macoris
 San Pedro de Macorís
+San Pedro de Ribas
 San Pedro de Uraba
 San Pedro de Urabá
 San Pedro del Pinatar
 San Pedro Garza Garcia
 San Pedro Garza García
+San Pedro Madera
 San Pedro Sacatepequez
 San Pedro Sacatepéquez
 San Pedro Sula
 San Pedro Totoltepec
+San Pedro y San Pablo
 San Petersburgo
 San Pietro a Patierno
 San Pietroburgo
@@ -39316,6 +40378,7 @@ San Polo del Braxil
 San Poulo
 San Poło del Braxil
 San Pàul ëd Brasil
+San Quirico de Tarrasa
 San Rafael
 San Rafael Abajo
 San Rafael Arriba
@@ -39325,6 +40388,7 @@ San Rafael Oriente
 San Rafael Tlanalapan
 San Ramon
 San Ramon de la Nueva Oran
+San Ramón
 San Ramón de la Nueva Orán
 San Roque
 San Salvador
@@ -39343,6 +40407,7 @@ San Sebastián
 San Sebastián de los Reyes
 San Sebastián de Mariquita
 San Sebastián el Grande
+San Sebastián sobre Loira
 San Severo
 San Simon
 San Tan Valley
@@ -39352,10 +40417,13 @@ San Tin
 San Tung Chung Hang
 San Vicent del Raspeig
 San Vicente
+San Vicente Chicoloapan
+San Vicente de Baracaldo
 San Vicente de Canete
 San Vicente de Cañete
 San Vicente de Moravia
 San Vicente de Tagua Tagua
+San Vicente del Raspeig
 San Vito dei Normanni
 san ya
 san ya shi
@@ -39468,6 +40536,7 @@ Sangariā
 Sangarébougou
 Sangarédi
 Sangay
+Sangenjo
 Sanger
 Sangerhausen
 sangha'i
@@ -39559,6 +40628,8 @@ Sanpaulu
 sanpauro
 Sanqu
 Sanremo
+Sansanné-Mango
+Sanse
 Sansheng
 Sanshui
 Sant Adria de Besos
@@ -39574,6 +40645,7 @@ sant btrsbrgh
 Sant Carles de la Rapita
 Sant Carles de la Ràpita
 Sant Celoni
+Sant Cugat
 Sant Cugat del Valles
 Sant Cugat del Vallès
 Sant Feliu de Guixols
@@ -39605,6 +40677,7 @@ Sant'jago-de-los-Trejnta-Kabal'eros
 Sant-Petersbourg
 Santa Ana
 Santa Ana Chiautempan
+Santa Ana del Táchira
 Santa Ana Xalmimilulco
 Santa Anita
 Santa Barbara
@@ -39631,6 +40704,7 @@ Santa Cruz da Serra
 Santa Cruz das Palmeiras
 Santa Cruz de Barahona
 Santa Cruz de El Seibo
+Santa Cruz de Juventino Rosas
 Santa Cruz de la Palma
 Santa Cruz de la Sierra
 Santa Cruz de los Taques
@@ -39651,6 +40725,7 @@ Santa Elena
 Santa Elena de Uairen
 Santa Elena de Uairén
 Santa Eugenia
+Santa Eulalia del Río
 Santa Eularia des Riu
 Santa Eulària des Riu
 Santa Fe
@@ -39680,6 +40755,7 @@ Santa Lucia
 Santa Lucia Cotzumalguapa
 Santa Lucía
 Santa Lucía Cotzumalguapa
+Santa Lucía de Tirajana
 Santa Luzia
 Santa Luzia do Para
 Santa Luzia do Parua
@@ -39695,6 +40771,7 @@ Santa Maria da Boa Vista
 Santa Maria da Vitoria
 Santa Maria da Vitória
 Santa Maria das Barreiras
+Santa Maria de Barbera
 Santa Maria de Belem do Grao Para
 Santa Maria de Belém do Grão Pará
 Santa Maria de Jesus
@@ -39703,18 +40780,22 @@ Santa Maria de Jetibá
 Santa Maria del Buen Ayre
 Santa Maria do Para
 Santa Maria do Pará
+Santa Maria dos Olivais
 Santa Maria Totoltepec
 Santa Marta
 Santa María
 Santa María Ajoloapan
 Santa María Atzompa
 Santa María Chimalhuacán
+Santa María de Barberà
 Santa María de Jesús
 Santa María del Buen Ayre
 Santa María Totoltepec
 Santa Monica
+Santa Mónica
 Santa Paula
 Santa Perpetua de Mogoda
+Santa Perpetua de Moguda
 Santa Perpètua de Mogoda
 Santa Peterburg
 Santa Pola
@@ -39773,6 +40854,7 @@ Santana do Acaraú
 Santana do Araguaia
 Santana do Cariri
 Santana do Ipanema
+Santana do Livramento
 Santana do Paraiso
 Santana do Paraíso
 Santander
@@ -39792,11 +40874,13 @@ Santiago de Cao
 Santiago de Chile
 Santiago de Compostela
 Santiago de Cuba
+Santiago de Guatimala
 Santiago de Guayaquil
 Santiago de las Vegas
 Santiago de Leon de Caracas
 Santiago de León de Caracas
 Santiago de los Caballeros
+Santiago de los Caballeros de Guatemala
 Santiago de los Kampagieros
 Santiago de Maria
 Santiago de María
@@ -39821,6 +40905,7 @@ Santiago Teyahualco
 Santiago Tlachco
 Santiago Tlacotepec
 Santiago Tulantepec
+Santiago Tulantepec de Lugo Guerrero
 Santiago Tuxtla
 santiagodeloseukabayeloseu
 Santiagu di Queretaro
@@ -39908,6 +40993,9 @@ Sants
 Sants-Montjuic
 Sants-Montjuïc
 Santuario
+Santuchu
+Santurce
+Santurce-Antiguo
 Santurtzi
 Santutxu
 santyaghw
@@ -40138,6 +41226,7 @@ Sarakhs
 Saraktash
 Saram
 Saran
+Saranda
 Sarande
 Sarandi
 Sarandë
@@ -40181,6 +41270,7 @@ Sarikamis
 Sarikei
 Sarishabari
 Sarishābāri
+Sariwon
 Sariwon-si
 Sariwŏn-si
 sarja
@@ -40198,6 +41288,7 @@ Sarov
 Sarpol-e Zahab
 Sarpsborg
 Sarqant
+Sarrebruck
 Sarreguemines
 Sarria
 Sarria-Sant Gervasi
@@ -40219,6 +41310,8 @@ Sarykemer
 Sarza
 Sarzana
 Sarzedo
+Sarátov
+Sarí
 Sarāb
 Sarāi Mīr
 Sarāi Ākil
@@ -40369,6 +41462,7 @@ Scarborough
 Scarborough Village
 Scarsdale
 Sceaux
+Schaarbeek
 Schaerbeek
 Schaffhausen
 Schagen
@@ -40465,6 +41559,7 @@ Seaside
 SeaTac
 Seattle
 Sebastian
+Sebastián
 Sebauh
 Sebdou
 Sebes
@@ -40485,6 +41580,7 @@ Sedan
 Seddouk
 Sedeh Lanjan
 Sedeh Lanjān
+Sederot
 Sedhiou
 Sedniejos
 Sedrata
@@ -40502,9 +41598,11 @@ Segezha
 Segou
 Segovia
 Segrate
+Segu
 Seguela
 Seguin
 Segundo Ensanche
+Segú
 Sehnde
 Sehore
 Sehwan
@@ -40898,6 +41996,7 @@ Shaji
 Shajing
 Shajing Residential District
 Shajing Town
+Shajty
 Shakargarh
 Shakaskraal
 Shaker Heights
@@ -40915,6 +42014,7 @@ Shali
 Shalkar
 Shalkot
 Shalqar
+Shalí
 Sham Chan
 Sham Chun
 Sham Chun Hu
@@ -40926,6 +42026,7 @@ Shambu
 Shamen
 Shamgarh
 Shamkhir
+Shamkhor
 Shamli
 Shamsabad
 Shamshabad
@@ -41038,6 +42139,7 @@ sharja
 Sharjah
 Sharjah city
 sharjh
+Sharm el-Sheij
 Sharm el-Sheikh
 Sharqpur Sharif
 sharuja
@@ -41046,6 +42148,7 @@ Sharīfābād
 Shashamane
 Shathi'ul-Furat
 Shatura
+Shatúra
 Shaw
 Shawan
 Shawei
@@ -41185,6 +42288,7 @@ Shibin al Kawm
 Shibin al Qanatir
 Shibirghan
 Shibirghān
+Shibirgán
 Shibukawa
 Shibushi
 Shibuya
@@ -41504,6 +42608,7 @@ shytaghwngh
 shytajwnj
 shyyan
 Shànghǎi
+Shélejov
 Shādegān
 Shādīpur Julāna
 Shāhbāzpur Town
@@ -41671,6 +42776,7 @@ Sidrolândia
 Sidziadzuangas
 Sidzjadzuana
 Sidzjadzuang
+Sidón
 Siedlce
 Siegburg
 Siegen
@@ -41699,6 +42805,7 @@ Sighisoara
 Sighișoara
 Sigjaguango
 Sigli
+Sigmaringa
 Sigmaringen
 Siguatepeque
 Siguiri
@@ -41759,6 +42866,7 @@ Silvani
 Silvania
 Silvassa
 Silver Firs
+Silver Hill
 Silver Lake
 Silver Spring
 Silverdale
@@ -41778,6 +42886,7 @@ Simei New Town
 Simele
 Simen
 Simferopol
+Simferópol
 Simga
 Simi Valley
 Simin Shahr
@@ -41831,6 +42940,7 @@ sing-gapoleu
 Sing-iong
 Singa
 Singampunari
+Singampuneri
 Singan
 Singanallur
 Singano
@@ -41890,6 +43000,7 @@ Sinop
 Sinp'o
 Sinsheim
 Sinsiang-hsien
+Sint Katelijne Waver
 Sint Petersbork
 Sint-Amandsberg
 Sint-Andries
@@ -41915,6 +43026,7 @@ Sinŭiju
 Siocon
 Siofok
 Sioh-ga-cong
+Sion
 Siong-chiu-chhi
 Siong-ciu
 Siong-daik
@@ -41928,7 +43040,9 @@ Sipalay
 Sipe Sipe
 Siping
 Sipitang
+Sipoo
 Siqueira Campos
+Siquem
 Siquirres
 Sir Muttra
 Sira
@@ -41981,6 +43095,7 @@ Sisak
 Sisauli
 Sishui
 Sisli
+Sisofón
 Sisophon
 Siswa Bazar
 Siswā Bāzār
@@ -42137,6 +43252,8 @@ Slupsk
 Slutsk
 slwadwr
 Slyudyanka
+Slántsy
+Slávgorod
 Smach Mean Chey
 Smaliavicy
 Smaliavičy
@@ -42289,11 +43406,13 @@ Soledad de Graciano Sanchez
 Soledad de Graciano Sánchez
 Soledade
 Solenzo
+Soleura
 Solhan
 Soligorsk
 Solihull
 Solikamsk
 Soliman
+Solimania
 Solin
 Solingen
 Sollentuna
@@ -42659,6 +43778,7 @@ Srīperumbūdūr
 Srīrāmnagar
 Srīsailain
 Srīvardhan
+SS de los Reyes
 SSA
 ssan-ya si
 Ssu-ming
@@ -42673,6 +43793,7 @@ St Petersburg
 Staaken
 Stabat
 Stabroek
+Stade
 Stadskanaal
 Stadtallendorf
 Stadthagen
@@ -42681,6 +43802,7 @@ Staffanstorp
 Stafford
 Staines
 Stains
+Stajánov
 stak'hom
 stakahoma
 Stakgol'm
@@ -42895,6 +44017,7 @@ stwkhwlm
 stwqhwlm
 stxkholm
 Stócólm
+Stúpino
 Střížkov
 su cow
 su la te
@@ -42983,7 +44106,9 @@ Sujangarh
 Sujanpur
 sujho'u
 Sujiatun
+Sujumi
 Sujānpur
+Suk Aharas
 Sukabumi
 Sukagawa
 Sukawati
@@ -43022,12 +44147,14 @@ Sultanganj
 Sultangazi
 Sultanpur
 Sultonobod
+Sultán Kudarat
 Sultānganj
 Sultānpur
 Suluktu
 Suluova
 Sulur
 Suluru
+Sulya
 Sulzbach
 Sulzbach-Rosenberg
 Sulţānah
@@ -43158,6 +44285,7 @@ surabaya
 Surajgarh
 Surajpur
 Surakarta
+Surala
 Surallah
 Surampatti
 Suran
@@ -43197,6 +44325,7 @@ Suruç
 Suryampalaiyam
 Suryanagar
 Suryaraopeta
+Susa
 Susaki
 Susangerd
 Susanville
@@ -43227,6 +44356,7 @@ Suvorovskaya
 Suwa
 Suwalki
 Suwanee
+Suwayda
 Suwaylih
 Suwałki
 suwon
@@ -43410,6 +44540,7 @@ Szófia
 Szöul
 Sài Gòn
 Sàng-tû-sṳ
+Sámal
 Sán Đầu
 Sáng-tàu
 Sárvár
@@ -43489,6 +44620,7 @@ São João da Talha
 São João de Meriti
 São João de Pirabas
 São João del Rei
+São João del-Rei
 São João do Paraíso
 São João do Piauí
 São João do Rio do Peixe
@@ -43570,7 +44702,9 @@ Sélestat
 Sélibaby
 Séoul
 Sérres
+Sértolovo
 Sétif
+Séverskaya
 Sêûl
 Sìng-dŭ
 Sídney
@@ -43597,6 +44731,7 @@ Sønderborg
 Sû-chû-sṳ
 Südstadt
 Sühbaatar
+Sükhbaatar
 Sürmene
 Sādatpur Gujran
 Sādpalli
@@ -43743,6 +44878,7 @@ Tabarka
 Tabas
 Tabatinga
 Tabay
+Tabernes de Valldigna
 tabeulijeu
 Tabira
 Tabligbo
@@ -43879,6 +45015,7 @@ Taichow
 Taichung
 Taicungas
 Taiden
+Taif
 Taifa
 Taifu
 Taigiouan
@@ -44064,6 +45201,7 @@ Tallahassee
 Tallang-dong
 Tallbisah
 Tallbīsah
+Tallin
 Tallinn
 Tallkalakh
 Tallkayf
@@ -44079,6 +45217,7 @@ Talwandi Sabo
 Talwandi Sābo
 Talwara
 Talwāra
+Talísay
 Talā
 Talāja
 Tam A
@@ -44113,6 +45252,7 @@ Tamandare
 Tamandaré
 Tamanghasset
 Tamano
+Tamanrasset
 Tamansourt
 Tamarac
 Tamarana
@@ -44205,6 +45345,7 @@ tang-elang
 Tanga
 Tangail
 Tangancicuaro de Arista
+Tangancícuaro
 Tangancícuaro de Arista
 Tangara da Serra
 Tangarang
@@ -44259,6 +45400,7 @@ tanh
 Tanhacu
 Tanhaçu
 tanijeri
+Tanis
 Tanjay
 tanje
 Tanjer
@@ -44313,6 +45455,7 @@ Taozhou
 Taozhuang
 Tapa
 Tapachula
+Tapachula de Córdova y Ordóñez
 Tapah Road
 Tapaua
 Tapauá
@@ -44356,6 +45499,7 @@ Taraz
 Tarbes
 Tarch'a Sodo
 Taree
+Tarento
 Targovishte
 Targoviste
 Targowek
@@ -44372,6 +45516,7 @@ Tarija
 Tarikere
 Tarime
 Tarko-Sale
+Tarko-Salé
 Tarkwa
 Tarlac City
 Tarma
@@ -44394,12 +45539,14 @@ Tarqui
 Tarragona
 Tarrega
 Tarsadi
+Tarso
 Tarsus
 Tartagal
 Tartar
 Tartarugalzinho
 Tartu
 Tartus
+Tartús
 Tarub
 Tarui
 Tarumizu
@@ -44482,12 +45629,14 @@ Taunton
 Taunusstein
 Taupo
 Taurage
+Tauragė
 Tauramena
 Tauranga
 Tauris
 Tauá
 Tavares
 Tavda
+Tavdá
 Tavernes de la Valldigna
 Taverny
 Taveta
@@ -44601,6 +45750,7 @@ Teaneck
 Teapa
 Tearce
 teareantea
+Tebas
 Tebedu
 Tebela
 Tebesbest
@@ -44669,6 +45819,7 @@ teirani
 Teixeira de Freitas
 Tejar
 Tejen
+Tejerias
 Tejucuoca
 Tejupilco de Hidalgo
 Tejuçuoca
@@ -44716,6 +45867,7 @@ Telukbetung
 Teluknaga
 Telychka
 Telêmaco Borba
+Telšiai
 Tema
 Tema New Town
 Temara
@@ -44784,6 +45936,7 @@ Tepatitlan de Morelos
 Tepatitlán de Morelos
 Tepatlaxco de Hidalgo
 Tepeaca
+Tepeaca de Negrete
 Tepeapulco
 Tepecik
 Tepeji del Rio de Ocampo
@@ -44815,6 +45968,7 @@ Terlizzi
 Termas de Rio Hondo
 Termas de Río Hondo
 Terme
+Termez
 Termini Imerese
 Termoli
 Ternate
@@ -44838,9 +45992,11 @@ Terrebonne
 Terrell
 Terrier Rouge
 Terrytown
+Terter
 Teruel
 Tervuren
 Terzigno
+Tesalónica
 Teshi Old Town
 Tessaoua
 Tessenderlo
@@ -44851,6 +46007,7 @@ Tetovo
 Tettnang
 Tetu
 Tetuan de las Victorias
+Tetuán
 Tetuán de las Victorias
 Tetyan
 teubillisi
@@ -44869,7 +46026,9 @@ Tewrêz
 Tewulike
 Texarkana
 Texas City
+Texcoco
 Texcoco de Mora
+Teyahualco
 Teyateyaneng
 Teyjong shehiri
 Teyju shehiri
@@ -44913,6 +46072,7 @@ Thakurganj
 Thakurgaon
 Thal
 Thala
+Thalassery
 Tham Duong
 Tham Quyen
 Thamaga
@@ -44943,6 +46103,7 @@ Thanh pho Hue
 Thanh pho New York
 Thanh pho Ngan Xuyen
 Thanh pho Song Cong
+Thanh pho Tra Vinh
 Thanh Pho Uong Bi
 Thanh Thai Phien
 Thanh Vien
@@ -45235,11 +46396,13 @@ Tibagi
 Tibati
 Tibau do Sul
 Tiberias
+Tiberíades
 Tibilisi
 Tibiri
 Tiblisi
 Tiblissi
 Tiblíssi
+Tibur
 Tibîlîsî
 Tichouana
 Tichuana
@@ -45287,10 +46450,12 @@ Tihwa
 Tihwafu
 TIJ
 Tijara
+Tijoretsk
 Tijuana
 Tijuano
 Tijucas
 Tijucas do Sul
+Tijvin
 Tijāra
 Tikamgarh
 Tikapur
@@ -45309,6 +46474,7 @@ Tikri Kalān
 Tikrit
 Tikrīt
 Tilburg
+Tilburgo
 Tilda Newra
 Tilhar
 Tilili
@@ -45332,12 +46498,14 @@ Timbiqui
 Timbiquí
 Timbiras
 Timbo
+Timbu
 Timbuktu
 Timbó
 Time
 Times Square
 Timika
 Timimoun
+Timimún
 timisku
 Timisoara
 Timizart
@@ -45359,6 +46527,7 @@ Tindal
 Tinde
 Tindivanam
 Tindouf
+Tinduf
 Tine Biougra
 Ting Kau
 Ting-cou
@@ -45412,6 +46581,7 @@ Tirkadavur
 Tirkadavūr
 Tirmitine
 Tirmiz
+Tiro
 Tirora
 Tirorā
 Tirthahalli
@@ -45472,6 +46642,7 @@ Tiruvottiyur
 Tiruvottiyūr
 Tiruĉirapali
 Tiruččiráppalli
+Tiráspol
 Tirāwari
 Tirūrangādi
 Tisaiyanvilai
@@ -45491,6 +46662,7 @@ Tittagudi
 Titusville
 Titāgarh
 Tiu Keng Leng
+Tiumén
 Tivaouane
 Tiverton
 Tivoli
@@ -45504,6 +46676,7 @@ Tizayuca
 Tizi Gheniff
 Tizi Ouzou
 Tizi Rached
+Tizi Uzú
 Tizi-n-Tleta
 Tizimin
 Tizimín
@@ -45533,10 +46706,13 @@ Tlahtoāntepēc
 Tlahuac
 Tlajomulco de Zuniga
 Tlajomulco de Zúñiga
+Tlalcilalcalpan
 Tlalnepantla
+Tlalnepantla de baz
 Tlalpan
 Tlaltenango de Sanchez Roman
 Tlaltenango de Sánchez Román
+Tlanepantla de baz
 Tlapa de Comonfort
 Tlapacoyan
 Tlaquepaque
@@ -45585,6 +46761,7 @@ Tocio
 Tocoa
 Tocopilla
 Tocumen
+Tocuyo
 Todabhim
 Todaraisingh
 Todi
@@ -45627,11 +46804,15 @@ Tolentino
 Tolga
 Toli-Toli
 Toliara
+Toliatti
 tolonto
 Tolosa
+Tolosa de Francia
 Tolu Viejo
 Toluca
+Toluca de Lerdo
 Tolyatti
+Tolón
 Tolú Viejo
 Toma
 Tomakomai
@@ -45644,6 +46825,7 @@ Tomaszów Mazowiecki
 Tombel
 Tomboco
 Tombua
+Tombuctú
 Tombôco
 Tome
 Tome-Acu
@@ -45746,6 +46928,7 @@ Torqabeh
 Torquay
 Torrance
 Torre Annunziata
+Torre de Belém
 Torre del Greco
 Torre del Mar
 Torre-Pacheco
@@ -45757,6 +46940,7 @@ Torrelodones
 Torremaggiore
 Torremolinos
 Torrent
+Torrente
 Torreon
 Torres
 Torres Novas
@@ -45876,6 +47060,7 @@ Trang Bom
 Trangsund
 Trani
 Trapani
+Trapisonda
 Trappes
 Traralgon
 Trat
@@ -45889,6 +47074,7 @@ Travnik
 Trbovlje
 Trebic
 Trebinje
+Trebisonda
 Trebisov
 Trebišov
 Trecate
@@ -45898,6 +47084,7 @@ Trekhgornyy
 Trelew
 Trelleborg
 Tremblay-en-France
+Tremecén
 Tremedal
 Tremembe
 Tremembé
@@ -46054,6 +47241,7 @@ Tràm Chim
 Trâu Quỳ
 Trâu Thành
 Trångsund
+Tréveris
 Três Barras
 Três Corações
 Três Coroas
@@ -46219,6 +47407,7 @@ Tuan Nghia
 Tuanbao
 Tuantian
 Tuapse
+Tuapsé
 Tub
 tuba
 Tuban
@@ -46227,6 +47416,7 @@ Tubarjal
 Tubarão
 Tubas
 Tubbergen
+Tubinga
 Tubize
 Tubmanburg
 Tubod
@@ -46240,6 +47430,7 @@ Tuckahoe
 Tucker
 Tucson
 Tucuma
+Tucumán
 Tucumã
 Tucupido
 Tucupita
@@ -46271,6 +47462,7 @@ Tukwila
 Tula
 Tula de Allende
 Tulancingo
+Tulancingo de Bravo
 Tulangan Utara
 Tulantongo
 Tulare
@@ -46280,6 +47472,7 @@ Tulchyn
 Tulcán
 Tuljapur
 Tuljāpur
+Tulkarem
 Tulkarm
 Tullahoma
 Tullamore
@@ -46291,6 +47484,7 @@ Tulsipur
 Tulsīpur
 Tultepec
 Tultitlan de Mariano Escobedo
+Tultitlá de Mariano Escobedo
 Tultitlán de Mariano Escobedo
 Tulu Bolo
 Tulua
@@ -46298,6 +47492,7 @@ Tulum
 Tulun
 Tulungagung
 Tuluá
+Tulún
 Tumaco
 Tumasik
 Tumba
@@ -46318,6 +47513,7 @@ Tundla
 Tunduma
 Tunduru
 Tuneri
+Tunez
 Tung Chung
 Tung Tau Estate
 Tung-an
@@ -46374,6 +47570,7 @@ Turbat
 Turbo
 Turda
 Turek
+Turfán
 Turgalium
 Turgutlu
 Turgutreis
@@ -46384,6 +47581,7 @@ Turilandia
 Turilândia
 Turin
 Turinsk
+Turkestán
 Turkistan
 Turku
 Turlock
@@ -46396,6 +47594,7 @@ Turpan
 Turrialba
 Tursunzoda
 Turubah
+Turín
 Tuscaloosa
 Tuscany
 Tushan
@@ -46417,6 +47616,9 @@ Tuxpam de Rodriguez Cano
 Tuxpan
 Tuxtepec
 Tuxtla
+Tuxtla Gtz
+Tuxtla Gutiérrez
+Tuy
 Tuy Hoa
 Tuy Hòa
 Tuyen Chau
@@ -46497,6 +47699,7 @@ Tzuliutsing
 Tànger
 Tàrrega
 Tábor
+Tágum
 Tái-ciŭ
 Tái-nguòng
 Táinán
@@ -46553,7 +47756,9 @@ Törökszentmiklós
 Töwriz
 Tønder
 Tønsberg
+Túnez
 Túquerres
+Túxpam
 Túxpam de Rodríguez Cano
 Tûng-kón-sṳ
 Tübingen
@@ -46583,6 +47788,7 @@ Tārūt
 Tāsgaon
 Tāybād
 Tāzah Khūrmātū
+Tărgovište
 Tēpī
 Tētyan
 Tīkamgarh
@@ -46629,6 +47835,7 @@ Uagaduguo
 Uagadugú
 Ualog
 Uaqaduqu
+Uargla
 Uarini
 Uaua
 Uauá
@@ -46673,6 +47880,7 @@ Uckfield
 Ucu Seles
 Ucua
 Ucuma
+Udachni
 Udachny
 Udaipur
 Udaipura
@@ -46739,6 +47947,7 @@ Uijeongbu-si
 Uiju
 uin
 UIO
+Uitenhage
 Uithoorn
 Uiwang
 Ujar
@@ -46753,6 +47962,7 @@ Ujlipotvaros
 Ujpalota
 Ujpest
 Ujszeged
+Ujtá
 Ujungpandang
 Ukhan
 ukhani
@@ -46764,6 +47974,7 @@ Ukiah
 Ukiha
 Ukima
 Ukmerge
+Ukmergė
 Ukunda
 UKY
 Ul'san
@@ -46778,6 +47989,7 @@ Ulianopolis
 Ulianópolis
 Uliastay
 Uliyazhathura
+Uliánovsk
 Ullagaram
 Ullal
 Ulliyeri
@@ -46798,7 +48010,10 @@ Uluberiya
 ulumuchi si
 Ulundi
 Ulundurpet
+Ulyanovo
 Ulyanovsk
+Ulán Bator
+Ulán-Udé
 Uman
 Umarga
 Umargam
@@ -46818,12 +48033,14 @@ Umi
 Umina Beach
 Umirim
 Umluj
+Umm Al Quwain
 Umm Al Quwain City
 Umm as Summaq
 Umm as Summāq
 Umm Durman
 Umm Durmán
 Umm Durmān
+Umm el Bawaqui
 Umm el Fahm
 Umm el Faḥm
 Umm Ghuwaylinah
@@ -46891,6 +48108,7 @@ União
 União da Vitória
 União dos Palmares
 Unión de Reyes
+Unión Ferroviaria
 Unjha
 Unna
 Unnamalaikadai
@@ -46926,6 +48144,7 @@ Upper West Side
 Upplands Vaesby
 Upplands Väsby
 Uppsala
+Upsala
 Uptown
 Urachiche
 Urakam
@@ -46946,10 +48165,12 @@ Urbs Paulistana
 Urbs Pulchri Horizontis
 URC
 Urdaneta
+Urdaneta de Pangasinán
 Urena
 Ureshinomachi-shimojuku
 Ureña
 Urganch
+Urgench
 Urgut Shahri
 Uriangato
 Uritsk
@@ -46957,6 +48178,7 @@ Urk
 Urla
 Urmar
 Urmston
+Urmía
 Uromi
 Urrao
 Ursus
@@ -47008,6 +48230,7 @@ Uruçuca
 Uruçuí
 Uryupinsk
 Urziceni
+Urús-Martán
 Usa River
 Usagara
 Usak
@@ -47249,6 +48472,7 @@ Valuyki
 Valvachatottam
 Valvedditturai
 Valverde
+Valvettithurai
 Valência
 Vammala
 Van
@@ -47364,9 +48588,11 @@ Vasto
 Vasudevanallur
 Vasyl'evsky Ostrov
 Vasylkiv
+Vatakara
 Vaterstetten
 Vathirairuppu
 Vatican City
+Vaticano
 Vatomandry
 vatotara
 Vatra Dornei
@@ -47428,9 +48654,11 @@ Velez-Malaga
 Velika Gorica
 Velika Kladusa
 Velika Kladuša
+Veliki Nóvgorod
 Velikiy Novgorod
 Velikiy Ustyug
 Velikiye Luki
+Veliko Tarnovo
 Veliko Turnovo
 Veliko Tŭrnovo
 Velingara
@@ -47461,9 +48689,11 @@ Vence
 Venceremos
 Vencsou
 Vendome
+Vendrell
 Vendzou
 Vendôme
 Vendžou
+Venecia
 Venev
 Venezuela
 Venganoor
@@ -47502,6 +48732,7 @@ Verbania
 Vercelli
 Verden
 Verdun
+Verdún
 Vereeniging
 Verena
 Veresegyhaz
@@ -47529,6 +48760,7 @@ Verrettes
 Verrieres-le-Buisson
 Verrières-le-Buisson
 Versailles
+Versalles
 Versmold
 Vertentes
 Vertientes
@@ -47626,6 +48858,7 @@ Vienna
 Vienne
 Vieno
 Vientiane
+Vientián
 Viernheim
 Viersen
 Vierzon
@@ -47662,6 +48895,7 @@ Vikarabad
 Vikhorevka
 Vikindu
 Vikramasingapuram
+Viksa
 Vikārābād
 Vila Andrade
 Vila Bela da Santissima Trindade
@@ -47693,6 +48927,7 @@ Vila-seca
 Viladecans
 Vilafranca del Penedes
 Vilafranca del Penedès
+Vilafranca Penedes
 Vilagarcia de Arousa
 Vilagarcía de Arousa
 Vilangudi
@@ -47706,6 +48941,7 @@ Vilar
 Vilar de Andorinho
 Vilaseca
 Vilassar de Mar
+Vilassar del Mar
 Vilattikulam
 Vilavoorkkal
 Vilcun
@@ -47717,34 +48953,42 @@ Viljoenskroon
 Vilkhivskyi
 Vilkpede
 Vilkpėdė
+Villa Alegre de Paine
 Villa Alemana
+Villa Alhucemas
 Villa Allende
 Villa Altagracia
+Villa Altezoyuca
 Villa Angela
 Villa Bisono
 Villa Bisonó
 Villa Bruzual
 Villa Canales
 Villa Carlos Paz
+Villa Cisneros
 Villa Constitucion
 Villa Constitución
 Villa Consuelo
 Villa de Cura
+Villa de Fray Bentos
 Villa de Guadalupe
 Villa de Guadalupe Hidalgo
 Villa de Mayo
 Villa de San Antonio
 Villa de San Diego de Ubate
 Villa de San Diego de Ubaté
+Villa de Santiago
 Villa de Vallecas
 Villa del Rosario
 Villa Dolores
 Villa Elisa
 Villa Francisca
+Villa Fray Bentos
 Villa General San Martin
 Villa General San Martín
 Villa Gesell
 Villa Hayes
+Villa Hermosa
 Villa Hidalgo
 Villa Independencia
 Villa Lugano
@@ -47752,6 +48996,8 @@ Villa Madero
 Villa Maria
 Villa María
 Villa Mercedes
+Villa Montes
+Villa Nanchital
 Villa Nueva
 Villa Ocampo
 Villa Ortuzar
@@ -47762,15 +49008,19 @@ Villa Poeta Jose Galvez Barrenechea
 Villa Poeta José Gálvez Barrenechea
 Villa Regina
 Villa Rica
+Villa San Lorenzo
+Villa Sanjurjo
 Villa Santa Rita
 Villa Sarmiento
 Villa Vicente Guerrero
 Villa Yapacani
 Villa Yapacaní
 Villa Ángela
+Villa-Real
 Villabate
 Villach
 Villaflores
+Villafranca del Panadés
 Villafranca di Verona
 Villagran
 Villagrán
@@ -47785,6 +49035,8 @@ Villanueva
 Villanueva de la Canada
 Villanueva de la Cañada
 Villanueva de la Serena
+Villanueva de San Andrés
+Villanueva de San Andrés de Heybar
 Villanueva del Pardillo
 Villaquilambre
 Villaricca
@@ -47805,6 +49057,7 @@ Ville-Lumière
 Ville-Marie
 Ville-Émard
 Villefontaine
+Villefranche sobre Saona
 Villefranche-sur-Saone
 Villefranche-sur-Saône
 Villejuif
@@ -47831,6 +49084,7 @@ Villiers-sur-Marne
 Villingen-Schwenningen
 Villukuri
 Villupuram
+Vilna
 Vilnius
 Vilnohirsk
 Vilnyansk
@@ -47847,6 +49101,7 @@ Vina del Mar
 Vinales
 Vinarborg
 Vinaros
+Vinaroz
 Vinaròs
 Vinateros
 Vincennes
@@ -47978,9 +49233,11 @@ Vjena
 Vjenna
 Vl'gogradu
 Vlaardingen
+Vladicáucaso
 Vladikavkaz
 Vladimir
 Vladivostok
+Vladímir
 Vlissingen
 VLN
 Vlore
@@ -48019,6 +49276,7 @@ Volksdorf
 Volksrust
 Volla
 Volnkonkrant
+Volnovaja
 Volnovakha
 Volochysk
 Volodymyr-Volynskyi
@@ -48038,6 +49296,7 @@ Voorschoten
 Vordingborg
 Vorgashor
 Vorkuta
+Vorkutá
 Vorob'yovo
 Voronej
 Voronejo
@@ -48096,6 +49355,7 @@ Vršovice
 Vsetin
 Vsetín
 Vsevolozhsk
+Vsévolozhsk
 VTZ
 Vu Han
 Vu Ho
@@ -48190,11 +49450,16 @@ Vénissieux
 Véroia
 Víbora
 Víbora Park
+Víborg
 Vícar
 Víctor Rosales
 Vídeň
 Vín
 Vínarborg
+Vítebsk
+Vóljov
+Vólogda
+Vótkinsk
 Vô Tích
 Völklingen
 Vù-chû-sṳ
@@ -48238,6 +49503,7 @@ Wacha
 Wacheng Neighborhood
 Wachtberg
 Waco
+Wad Madani
 Wad Medani
 Wadayama
 Waddinxveen
@@ -48556,6 +49822,7 @@ weipang si
 Weir
 Weirton
 Weirton Heights
+Weissenburg
 Weißenburg in Bayern
 Weißenfels
 Weißensee
@@ -48600,6 +49867,7 @@ Wenceslau Braz
 Wenceslau Guimaraes
 Wenceslau Guimarães
 Wenchang
+Wenchi
 Wenchow
 Wenchow-fu
 Wendelstein
@@ -48631,6 +49899,7 @@ Werdohl
 Were Ilu
 Were Īlu
 Werl
+Werle
 Wermelskirchen
 Werne
 Wernigerode
@@ -48953,6 +50222,7 @@ Wolfenbüttel
 Wolfratshausen
 Wolfsberg
 Wolfsburg
+Wolfsburgo
 Wolgograd
 Wollert
 Wollongong
@@ -49106,6 +50376,7 @@ Wunstorf
 Wuppertal
 Wuqiao
 Wurumch'ih
+Wurzburgo
 Wurzen
 Wushan
 Wushipai
@@ -49196,10 +50467,12 @@ Xacmaz
 xad dam mam
 xah mda bad
 XAI
+Xai Xai
 Xai-Xai
 xak kra
 xal mati
 Xalab
+Xalapa
 Xalapa de Enriquez
 Xalapa de Enríquez
 Xalatlaco
@@ -49229,6 +50502,7 @@ Xarkov
 Xartum
 Xartûm
 Xativa
+Xauen
 Xaxim
 Xaçmaz
 xe dman tan
@@ -49427,6 +50701,8 @@ Xonacatlan
 Xonacatlán
 Xonobod
 Xoxocotla
+Xoxocotla Centro
+Xoxocotlan
 xu chang shi
 xu han
 xu hui
@@ -49488,6 +50764,7 @@ Ya-hsien
 Yabase
 Yabayo
 Yabelo
+Yablonovski
 Yablonovskiy
 Yabrud
 Yabrūd
@@ -49498,6 +50775,7 @@ Yachi
 Yachimata
 Yachiyo
 Yacuiba
+Yacuíba
 Yadagirigutta
 yadana
 Yadgir
@@ -49572,6 +50850,7 @@ Yamoto
 Yamoussoukro
 yamrytsar
 Yamuna Nagar
+Yamusukro
 Yan Besar
 yan cheng
 yan cheng shi
@@ -49619,6 +50898,7 @@ Yanghang
 Yanghe
 yanghtshw
 yanghwn
+Yangiabod
 Yangiobod
 Yangirabot
 Yangiyer
@@ -49726,6 +51006,7 @@ yaunde
 Yaundé
 Yauri
 Yautepec
+Yautepec de Zaragoza
 Yaval
 Yavatmal
 Yavatmāl
@@ -49767,6 +51048,7 @@ Yecheon
 Yecla
 Yedashe
 Yefremov
+Yefrémov
 Yegor'yevsk
 Yegorlykskaya
 Yegyi
@@ -49774,6 +51056,7 @@ Yehsien
 Yehud
 Yehud-Monosson
 Yei
+Yeji
 yekatelinbuleukeu
 yekaterinabaraga
 yekaterinabarga
@@ -49881,6 +51164,7 @@ yi yang
 yi yang shi
 yi zi mi er
 Yibin
+Yibuti
 YIC
 Yichang
 Yicheng
@@ -49914,6 +51198,7 @@ Ying-chou
 Yingchow
 Yingchow-fu
 Yingge
+Yingge Districto
 Yinggen
 Yingjiang
 Yingkou
@@ -49949,6 +51234,7 @@ Yixing Shi
 Yiyang
 Yiyang Shi
 Yiyang-hsien
+Yiyel
 Yizhou
 Yizhuang
 ykatrnbrg
@@ -50071,6 +51357,7 @@ Yoxannesburg
 Yoyogi
 Yozgat
 Ypenburg
+Ypres
 Ypsilanti
 yqtrynbwrg
 yryfan
@@ -50189,6 +51476,7 @@ Yuxi
 Yuxia
 Yuyao
 Yuzawa
+Yuzhno-Sajalinsk
 Yuzhno-Sakhalinsk
 Yuzhnoural'sk
 Yuzhnyy
@@ -50213,6 +51501,7 @@ Yylanly
 yynchwan
 YYZ
 Yángzhōu
+Yáquimo
 Yèrèvan
 Yérévan
 Yên Bái
@@ -50288,6 +51577,7 @@ Zagor'ye
 Zagora
 Zagreb
 Zahedan
+Zahedán
 Zahir Pir
 Zahirabad
 Zahirābād
@@ -50303,6 +51593,7 @@ Zajecar
 Zaječar
 Zakiyah
 Zakopane
+Zakłady Samochodowe Jelcz SA
 Zalaegerszeg
 Zalau
 Zalinjay
@@ -50331,6 +51622,7 @@ Zanesville
 Zango
 Zanjan
 Zanzibar
+Zanzíbar
 zao zhuang
 zao zhuang shi
 Zaouiet Sousse
@@ -50339,17 +51631,21 @@ Zaozhuang
 Zapala
 Zapolyarnyy
 Zapopan
+Zaporiyia
 Zaporizhzhya
+Zaporoye
 Zapotiltic
 Zapotlanejo
 Zapresic
 Zaprešić
 Zaqatala
+Zaragosa
 Zaragoza
 Zarand
 Zaranj
 Zarate
 Zarautz
+Zarauz
 Zaraysk
 Zaraza
 Zarechnyy
@@ -50378,6 +51674,7 @@ Zavodoukovsk
 Zavolzh'ye
 Zawiercie
 Zawiya
+Zawiyah
 Zawyat an Nwacer
 Zawyat an Nwaçer
 Zawyat ech Cheikh
@@ -50388,6 +51685,7 @@ zaybw
 Zayed City
 Zaysan
 Zayton
+Zaínsk
 Zaïbo
 Zaïo
 ZBD
@@ -50405,6 +51703,7 @@ Zefta
 Zeghanghane
 Zegoua
 Zehlendorf
+Zeila
 Zeist
 Zeitz
 Zekeriya
@@ -50637,6 +51936,7 @@ Zighout Youcef
 Zigon
 Zigong
 Ziguinchor
+Zihuatanejo
 Zikhron Ya'aqov
 Zile
 Zilina
@@ -50657,6 +51957,7 @@ Zinjibār
 Zintan
 Zinvie
 Zinvié
+Zinyibar
 Zion
 Zionsville
 Zipaquira
@@ -50665,6 +51966,7 @@ Zir Ab
 Zira
 Zirndorf
 Zishui
+Zitlaltepec
 Zitong
 Zittau
 Ziway
@@ -50687,6 +51989,7 @@ zngdw
 zngwwn
 znng
 Znojmo
+Známensk
 Zoetermeer
 Zografos
 Zográfos
@@ -50717,6 +52020,7 @@ Zouxian
 Zouzhuang
 Zouérat
 Zrenjanin
+Zuara
 Zubia
 Zuelpich
 Zuenoula
@@ -50744,12 +52048,15 @@ Zutphen
 Zuunmod
 Zuwarah
 Zuénoula
+Zuérate
 Zvecan
 Zvenigorod
 Zvenyhorodka
+Zvenígorod
 Zverevo
 Zvečan
 Zvishavane
+Zviáhel
 Zvolen
 Zvyahel
 Zwedru
@@ -50782,6 +52089,7 @@ Zé
 Zé Doca
 Zéaglo
 Zégoua
+Zúrich
 Zülpich
 Zürich
 Zābol
@@ -50793,6 +52101,7 @@ Zīr Āb
 Złotoryja
 Złotów
 Zūnyì
+Áchinsk
 Áden
 Ágioi Anárgyroi
 Água Azul do Norte
@@ -50813,6 +52122,7 @@ Zūnyì
 Álimos
 Álvares Machado
 Álvaro Obregón
+Ámsterdam
 Áno Liósia
 Árgos
 Árta
@@ -50881,6 +52191,7 @@ Zūnyì
 Édessa
 Édmonton
 Égkomi
+Éibar
 Élancourt
 Élisabethville
 Épernay
@@ -50889,6 +52200,7 @@ Zūnyì
 Équeurdreville-Hainneville
 Éragny
 Érd
+Érfurt
 Étampes
 Évora
 Évosmos
@@ -50902,6 +52214,7 @@ Zūnyì
 Ílhavo
 Ílion
 Ít Ong
+Íznik
 Î-hng-chhī
 Îsfehan
 Ðà Lạt
@@ -50909,6 +52222,7 @@ Zūnyì
 Ñuñoa
 Òslo
 Óbidos
+Óbninsk
 Óbuda
 Óc Eo
 Ódessa
@@ -50916,6 +52230,7 @@ Zūnyì
 Ósaka
 Ósló
 Ószaka
+Óvruch
 Ózd
 Ô Chợ Dừa
 Ô Môn
@@ -50938,6 +52253,7 @@ Zūnyì
 Újpest
 Újszeged
 Ústí nad Labem
+Úzhgorod
 Übach-Palenberg
 Überlingen
 Ünye
@@ -51135,6 +52451,7 @@ Zūnyì
 Ĝunji
 Ĝuĝou
 Ğidda
+Ġandala
 Ĥarkivo
 Ĥarkov
 Ĥartumo
@@ -51299,6 +52616,7 @@ Zūnyì
 Šao-sing
 Šardža
 Šardžá
+Šarypovo
 Šaľa
 Šen-jang
 Šen-čen

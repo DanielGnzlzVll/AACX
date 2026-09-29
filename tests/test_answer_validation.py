@@ -56,8 +56,13 @@ def validate(pairs, validators=None):
         (("name", "mesa"), {("name", "mesa"): False}),
         (("last_name", "quintero"), {("last_name", "quintero"): True}),
         (("animal", "ñandu"), {("animal", "ñandu"): True}),
+        (("animal", "turpial"), {("animal", "turpial"): True}),
         (("animal", "elefnte"), {("animal", "elefnte"): False}),
+        (("animal", "silla"), {}),
         (("color", "fucsia"), {("color", "fucsia"): True}),
+        (("color", "xkq"), {("color", "xkq"): False}),
+        (("color", "perro"), {}),
+        (("thing", "quitasol"), {("thing", "quitasol"): True}),
         (("thing", "mesa"), {}),
     ],
 )
@@ -72,6 +77,7 @@ def test_lexicon_validator(pair, expected):
         (("city", "bogota"), {("city", "bogota"): True}),
         (("city", "bogta"), {}),
         (("animal", "elefnte"), {}),
+        (("color", "xkq"), {}),
     ],
 )
 def test_partial_lexicon_validator_leaves_misses_to_the_next(pair, expected):
@@ -98,9 +104,14 @@ def test_empty_validator_paths_are_skipped(settings):
     [
         (("thing", "mesa"), {("thing", "mesa"): True}),
         (("thing", "lapiz"), {("thing", "lapiz"): True}),
+        (("thing", "xilofono"), {("thing", "xilofono"): True}),
+        (("thing", "tijeras"), {("thing", "tijeras"): True}),
         (("thing", "maquina de coser"), {("thing", "maquina de coser"): True}),
         (("thing", "mesaa"), {("thing", "mesaa"): False}),
         (("thing", "asdf"), {("thing", "asdf"): False}),
+        (("thing", "correr"), {("thing", "correr"): False}),
+        (("thing", "de mesa"), {("thing", "de mesa"): False}),
+        (("thing", "xd"), {("thing", "xd"): False}),
         (("animal", "mesaa"), {}),
     ],
 )

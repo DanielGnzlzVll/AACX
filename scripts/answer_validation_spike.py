@@ -90,12 +90,6 @@ def evaluate(name, validators, sample, shuffles):
     }
 
 
-def with_fields(validator_class, attribute, fields):
-    validator = validator_class()
-    setattr(validator, attribute, frozenset(fields))
-    return validator
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -110,31 +104,15 @@ def main():
     sample = load_sample(args.sample)
     lexicon = answer_validation.PartialLexiconValidator()
     dictionary = answer_validation.DictionaryValidator()
-    strict = answer_validation.LexiconValidator()
+    default = answer_validation.LexiconValidator()
+    every_list_closed = answer_validation.LexiconValidator()
+    every_list_closed.closed_fields |= every_list_closed.soft_fields
+    every_list_closed.soft_fields = frozenset()
     pipelines = {
         "lists": [lexicon],
         "lists + dictionary (thing)": [lexicon, dictionary],
-        "lists + dictionary (thing, animal, color)": [
-            lexicon,
-            with_fields(
-                answer_validation.DictionaryValidator,
-                "fields",
-                ["thing", "animal", "color"],
-            ),
-        ],
-        "strict lists + dictionary (thing)": [strict, dictionary],
-        "strict lists (name, last_name, country, city) + dictionary (rest)": [
-            with_fields(
-                answer_validation.LexiconValidator,
-                "closed_fields",
-                ["name", "last_name", "country", "city"],
-            ),
-            with_fields(
-                answer_validation.DictionaryValidator,
-                "fields",
-                ["thing", "animal", "color"],
-            ),
-        ],
+        "every list closed + dictionary (thing)": [every_list_closed, dictionary],
+        "default chain": [default, dictionary],
     }
     results = [
         evaluate(name, v, sample, args.shuffles) for name, v in pipelines.items()

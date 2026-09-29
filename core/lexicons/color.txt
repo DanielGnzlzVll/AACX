@@ -97,5 +97,7 @@ verde menta
 verde militar
 verde oliva
 vino
+vino tinto
+vinotinto
 violeta
 zafiro
