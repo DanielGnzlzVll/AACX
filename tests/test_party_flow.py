@@ -81,12 +81,10 @@ async def test_two_players_play_a_round(
     )
     path = f"/party/{party.id}/"
 
-    # Both players connect before the state machine starts: in a single process its
-    # join transaction blocks the only thread-sensitive sync thread until they join.
     alice_ws = await ws_connect(alice, path)
     bob_ws = await ws_connect(bob, path)
     start_event = await channel_layer.receive(consumers.STATE_MACHINE_CHANNEL_NAME)
-    party_task = asyncio.create_task(state_machine.event_party_started(start_event))
+    party_task = asyncio.create_task(state_machine.play_party(start_event["party_id"]))
 
     for ws in (alice_ws, bob_ws):
         await receive_until(ws, is_answers_form)
