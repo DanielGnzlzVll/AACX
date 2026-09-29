@@ -8,7 +8,7 @@ from asacx.settings import DATABASES  # noqa: E402
 DATABASES["default"]["HOST"] = os.environ.get("POSTGRES_HOST", "db")
 DATABASES["default"]["PORT"] = int(os.environ.get("POSTGRES_PORT", 5432))
 
-CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
+CHANNEL_LAYERS = {"default": {"BACKEND": "core.testing.MsgpackInMemoryChannelLayer"}}
 
 LEASE_REDIS_URL = "redis://{}:{}/1".format(
     os.environ.get("REDIS_HOST", "cache"), os.environ.get("REDIS_PORT", 6379)
