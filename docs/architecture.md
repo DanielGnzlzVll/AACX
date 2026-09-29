@@ -137,7 +137,7 @@ Consumed by `PartyStateMachine` in whichever worker receives the message first. 
 
 | Payload | Producer | Consumer |
 |---|---|---|
-| `round_id` | `PartyStateMachine.event_party_round_stopped`, after it closed the round | `PartyStateMachine.wait_for_round_end`, inside the round loop of `play_party`. It waits up to `max_round_duration` seconds. A message for the current round ends the wait early, and messages for other rounds are dropped as stale. On timeout it closes the round conditionally and, if that closed it, broadcasts `event_party_round_stopped`. |
+| `round_id` | `PartyStateMachine.event_party_round_stopped`, after it closed the round | `PartyStateMachine.wait_for_round_end`, inside the round loop of `play_party`. It waits until the round's `deadline_at`. A message for the current round ends the wait early, and messages for other rounds are dropped as stale. On timeout it closes the round conditionally and, if that closed it, broadcasts `event_party_round_stopped`. |
 
 ### Group `party_{id}`
 
@@ -197,7 +197,7 @@ sequenceDiagram
             SM->>DB: UPDATE round SET closed_at WHERE closed_at IS NULL
             SM->>R: group_send event_party_round_stopped
             SM->>R: send party_new_round_{id} {round_id}
-        else max_round_duration passes
+        else deadline_at passes
             SM->>DB: UPDATE round SET closed_at WHERE closed_at IS NULL
             SM->>R: group_send event_party_round_stopped
         end
@@ -223,7 +223,7 @@ The lifecycle has no explicit state. It is inferred from `Party.started_at`, `Pa
 2. If the party is already closed, `play_party` returns. If it has already started, it is resumed: a latest round that is closed may have lost its runner before scoring, so it is scored again. Scoring is idempotent, and it closes the party after the last round.
 3. While `Party.closed_at` is NULL:
    - `next_round` returns the open round, or creates one with an unused letter, and broadcasts it.
-   - `wait_for_round_end` waits for a STOP on `party_new_round_{id}` or until the round's `started_at` plus `max_round_duration`, and makes sure the round is closed. A resumed round only gets the time it has left.
+   - `wait_for_round_end` waits for a STOP on `party_new_round_{id}` or until the round's `deadline_at`, and makes sure the round is closed. A round saves `deadline_at` as `started_at` plus `max_round_duration` when it opens, so a resumed round only gets the time it has left.
    - `update_scores` validates the round's answers, then scores it. The same transaction sets `Party.closed_at` once the party has `max_rounds` closed rounds.
 4. `finish_party` broadcasts `party_finished_update.html`: the winners, the final scores and a link home.
 
@@ -249,7 +249,7 @@ stateDiagram-v2
 
 ### Target
 
-The target is proposed in [#1] and recorded in [ADR 0004](adr/0004-persisted-event-driven-party-state-machine.md). State is persisted in `Party.status`, transitions are conditional DB updates, events carry ids only, and each party runs as its own `asyncio.Task` owned by one worker through a Redis lease. The per-party tasks, the lease and the reconciler are implemented (see above). `Party.status`, `ABANDONED` and the round's `deadline_at` and `closed_reason` are not.
+The target is proposed in [#1] and recorded in [ADR 0004](adr/0004-persisted-event-driven-party-state-machine.md). State is persisted in `Party.status`, transitions are conditional DB updates, events carry ids only, and each party runs as its own `asyncio.Task` owned by one worker through a Redis lease. The per-party tasks, the lease and the reconciler are implemented (see above). So is the round's `deadline_at`. `Party.status`, `ABANDONED` and the round's `closed_reason` are not.
 
 ```mermaid
 stateDiagram-v2
@@ -306,6 +306,7 @@ erDiagram
         bigint party_id FK
         char letter "unique per party"
         datetime started_at
+        datetime deadline_at "started_at plus the party's max_round_duration"
         datetime closed_at "NULL while open"
         datetime created_at
     }
@@ -385,6 +386,7 @@ The ws extension handles each server message as an HTML fragment. Every top-leve
 | `party_content` | `_waiting_room.html`, `_party_content.html` (included by `party.html`) | `_party_content.html` | `PartyConsumer.event_new_round` |
 | `party_current_answers`, `party_reports` | `_party_content.html` | `party_finished_update.html` (final results in place of the form) | `PartyStateMachine.finish_party`, group `html` |
 | `party_current_answers_form` | `party_current_answers.html` (the id is also the waiting placeholder when no round is open) | `party_current_answers.html` | `PartyConsumer.event_party_round_stopped` (disabled form) |
+| `round_countdown` | `_round_countdown.html`, included by `party_reports.html` | `_round_countdown.html` at 0 | `PartyConsumer.event_party_round_stopped` |
 | `answer_error_<field>` | `_answer_error.html`, included once per field by `party_current_answers.html` | `party_current_answers_errors.html` | `PartyConsumer`: autosave reply to its own socket |
 | `party_answers_table` | `party_answers.html` | `party_answers.html` | `PartyConsumer.event_update_past_answers` |
 | `modal` | `base.html` | `party_current_all_users_answers_modal.html` | `PartyStateMachine.display_all_answers`, group `html` |
@@ -395,6 +397,7 @@ Things to keep in mind when changing templates or consumers:
 - **Group broadcasts are rendered once for every player.** An `html` broadcast can only carry state that all players share. Anything that depends on the user, like the past-answers table, has to be rendered by that player's `PartyConsumer`, like the `event_*` handlers do.
 - **The waiting page and the game page share `#party_content`.** `_party_content.html` wraps the three game panels in it, so the first round broadcast replaces the waiting message. Its `display: contents` keeps the panels as grid items of `.party_game`.
 - **The answers form** (`party_current_answers_form`) sends itself with `ws-send` on every `input` (200 ms debounce), including empty and one-character values, so the stored answers always match the screen. The autosave reply never contains the inputs: replacing an input while the player types would drop the characters typed while the message was in flight. It only swaps the `#answer_error_<field>` elements, and `.word-error + input` paints the field red.
+- **The round countdown** (`round_countdown`) is display-only: the worker's timeout is what closes the round. The server renders the seconds left until `deadline_at` in `data-seconds-left`, and `countdown.js` ticks every such element down against the browser's monotonic clock, so a skewed client clock doesn't shift it. A swapped-in element starts from its own value.
 - **STOP** is a `type="button"` with its own `ws-send` and `hx-vals='{"submit_stop": "on"}'`, so it sends the form's values plus `submit_stop`, with `HX-Trigger: submit_stop`. It isn't a submit button, so pressing Enter in an answer can't end the round.
 
 The per-player answers modal doesn't use the websocket. Clicking a row in the scores table sends an `hx-get` to `party_answers`, which returns `party_modal_answers.html` and replaces `#modal` (`hx-swap="outerHTML transition:true"`). For another player, it only shows closed rounds.
