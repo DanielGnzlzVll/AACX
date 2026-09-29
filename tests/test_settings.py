@@ -20,16 +20,20 @@ PRODUCTION_ENV = {
 }
 
 
-def run_django(env, *code):
-    clean_env = {
+def isolated_env(env):
+    inherited = {
         key: value
         for key, value in os.environ.items()
         if not key.startswith(("DJANGO_", "DATABASE_", "REDIS_", "LEASE_", "CSRF_"))
     }
+    return {**inherited, **env}
+
+
+def run_django(env, *code):
     return subprocess.run(
         [sys.executable, "-c", "\n".join(("import django", "django.setup()", *code))],
         cwd=BASE_DIR,
-        env={**clean_env, "DJANGO_SETTINGS_MODULE": "asacx.settings", **env},
+        env=isolated_env({"DJANGO_SETTINGS_MODULE": "asacx.settings", **env}),
         capture_output=True,
         text=True,
     )
@@ -39,7 +43,7 @@ def test_production_env_passes_deploy_checks():
     result = subprocess.run(
         [sys.executable, "manage.py", "check", "--deploy", "--fail-level", "WARNING"],
         cwd=BASE_DIR,
-        env={**os.environ, **PRODUCTION_ENV},
+        env=isolated_env(PRODUCTION_ENV),
         capture_output=True,
         text=True,
     )
@@ -112,15 +116,10 @@ def test_debug_toolbar_only_with_debug(debug, installed):
 
 
 def test_asgi_application_loads_without_settings_module():
-    env = {
-        key: value
-        for key, value in os.environ.items()
-        if key != "DJANGO_SETTINGS_MODULE"
-    }
     result = subprocess.run(
         [sys.executable, "-c", "from asacx.asgi import application"],
         cwd=BASE_DIR,
-        env={**env, "DJANGO_SECRET_KEY": PRODUCTION_ENV["DJANGO_SECRET_KEY"]},
+        env=isolated_env({"DJANGO_SECRET_KEY": PRODUCTION_ENV["DJANGO_SECRET_KEY"]}),
         capture_output=True,
         text=True,
     )
