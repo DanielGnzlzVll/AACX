@@ -198,9 +198,13 @@ class DetailParty(LoginRequiredMixin, HTMXPartialMixin, View):
 
         context["party"] = party_qs.get()
         self.party = context["party"]
-        context["current_round"] = self.party.get_current_or_next_round()
         context["players_scores"] = self.party.get_players_scores()
         context["rounds"] = self.party.get_answers_for_user(self.request.user)
+        if self.party.closed_at:
+            context["current_round"] = self.party.get_current_round()
+            context["winners"] = self.party.get_winners()
+            return context
+        context["current_round"] = self.party.get_current_or_next_round()
         context["form"] = forms.CurrentAnswersForm(
             current_round=context["current_round"],
         )
