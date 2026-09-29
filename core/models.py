@@ -1,6 +1,7 @@
 import collections
 import random
 import string
+import unicodedata
 from collections import defaultdict
 from itertools import groupby
 
@@ -12,6 +13,24 @@ from django.db.models.functions import Coalesce, Lower
 from django.utils import timezone
 
 DUPLICATE_OPEN_PARTY_NAME_MESSAGE = "Ya existe una partida abierta con ese nombre."
+
+COMBINING_TILDE = "\u0303"
+
+
+def normalize_answer(value):
+    decomposed = unicodedata.normalize("NFKD", value.casefold())
+    # Ñ is its own letter in Spanish, so its tilde is the one mark kept.
+    kept = "".join(
+        char
+        for previous, char in zip(" " + decomposed, decomposed)
+        if not unicodedata.combining(char)
+        or (char == COMBINING_TILDE and previous == "n")
+    )
+    return " ".join(unicodedata.normalize("NFC", kept).split())
+
+
+def answer_starts_with(value, letter):
+    return normalize_answer(value).startswith(normalize_answer(letter))
 
 
 class PartyQuerySet(models.QuerySet):
@@ -225,20 +244,19 @@ class PartyRound(models.Model):
         for answer in UserRoundAnswer.objects.filter(round=self):
             answers_by_field[answer.field].append(answer)
 
-        for field, answers in answers_by_field.items():
-            all_users_for_field_answers = defaultdict(int)
+        letter = normalize_answer(self.letter)
+        for answers in answers_by_field.values():
+            valid_answers = defaultdict(list)
             for answer in answers:
-                all_users_for_field_answers[answer.value] += 1
-
-            for answer in answers:
-                if not answer.value:
-                    answers_to_save.append(answer)
-                    continue
-                if not answer.value.lower().startswith(self.letter.lower()):
-                    answers_to_save.append(answer)
-                    continue
-                answer.scored_points = 100 // all_users_for_field_answers[answer.value]
+                answer.scored_points = 0
+                normalized = normalize_answer(answer.value)
+                if normalized.startswith(letter):
+                    valid_answers[normalized].append(answer)
                 answers_to_save.append(answer)
+
+            for same_answers in valid_answers.values():
+                for answer in same_answers:
+                    answer.scored_points = 100 // len(same_answers)
 
         UserRoundAnswer.objects.bulk_update(answers_to_save, ["scored_points"])
 

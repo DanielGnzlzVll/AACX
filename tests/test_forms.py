@@ -37,6 +37,32 @@ def test_current_answers_form_letter_validation(data, errors):
     assert form.errors == errors
 
 
+@pytest.mark.parametrize(
+    "letter, value, valid",
+    [
+        ("A", "Álvaro", True),
+        ("A", "Ávila", True),
+        ("A", "álvaro", True),
+        ("A", "ÁNGEL", True),
+        ("A", "  ana  ", True),
+        ("E", "Éxito", True),
+        ("I", "Íñigo", True),
+        ("O", "Óscar", True),
+        ("U", "Úrsula", True),
+        ("U", "Ürümqi", True),
+        ("N", "Ñandú", False),
+        ("N", "ñu", False),
+        ("B", "Álvaro", False),
+    ],
+)
+def test_current_answers_form_letter_check_ignores_case_accents_and_spaces(
+    letter, value, valid
+):
+    form = CurrentAnswersForm({"name": value}, current_round=PartyRound(letter=letter))
+
+    assert form.is_valid() == valid
+
+
 def test_current_answers_form_rejects_answers_longer_than_model_field():
     max_length = UserRoundAnswer._meta.get_field("value").max_length
     form = CurrentAnswersForm(

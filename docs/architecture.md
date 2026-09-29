@@ -275,7 +275,7 @@ erDiagram
         int user_id FK
         varchar field "name, last_name, country, city, animal, thing, color"
         varchar value "max 50 chars"
-        int scored_points "NULL until scored, stays NULL if invalid"
+        int scored_points "NULL until scored, 0 if invalid or empty"
         datetime saved_at
     }
 ```
@@ -299,8 +299,8 @@ erDiagram
 
 `PartyRound.close_round_and_calculate_scores` closes the round and scores it in one transaction, and closes the party after its last round. Each category is scored separately:
 
-- An answer that is empty, or doesn't start with the round's letter (case-insensitive), keeps `scored_points = NULL`. It is shown as 0.
-- A valid answer scores `100 // n`, where `n` is the number of answers in that category with exactly the same `value`. A unique answer scores 100, two identical answers score 50 each, three score 33 each. Values are compared case- and accent-sensitively ([#19]).
+- An answer that is empty, or doesn't start with the round's letter, scores 0. The letter check ignores case and accents, but ñ is its own letter, so `Ñandú` doesn't count for N. Rounds scored before this rule kept `scored_points = NULL`, which is shown as 0.
+- A valid answer scores `100 // n`, where `n` is the number of answers in that category with the same normalized value. A unique answer scores 100, two identical answers score 50 each, three score 33 each. `normalize_answer` ignores case, accents except the tilde on ñ, and surrounding or repeated whitespace, so `Perro`, `perro` and `perro ` are the same answer. The stored `value` is kept as typed.
 - A player's party score is the sum of their `scored_points` over every round, with 0 for a player who has none (`Party.aget_players_scores`). The winners are every player with the top score, or nobody if the top score is 0 (`Party.aget_winners`).
 
 `CurrentAnswersForm.clean` checks the initial letter while the player types, but it adds errors without removing the values, so invalid answers are stored anyway and score nothing when the round closes.
@@ -367,7 +367,6 @@ The issues that track where the implementation differs from the design:
 [#15]: https://github.com/DanielGnzlzVll/AACX/issues/15
 [#16]: https://github.com/DanielGnzlzVll/AACX/issues/16
 [#18]: https://github.com/DanielGnzlzVll/AACX/issues/18
-[#19]: https://github.com/DanielGnzlzVll/AACX/issues/19
 [#20]: https://github.com/DanielGnzlzVll/AACX/issues/20
 [#21]: https://github.com/DanielGnzlzVll/AACX/issues/21
 [#24]: https://github.com/DanielGnzlzVll/AACX/issues/24
