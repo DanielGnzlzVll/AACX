@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 import types
 from html.parser import HTMLParser
 
@@ -256,3 +257,22 @@ async def test_group_broadcasts_carry_no_per_player_answers(
     assert broadcast_html
     for message in broadcast_html:
         assert "party_answers_table" not in ElementIds(message).all, message
+
+
+@pytest.mark.django_db(transaction=True)
+async def test_answers_reveal_titles_each_category_in_spanish(
+    monkeypatch, channel_layer, state_machine, fast_answers_reveal, party_factory
+):
+    party = await sync_to_async(party_factory)()
+    round = await models.PartyRound.objects.acreate(party=party, letter="M")
+    titles = []
+    group_send = channel_layer.group_send
+
+    async def spy(group, message):
+        titles.extend(re.findall(r"<h3>(.+?)</h3>", message["message"]))
+        await group_send(group, message)
+
+    monkeypatch.setattr(channel_layer, "group_send", spy)
+    await state_machine.display_all_answers([], round, party)
+
+    assert titles == ["Nombre", "Apellido", "País", "Ciudad", "Animal", "Cosa", "Color"]

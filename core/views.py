@@ -244,7 +244,7 @@ class CreateParty(LoginRequiredMixin, HTMXPartialMixin, View):
 
         self.form_saved = True
         messages.add_message(
-            request, messages.SUCCESS, f"'{party.name}' created successfully."
+            request, messages.SUCCESS, f"Partida '{party.name}' creada."
         )
 
         context["parties"] = models.Party.objects.get_available_parties(

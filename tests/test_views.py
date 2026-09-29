@@ -77,6 +77,7 @@ def test_create_party_creates_party(logged_in_client):
     party = Party.objects.get(name="new party")
     assert (party.min_players, party.max_round_duration, party.max_rounds) == (3, 60, 4)
     assert party in response.context["parties"]
+    assert "Partida &#x27;new party&#x27; creada." in response.content.decode()
 
 
 def test_create_party_stores_its_creator(logged_in_client, alice):

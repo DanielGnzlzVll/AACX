@@ -75,7 +75,7 @@ class PartyQuerySet(models.QuerySet):
 
 
 class Party(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField("nombre", max_length=50)
 
     waiting_started_at = models.DateTimeField(blank=True, null=True)
     started_at = models.DateTimeField(blank=True, null=True)
@@ -396,13 +396,13 @@ class UserRoundAnswer(models.Model):
     ANIMAL_CHOICE = "animal"
 
     FIELD_CHOICES = (
-        (NAME_CHOICE, NAME_CHOICE),
-        (LAST_NAME_CHOICE, LAST_NAME_CHOICE),
-        (COUNTRY_CHOICE, COUNTRY_CHOICE),
-        (CITY_CHOICE, CITY_CHOICE),
-        (ANIMAL_CHOICE, ANIMAL_CHOICE),
-        (THING_CHOICE, THING_CHOICE),
-        (COLOR_CHOICE, COLOR_CHOICE),
+        (NAME_CHOICE, "Nombre"),
+        (LAST_NAME_CHOICE, "Apellido"),
+        (COUNTRY_CHOICE, "País"),
+        (CITY_CHOICE, "Ciudad"),
+        (ANIMAL_CHOICE, "Animal"),
+        (THING_CHOICE, "Cosa"),
+        (COLOR_CHOICE, "Color"),
     )
 
     class Verdict(models.TextChoices):
